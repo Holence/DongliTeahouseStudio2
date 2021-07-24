@@ -1,0 +1,405 @@
+# # --
+from DTPySide import *
+
+from session import LobbySession
+from module.Ui_Concept import Ui_Concept
+class Concept(QWidget,Ui_Concept):
+	def __init__(self, parent, Headquarter: LobbySession):
+		super().__init__(parent=parent)
+		self.setupUi(self)
+		self.Headquarter=Headquarter
+		self.current_id=-1
+
+		self.initializeWindow()
+		self.initializeSignal()
+	
+	def initializeWindow(self):
+		self.splitter_center.setStretchFactor(0,1)
+		self.splitter_center.setStretchFactor(1,4)
+		
+		self.splitter_whole.setStretchFactor(0,1)
+		self.splitter_whole.setStretchFactor(1,2)
+		self.splitter_whole.setStretchFactor(2,1)
+
+		# 搜索处的concept table只能drag out不能drop in
+		self.conceptTable.setDragDropMode(QAbstractItemView.DragOnly)
+		self.conceptTable.setHeadquarter(self.Headquarter)
+		self.conceptTable.setObjectName("ConceptConceptTable") #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
+
+		self.fileTable.setHeadquarter(self.Headquarter)
+		self.fileTable.setObjectName("ConceptFileTable%s"%len(self.Headquarter.concept_dump)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
+		self.textList.setHeadquarter(self.Headquarter)
+		self.textList.setObjectName("ConceptTextList%s"%len(self.Headquarter.concept_dump)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
+		
+		self.parentTable.setHeadquarter(self.Headquarter)
+		self.childTree.setHeadquarter(self.Headquarter)
+		self.relativeTable.setHeadquarter(self.Headquarter)
+
+
+	def initializeSignal(self):
+		# 添加concept
+		self.actionAdd_Concept.triggered.connect(self.addConcept)
+		self.actionDelete.triggered.connect(self.deleteCenter)
+		
+		# search
+		self.lineEdit_search.textEdited.connect(self.showSearch)
+
+		#修改concept信息
+		self.lineEdit_name.editingFinished.connect(self.saveName)
+		self.plainTextEdit_detail.editingFinished.connect(self.saveDetail)
+
+		# 添加concept linked file
+		self.fileTable.fileDropped.connect(self.addConceptFile)
+		
+		# 点击concept，展示concept
+		self.conceptTable.conceptClicked.connect(self.showConcept)
+		self.childTree.conceptClicked.connect(self.showConcept)
+		self.relativeTable.conceptClicked.connect(self.showConcept)
+		self.parentTable.conceptClicked.connect(self.showConcept)
+
+		# 添加concept链接
+		self.parentTable.conceptDropped.connect(self.addParent)
+		self.childTree.conceptDropped.connect(self.addChild)
+		self.relativeTable.conceptDropped.connect(self.addRelative)
+
+		self.checkBox.stateChanged.connect(self.refreshTab)
+		self.tabWidget.currentChanged.connect(self.refreshTab)
+
+		self.textList.textDropped.connect(self.addConceptText)
+	
+	def refresh(self):
+		self.showSearch()
+		self.showConcept(self.current_id)
+	
+	def showSearch(self):
+		concept_list=self.Headquarter.getConceptData()
+		search=self.lineEdit_search.text()
+		self.conceptTable.setConceptList(concept_list,search)
+
+	def refreshTab(self):
+		def showConceptTextList():
+			self.textList.setTextList("Concept",id_list)
+		
+		def ShowConceptText():
+			text=""
+			day_list=["星期一","星期二","星期三","星期四","星期五","星期六","星期日"]
+			diary_data=self.Headquarter.getDiaryData()
+			for year in diary_data:
+				for month in diary_data[year]:
+					for day in diary_data[year][month]:
+						flag=False
+						for line in diary_data[year][month][day]:
+							if List_Intersection(line["concept"],id_list)!=[]:
+								if flag==False:
+									text+="%s.%s.%s %s\n\n"%(year,month,day,day_list[QDate(int(year),int(month),int(day)).dayOfWeek()-1])
+									flag=True
+								text+=line["text"]+"\n\n"
+			self.textViewer.setMarkdown(text)
+
+		def showConceptFile():
+			file_list=[]
+			for id in id_list:
+				concept=self.Headquarter.getConcept(id)
+				file_list+=concept["file"]
+			self.fileTable.setFileList(file_list)
+		
+		def deepin(root_id):
+			child_id_list=self.Headquarter.getConcept(root_id)["child"]
+			for child_id in child_id_list:
+				if child_id not in id_list:
+					id_list.append(child_id)
+					deepin(child_id)
+		
+		id_list=[]
+		state=self.checkBox.checkState()
+		if state==Qt.Unchecked:
+			self.checkBox.setText("Only Root")
+			id_list.append(self.current_id)
+		elif state==Qt.PartiallyChecked:
+			self.checkBox.setText("Only Child")
+			deepin(self.current_id)
+		elif state==Qt.Checked:
+			self.checkBox.setText("Both Root and Child")
+			id_list.append(self.current_id)
+			deepin(self.current_id)
+		
+
+		self.fileTable.Clear()
+		self.textList.clear()
+		self.textViewer.clear()
+		if self.tabWidget.currentIndex()==0:
+			showConceptFile()
+		elif self.tabWidget.currentIndex()==1:
+			showConceptTextList()
+		else:
+			ShowConceptText()
+
+
+	def showConcept(self, id:int):
+		
+		self.current_id=id
+		if self.current_id!=-1:
+			concept=self.Headquarter.getConcept(id)
+			self.lineEdit_name.setText(concept["name"])
+			self.plainTextEdit_detail.setPlainText(concept["detail"])
+			
+			self.refreshTab()
+
+			# parent child relative
+			self.parentTable.setConceptIDList(concept["parent"])
+			self.childTree.setChildTree(self.current_id)
+			self.relativeTable.setConceptIDList(concept["relative"])
+		else:
+			self.lineEdit_name.clear()
+			self.plainTextEdit_detail.clear()
+			self.fileTable.Clear()
+			self.textViewer.clear()
+			self.parentTable.Clear()
+			self.childTree.clear()
+			self.relativeTable.Clear()
+	
+	def addConcept(self):
+		if self.lineEdit_name.hasFocus():
+			self.saveName()
+		elif self.plainTextEdit_detail.hasFocus():
+			self.saveDetail()
+
+		new_concept=self.Headquarter.appendConcept()
+		self.showConcept(new_concept["id"])
+		self.conceptTable.appendConcept(new_concept["id"],new_concept["name"])
+		self.lineEdit_name.setFocus()
+	
+	def saveName(self):
+		if self.current_id!=-1:
+			concept=self.Headquarter.getConcept(self.current_id)
+			concept["name"]=self.lineEdit_name.text()
+			concept["az"]=Str_to_AZ(concept["name"])
+			self.showSearch()
+	
+	def saveDetail(self):
+		if self.current_id!=-1:
+			concept=self.Headquarter.getConcept(self.current_id)
+			concept["detail"]=self.plainTextEdit_detail.toPlainText()
+			self.showSearch()
+
+	def addConceptFile(self,url_list,file_list):
+		if self.current_id!=-1:
+			concept=self.Headquarter.getConcept(self.current_id)
+			# 外来
+			if file_list==[]:
+				y,m,d=WhatDayIsToday(0)
+				for url in url_list:
+
+					# Library_Data中file添加file
+					res=self.Headquarter.addLibraryFile(QDate(y,m,d),url,[self.current_id])
+					if res!=None:
+						name,new_file=res
+
+						# concept中添加file
+						concept["file"].append({
+							"y":y,
+							"m":m,
+							"d":d,
+							"type":new_file["type"],
+							"name":name,
+							"url":new_file["url"]
+						})
+					else:
+						# 失败
+						continue
+			else:
+
+				# Library_Data中file添加concept id
+				for new_file in file_list:
+					y=new_file["y"]
+					m=new_file["m"]
+					d=new_file["d"]
+					name=new_file["name"]
+					file=self.Headquarter.getLibraryFile(QDate(y,m,d),name)
+					if self.current_id not in file["concept"]:
+						file["concept"].append(self.current_id)
+				
+				# concept中添加file
+				concept["file"]=List_Union_Full(concept["file"],file_list)
+
+			self.refreshTab()
+	
+	def addConceptText(self,text_list):
+		for text in text_list:
+			line=self.Headquarter.getDiaryDayLine(QDate(text["y"],text["m"],text["d"]),text["index"])
+			if self.current_id not in line["concept"]:
+				line["concept"].append(self.current_id)
+		
+		self.refreshTab()
+		self.textList.setFocus()
+	
+	#############################################################################################
+
+	def addParent(self,id_list):
+		if self.current_id!=-1:
+			self.Headquarter.addParent(self.current_id,id_list)
+			self.parentTable.setConceptIDList(self.Headquarter.getConcept(self.current_id)["parent"])
+			self.childTree.setChildTree(self.current_id)
+	
+	def addChild(self,id_list):
+		if self.current_id!=-1:
+			self.Headquarter.addChild(self.current_id,id_list)
+			self.parentTable.setConceptIDList(self.Headquarter.getConcept(self.current_id)["parent"])
+			self.childTree.setChildTree(self.current_id)
+	
+	def addRelative(self,id_list):
+		if self.current_id!=-1:
+			self.Headquarter.addRelative(self.current_id,id_list)
+			self.relativeTable.setConceptIDList(self.Headquarter.getConcept(self.current_id)["relative"])
+	
+	#############################################################################################
+
+	def deleteCenter(self):
+		if self.conceptTable.hasFocus():
+			self.deleteConcept()
+		elif self.fileTable.hasFocus():
+			self.deleteConceptFile()
+		elif self.textList.hasFocus():
+			self.deleteConceptText()
+		elif self.parentTable.hasFocus():
+			self.deleteParent()
+		elif self.childTree.hasFocus():
+			self.deleteChild()
+		elif self.relativeTable.hasFocus():
+			self.deleteRelative()
+	
+	def deleteConcept(self):
+		
+		delete_id_list=[]
+		warning_text="You want to delete concept:\n\n"
+		for model_index in self.conceptTable.selectionModel().selectedRows():
+			row=model_index.row()
+			id=int(self.conceptTable.item(row,0).text())
+			
+			delete_id_list.append(id)
+			warning_text+="%s: %s\n"%(id,self.Headquarter.getConcept(id)["name"])
+		
+		if delete_id_list!=[]:
+			if DTFrame.DTConfirmBox(self,"Delete Confirm",warning_text,DTIcon.Question()).exec_():
+				self.Headquarter.deleteConcept(delete_id_list)
+				self.current_id=-1
+				self.refresh()
+	
+	def deleteConceptFile(self):
+
+		delete_file_list=[]
+		warning_text="You want to delete concept linked file:\n\n"
+		for model_index in self.fileTable.selectionModel().selectedRows():
+
+			row=model_index.row()
+			type=int(self.fileTable.item(row,0).text())
+			y,m,d=map(int,self.fileTable.item(row,1).text().split("."))
+			name=self.fileTable.item(row,2).text()
+			url=self.fileTable.item(row,3).text().replace(self.Headquarter.library_base+"/","")
+			
+			delete_file_list.append({
+				"y":y,
+				"m":m,
+				"d":d,
+				"type":type,
+				"name":name,
+				"url":url
+			})
+			
+			warning_text+="%s\n"%(name)
+		
+		if delete_file_list!=[]:
+			if DTFrame.DTConfirmBox(self,"Delete Confirm",warning_text,DTIcon.Question()).exec_():
+				concept=self.Headquarter.getConcept(self.current_id)
+				
+				# concept中去除file
+				concept["file"]=List_Difference_Full(concept["file"],delete_file_list)
+				
+				# Library_Data中file去除concept id
+				for delete_file in delete_file_list:
+					file=self.Headquarter.getLibraryFile(QDate(delete_file["y"],delete_file["m"],delete_file["d"]),delete_file["name"])
+					file["concept"].remove(self.current_id)
+				
+				self.refreshTab()
+	
+	def deleteConceptText(self):
+		warning_text="You want to delete linked concept in text:\n\n"
+		delete_text_list=[]
+		for model_index in self.textList.selectionModel().selectedRows():
+			index=model_index.row()
+			text=self.textList.text_list[index]
+			delete_text_list.append(text)
+			warning_text+=self.textList.item(index).text()+"\n\n"
+		
+		if delete_text_list!=[]:
+			if DTFrame.DTConfirmBox(self,"Delete Confirm",warning_text,DTIcon.Question()).exec_():
+
+				for text in delete_text_list:
+					line=self.Headquarter.getDiaryDayLine(QDate(text["y"],text["m"],text["d"]),text["index"])
+					line["concept"].remove(self.current_id)
+				
+				self.refreshTab()
+
+	def deleteParent(self):
+		delete_id_list=[]
+		warning_text="You want to delete parent:\n\n"
+		for model_index in self.parentTable.selectionModel().selectedRows():
+			row=model_index.row()
+			id=int(self.parentTable.item(row,0).text())
+			
+			delete_id_list.append(id)
+			warning_text+="%s: %s\n"%(id,self.Headquarter.getConcept(id)["name"])
+		
+		if delete_id_list!=[]:
+			if DTFrame.DTConfirmBox(self,"Delete Confirm",warning_text,DTIcon.Question()).exec_():
+				self.Headquarter.deleteParent(self.current_id,delete_id_list)
+				self.parentTable.setConceptIDList(self.Headquarter.getConcept(self.current_id)["parent"])
+	
+	def deleteChild(self):
+		delete_id_list=[]
+		not_child_list=[]
+
+		warning_text="You want to delete child:\n\n"
+		delete_id_str=""
+		not_child_str="The concepts below are not direct child of the root concept, they will not be deleted.\n\n"
+		
+		concept=self.Headquarter.getConcept(self.current_id)
+		for item in self.childTree.selectedItems():
+			id=int(item.text(0))
+			if id in concept["child"]:
+				delete_id_list.append(id)
+				delete_id_str+="%s: %s\n"%(id,self.Headquarter.getConcept(id)["name"])
+			else:
+				not_child_list.append(id)
+				not_child_str+="%s: %s\n"%(id,self.Headquarter.getConcept(id)["name"])
+
+		if delete_id_list!=[] and not_child_list==[]:
+			warning_text+=delete_id_str
+			if DTFrame.DTConfirmBox(self,"Delete Confirm",warning_text,DTIcon.Question()).exec_():
+				self.Headquarter.deleteChild(self.current_id,delete_id_list)
+				self.childTree.setChildTree(self.current_id)
+		elif delete_id_list!=[] and not_child_list!=[]:
+			warning_text+=delete_id_str+"\n"+not_child_str
+			if DTFrame.DTConfirmBox(self,"Delete Confirm",warning_text,DTIcon.Question()).exec_():
+				self.Headquarter.deleteChild(self.current_id,delete_id_list)
+				self.childTree.setChildTree(self.current_id)
+		elif delete_id_list==[] and not_child_list!=[]:
+			DTFrame.DTMessageBox(self,"Warning",not_child_str,DTIcon.Holo01())
+		else:
+			pass
+
+
+	def deleteRelative(self):
+		delete_id_list=[]
+		warning_text="You want to delete relative:\n\n"
+		for model_index in self.relativeTable.selectionModel().selectedRows():
+			row=model_index.row()
+			id=int(self.relativeTable.item(row,0).text())
+			
+			delete_id_list.append(id)
+			warning_text+="%s: %s\n"%(id,self.Headquarter.getConcept(id)["name"])
+		
+		if delete_id_list!=[]:
+			if DTFrame.DTConfirmBox(self,"Delete Confirm",warning_text,DTIcon.Question()).exec_():
+				self.Headquarter.deleteRelative(self.current_id,delete_id_list)
+				self.relativeTable.setConceptIDList(self.Headquarter.getConcept(self.current_id)["relative"])
