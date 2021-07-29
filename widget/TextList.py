@@ -4,7 +4,17 @@ from DTPySide import *
 from session.LobbySession import LobbySession
 class TextList(QListWidget):
 
+	"""储存标准化的text_list=[{
+		"y":int,
+		"m":int,
+		"d":int,
+		"index":int
+	},]
+	在diary、concept、library的TextList间通信
+	"""
+
 	textDropped=Signal(list)
+	textClicked=Signal(dict)
 
 	def startDrag(self, actions:Qt.DropActions):
 		######################################################################
@@ -81,16 +91,22 @@ class TextList(QListWidget):
 		self.setResizeMode(QListView.Adjust)
 		self.setSpacing(15)
 		self.setWordWrap(True)
+
+		def slot():
+			index=self.currentRow()
+			self.textClicked.emit(self.text_list[index])
+		self.itemDoubleClicked.connect(slot)
 	
 	def setHeadquarter(self,Headquarter: LobbySession):
 		self.Headquarter=Headquarter
 	
-	def setTextList(self,Type,*args):
+	def setTextList(self,Type,args):
 		self.clear()
 		self.text_list=[]
+		day_list=["星期一","星期二","星期三","星期四","星期五","星期六","星期日"]
 
 		if Type=="Diary":
-			date=args[0]
+			date=args
 			index=0
 			for line in self.Headquarter.getDiaryDay(date):
 				have_concept=int(line["concept"]!=[])
@@ -108,9 +124,9 @@ class TextList(QListWidget):
 				index+=1
 			
 		elif Type=="Concept":
-			id_list=args[0]
+			id_list=args
 
-			day_list=["星期一","星期二","星期三","星期四","星期五","星期六","星期日"]
+			
 			diary_data=self.Headquarter.getDiaryData()
 			for year in diary_data:
 				for month in diary_data[year]:
@@ -130,8 +146,8 @@ class TextList(QListWidget):
 							index+=1
 			
 		elif Type=="Library":
-			file_dict=args[0]
-			day_list=["星期一","星期二","星期三","星期四","星期五","星期六","星期日"]
+			file_dict=args
+
 			diary_data=self.Headquarter.getDiaryData()
 			for year in diary_data:
 				for month in diary_data[year]:
@@ -149,3 +165,17 @@ class TextList(QListWidget):
 									"index":index
 								})
 							index+=1
+		elif Type=="Search":
+			
+			for line in args:
+				year=line["y"]
+				month=line["m"]
+				day=line["d"]
+				text="%s.%s.%s %s\n\n"%(year,month,day,day_list[QDate(year,month,day).dayOfWeek()-1])+line["text"]
+				self.addItem(text)
+				self.text_list.append({
+					"y":year,
+					"m":month,
+					"d":day,
+					"index":line["index"]
+				})

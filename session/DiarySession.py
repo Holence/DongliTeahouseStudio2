@@ -4,6 +4,11 @@ from DTPySide import *
 from session.LobbySession import LobbySession
 class DiarySession(DTFrame.DTMainWindow):
 	
+	def closeEvent(self, event:QCloseEvent):
+		super().closeEvent(event)
+		if hasattr(self.diary_module,"dairy_search_window"):
+			self.diary_module.dairy_search_window.close()
+
 	def eventFilter(self, watched: QObject, event:QMouseEvent) -> bool:
 		# 为了实现重新focusIn窗体的时候刷新界面，虽然手动把一堆子控件installEventFilter一遍，但也只能这样了
 		# focusInEvent和mousePressEvent都试了，都不可能捕获子控件的事件，所以只有点击到TitleBar或者window的空白区域，才可能被触发
@@ -11,7 +16,7 @@ class DiarySession(DTFrame.DTMainWindow):
 			# print(watched)
 			if self.Headquarter.WindowFocusing()!=self:
 				self.Headquarter.setWindowFocusing(self)
-				print("Now focused in",self.Headquarter.WindowFocusing())
+				# print("Now focused in",self.Headquarter.WindowFocusing())
 				self.diary_module.refresh()
 		return False # 这里是让继续延续event的处理，不要被filter掉了
 

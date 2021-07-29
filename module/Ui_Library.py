@@ -12,9 +12,9 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
+from widget import TextList
 from widget import ConceptTable
 from widget import FileTable
-from widget import TextList
 
 import DTPySide.DT_rc
 
@@ -68,7 +68,7 @@ class Ui_Library(object):
 
         self.dateEdit = QDateEdit(self.layoutWidget2)
         self.dateEdit.setObjectName(u"dateEdit")
-        self.dateEdit.setMinimumSize(QSize(400, 0))
+        self.dateEdit.setMinimumSize(QSize(300, 0))
         self.dateEdit.setReadOnly(True)
 
         self.verticalLayout_2.addWidget(self.dateEdit)
@@ -80,7 +80,7 @@ class Ui_Library(object):
 
         self.lineEdit_name = QLineEdit(self.layoutWidget2)
         self.lineEdit_name.setObjectName(u"lineEdit_name")
-        self.lineEdit_name.setMinimumSize(QSize(400, 0))
+        self.lineEdit_name.setMinimumSize(QSize(300, 0))
 
         self.verticalLayout_2.addWidget(self.lineEdit_name)
 
@@ -154,6 +154,7 @@ class Ui_Library(object):
         self.actionDelete.setShortcut(QCoreApplication.translate("Library", u"Del", None))
 #endif // QT_CONFIG(shortcut)
         self.label.setText(QCoreApplication.translate("Library", u"Search", None))
+        self.lineEdit_search.setPlaceholderText(QCoreApplication.translate("Library", u"file name (2000.1.1) (2001.1.1-2001.2.1) [conceptA] [conceptB] {1}", None))
         self.label_date.setText(QCoreApplication.translate("Library", u"Date", None))
         self.label_name.setText(QCoreApplication.translate("Library", u"Name", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_concept), QCoreApplication.translate("Library", u" Concept ", None))

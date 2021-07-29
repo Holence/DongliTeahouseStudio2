@@ -3,14 +3,18 @@ from DTPySide import *
 from session import LobbySession
 
 app=DTAPP([])
-app.setApplicationName("DongliTeahouse")
+
+app.setWindowIcon(DTIcon.HoloIcon1())
+app.setApplicationName("DongliTeahouseStudio")
+app.setApplicationVersion("2.0.0.0")
+app.setAuthor("鍵山狐")
+app.setLoginEnable(True)
+
+app.setBackupEnable(True)
+app.setBackupList(["data.dlcw"])
+
 mainsession=LobbySession(app)
 app.setMainSession(mainsession)
 
-app.debugRun("123",True)
+# app.debugRun("123",True)
 app.run()
-
-# 缩略图
-# alt打开文件目录
-# 文件复制导出
-# 导出JSON

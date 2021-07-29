@@ -27,9 +27,9 @@ class Concept(QWidget,Ui_Concept):
 		self.conceptTable.setObjectName("ConceptConceptTable") #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
 
 		self.fileTable.setHeadquarter(self.Headquarter)
-		self.fileTable.setObjectName("ConceptFileTable%s"%len(self.Headquarter.concept_dump)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
+		self.fileTable.setObjectName("ConceptFileTable%s"%len(self.Headquarter.concept_heap)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
 		self.textList.setHeadquarter(self.Headquarter)
-		self.textList.setObjectName("ConceptTextList%s"%len(self.Headquarter.concept_dump)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
+		self.textList.setObjectName("ConceptTextList%s"%len(self.Headquarter.concept_heap)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
 		
 		self.parentTable.setHeadquarter(self.Headquarter)
 		self.childTree.setHeadquarter(self.Headquarter)
@@ -187,23 +187,16 @@ class Concept(QWidget,Ui_Concept):
 			concept=self.Headquarter.getConcept(self.current_id)
 			# 外来
 			if file_list==[]:
-				y,m,d=WhatDayIsToday(0)
+				date=WhatDayIsToday(1)
 				for url in url_list:
 
 					# Library_Data中file添加file
-					res=self.Headquarter.addLibraryFile(QDate(y,m,d),url,[self.current_id])
+					res=self.Headquarter.addLibraryFile(date,url,[self.current_id])
 					if res!=None:
 						name,new_file=res
 
 						# concept中添加file
-						concept["file"].append({
-							"y":y,
-							"m":m,
-							"d":d,
-							"type":new_file["type"],
-							"name":name,
-							"url":new_file["url"]
-						})
+						concept["file"].append(self.Headquarter.generateDiaryConceptFileDict(date,new_file["type"],name,new_file["url"]))
 					else:
 						# 失败
 						continue
@@ -294,17 +287,11 @@ class Concept(QWidget,Ui_Concept):
 			row=model_index.row()
 			type=int(self.fileTable.item(row,0).text())
 			y,m,d=map(int,self.fileTable.item(row,1).text().split("."))
-			name=self.fileTable.item(row,2).text()
-			url=self.fileTable.item(row,3).text().replace(self.Headquarter.library_base+"/","")
+			date=QDate(y,m,d)
+			name=self.fileTable.item(row,3).text()
+			url=self.fileTable.item(row,4).text().replace(self.Headquarter.library_base+"/","")
 			
-			delete_file_list.append({
-				"y":y,
-				"m":m,
-				"d":d,
-				"type":type,
-				"name":name,
-				"url":url
-			})
+			self.Headquarter.generateDiaryConceptFileDict(date,type,name,url)
 			
 			warning_text+="%s\n"%(name)
 		
@@ -323,22 +310,24 @@ class Concept(QWidget,Ui_Concept):
 				self.refreshTab()
 	
 	def deleteConceptText(self):
-		warning_text="You want to delete linked concept in text:\n\n"
-		delete_text_list=[]
-		for model_index in self.textList.selectionModel().selectedRows():
-			index=model_index.row()
-			text=self.textList.text_list[index]
-			delete_text_list.append(text)
-			warning_text+=self.textList.item(index).text()+"\n\n"
-		
-		if delete_text_list!=[]:
-			if DTFrame.DTConfirmBox(self,"Delete Confirm",warning_text,DTIcon.Question()).exec_():
+		# Only Root时才能选择删除
+		if self.checkBox.checkState()==Qt.Unchecked:
+			warning_text="You want to delete linked concept in text:\n\n"
+			delete_text_list=[]
+			for model_index in self.textList.selectionModel().selectedRows():
+				index=model_index.row()
+				text=self.textList.text_list[index]
+				delete_text_list.append(text)
+				warning_text+=self.textList.item(index).text()+"\n\n"
+			
+			if delete_text_list!=[]:
+				if DTFrame.DTConfirmBox(self,"Delete Confirm",warning_text,DTIcon.Question()).exec_():
 
-				for text in delete_text_list:
-					line=self.Headquarter.getDiaryDayLine(QDate(text["y"],text["m"],text["d"]),text["index"])
-					line["concept"].remove(self.current_id)
-				
-				self.refreshTab()
+					for text in delete_text_list:
+						line=self.Headquarter.getDiaryDayLine(QDate(text["y"],text["m"],text["d"]),text["index"])
+						line["concept"].remove(self.current_id)
+					
+					self.refreshTab()
 
 	def deleteParent(self):
 		delete_id_list=[]

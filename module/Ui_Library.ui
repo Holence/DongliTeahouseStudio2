@@ -36,6 +36,9 @@
            <height>0</height>
           </size>
          </property>
+         <property name="placeholderText">
+          <string>file name (2000.1.1) (2001.1.1-2001.2.1) [conceptA] [conceptB] {1}</string>
+         </property>
         </widget>
        </item>
        <item>
@@ -63,7 +66,7 @@
         <widget class="QDateEdit" name="dateEdit">
          <property name="minimumSize">
           <size>
-           <width>400</width>
+           <width>300</width>
            <height>0</height>
           </size>
          </property>
@@ -83,7 +86,7 @@
         <widget class="QLineEdit" name="lineEdit_name">
          <property name="minimumSize">
           <size>
-           <width>400</width>
+           <width>300</width>
            <height>0</height>
           </size>
          </property>
@@ -213,6 +216,11 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>TextList</class>
+   <extends>QListWidget</extends>
+   <header>widget</header>
+  </customwidget>
+  <customwidget>
    <class>ConceptTable</class>
    <extends>QTableWidget</extends>
    <header>widget</header>
@@ -220,11 +228,6 @@
   <customwidget>
    <class>FileTable</class>
    <extends>QTableWidget</extends>
-   <header>widget</header>
-  </customwidget>
-  <customwidget>
-   <class>TextList</class>
-   <extends>QListWidget</extends>
    <header>widget</header>
   </customwidget>
  </customwidgets>

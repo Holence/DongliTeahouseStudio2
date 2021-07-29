@@ -4,6 +4,7 @@ from DTPySide import *
 from session import LobbySession
 from module.Ui_Diary import Ui_Diary
 class Diary(QWidget,Ui_Diary):
+
 	def __init__(self, parent, Headquarter: LobbySession):
 		super().__init__()
 		self.setupUi(self)
@@ -12,6 +13,7 @@ class Diary(QWidget,Ui_Diary):
 		self.current_date=QDate()
 		self.initializeWindow()
 		self.initializeSignal()
+		self.current_date=self.calendar.selectedDate()
 	
 	def initializeWindow(self):
 
@@ -19,11 +21,11 @@ class Diary(QWidget,Ui_Diary):
 		self.splitter_whole.setStretchFactor(0,1)
 
 		self.textList.setHeadquarter(self.Headquarter)
-		self.textList.setObjectName("DiaryTextList%s"%len(self.Headquarter.diary_dump)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
+		self.textList.setObjectName("DiaryTextList%s"%len(self.Headquarter.diary_heap)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
 		self.conceptTable.setHeadquarter(self.Headquarter)
-		self.conceptTable.setObjectName("DiaryConceptTable%s"%len(self.Headquarter.diary_dump)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
+		self.conceptTable.setObjectName("DiaryConceptTable%s"%len(self.Headquarter.diary_heap)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
 		self.fileTable.setHeadquarter(self.Headquarter)
-		self.fileTable.setObjectName("DiaryFileTable%s"%len(self.Headquarter.diary_dump)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
+		self.fileTable.setObjectName("DiaryFileTable%s"%len(self.Headquarter.diary_heap)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
 	
 	def initializeSignal(self):
 		self.actionSwitch_Eidt_View.triggered.connect(self.switchEditAndView)
@@ -65,13 +67,18 @@ class Diary(QWidget,Ui_Diary):
 		if index!=-1:
 			self.textList.setCurrentRow(index)
 
-	def showDay(self):
+	def showDay(self,date=None):
 		"""展示选中的日期，相当于全刷新：textViewer中显示对应日期的文字，textList中显示对应日期的列表，fileTable中显示全部的链接文件
-		"""	
-		self.current_date=self.calendar.selectedDate()
-		self.PAPA.setWindowTitle("Diary %s"%QDate_to_Str(self.current_date,"."))
+		"""
+		if date==None:
+			date=self.current_date
+		else:
+			self.current_date=date
+			self.calendar.setSelectedDate(date)
 		
-		day_data=self.Headquarter.getDiaryDay(self.current_date)
+		self.PAPA.setWindowTitle("Diary %s"%QDate_to_Str(date,"."))
+		
+		day_data=self.Headquarter.getDiaryDay(date)
 		if day_data!=None:
 			
 			text=""
@@ -82,7 +89,7 @@ class Diary(QWidget,Ui_Diary):
 				concept_id_list=List_Union(concept_id_list,line["concept"])
 				file_list=List_Union_Full(file_list,line["file"])
 			
-			self.textList.setTextList("Diary",self.current_date)
+			self.textList.setTextList("Diary",date)
 			self.conceptTable.setConceptIDList(concept_id_list)
 			self.fileTable.setFileList(file_list)
 			self.textViewer.setMarkdown(text)
@@ -208,9 +215,10 @@ class Diary(QWidget,Ui_Diary):
 			line=self.Headquarter.getDiaryDayLine(self.current_date,index)
 			line["text"]=text
 			self.textList.setTextList("Diary",self.current_date)
+			self.textList.setCurrentRow(index)
 			
 			text=""
-			for line in self.Headquarter.getDiaryDay(self.current_date):	
+			for line in self.Headquarter.getDiaryDay(self.current_date):
 				text+=line["text"]+"\n\n\n\n"
 			self.textViewer.setMarkdown(text)
 
@@ -263,23 +271,16 @@ class Diary(QWidget,Ui_Diary):
 			line=self.Headquarter.getDiaryDayLine(self.current_date,index)
 			# 外来
 			if file_list==[]:
-				y,m,d=WhatDayIsToday(0)
+				date=WhatDayIsToday(1)
 				for url in url_list:
 
 					# Library_Data中file添加file
-					res=self.Headquarter.addLibraryFile(QDate(y,m,d),url,[])
+					res=self.Headquarter.addLibraryFile(date,url,[])
 					if res!=None:
 						name,new_file=res
 
 						# line中添加file
-						line["file"].append({
-							"y":y,
-							"m":m,
-							"d":d,
-							"type":new_file["type"],
-							"name":name,
-							"url":new_file["url"]
-						})
+						line["file"].append(self.Headquarter.generateDiaryConceptFileDict(date,new_file["type"],name,new_file["url"]))
 					else:
 						# 失败
 						continue
@@ -351,7 +352,7 @@ class Diary(QWidget,Ui_Diary):
 			warning_text="You want to delete line linked file:\n\n"
 			for model_index in self.fileTable.selectionModel().selectedRows():
 				row=model_index.row()
-				filename=self.fileTable.item(row,2).text()
+				filename=self.fileTable.item(row,3).text()
 				
 				delete_filename_list.append(filename)
 				warning_text+="%s\n"%(filename)
@@ -362,7 +363,14 @@ class Diary(QWidget,Ui_Diary):
 					self.showLine()
 	
 	def findText(self):
-		dlg=DTFrame.DTDialog(self,"Find Text")
+		def slot():
+			del self.dairy_search_window
 		
-		dlg.setCentralWidget(QWidget())
-		dlg.exec_()
+		if hasattr(self,"dairy_search_window"):
+			self.dairy_search_window.setFocus()
+			return
+		
+		from session import DiarySearchSession
+		self.dairy_search_window=DiarySearchSession(self.Headquarter.app,self.Headquarter,self)
+		self.dairy_search_window.closed.connect(slot)
+		self.dairy_search_window.show()

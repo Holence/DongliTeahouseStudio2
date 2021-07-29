@@ -10,7 +10,7 @@ class LibrarySession(DTFrame.DTMainWindow):
 			# print(watched)
 			if self.Headquarter.WindowFocusing()!=self:
 				self.Headquarter.setWindowFocusing(self)
-				print("Now focused in",self.Headquarter.WindowFocusing())
+				# print("Now focused in",self.Headquarter.WindowFocusing())
 				self.library_module.refresh()
 		return False # 这里是让继续延续event的处理，不要被filter掉了
 	
@@ -45,10 +45,13 @@ class LibrarySession(DTFrame.DTMainWindow):
 		self.addAction(self.library_module.actionDelete)
 	
 	def initializeMenu(self):
-		super().initializeMenu()
+		
 		self.menu_edit=QMenu("Edit",self)
 		self.menu_edit.setIcon(QIcon(":/icon/white/white_pen-tool.svg"))
 		self.menu_edit.addAction(self.library_module.actionDelete)
 		self.addMenuToMainMenu(self.menu_edit)
 
 		self.addSeparatorToMainMenu()
+		
+		super().initializeMenu()
+		

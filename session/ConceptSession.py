@@ -11,7 +11,7 @@ class ConceptSession(DTFrame.DTMainWindow):
 			# print(watched)
 			if self.Headquarter.WindowFocusing()!=self:
 				self.Headquarter.setWindowFocusing(self)
-				print("Now focused in",self.Headquarter.WindowFocusing())
+				# print("Now focused in",self.Headquarter.WindowFocusing())
 				self.concept_module.refresh()
 		return False # 这里是让继续延续event的处理，不要被filter掉了
 	

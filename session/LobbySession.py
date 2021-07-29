@@ -18,7 +18,7 @@ class LobbySession(DTSession.DTMainSession):
 	def __init__(self, app):
 		super().__init__(app)
 		self.__WindowFocusing=None #记录点击的window，如果focus的window改变，对应被focusIn的window就要刷新画面
-		
+		self.qlock=QMutex(QMutex.NonRecursive)
 	
 	def WindowFocusing(self):
 		return self.__WindowFocusing
@@ -27,33 +27,29 @@ class LobbySession(DTSession.DTMainSession):
 		self.__WindowFocusing=which
 	
 	def loadData(self):
-		if os.path.exists("Diary_Data.dlcw"):
-			self.diary_data=Fernet_Decrypt_Load(self.password(),"Diary_Data.dlcw")
-			if self.diary_data==False:
-				DTFrame.DTMessageBox(self,"Error","Diary data error!")
+		if os.path.exists("data.dlcw"):
+			self.data=Fernet_Decrypt_Load(self.password(),"data.dlcw")
+			if self.data==False:
+				DTFrame.DTMessageBox(self,"Error","Data error!")
 				self.app.quit()
+			
 		else:
-			self.diary_data={}
-			Fernet_Encrypt_Save(self.password(),self.diary_data,"Diary_Data.dlcw")
+			self.data=[{},[],{}]
+			Fernet_Encrypt_Save(self.password(),self.data,"data.dlcw")
 		
-		if os.path.exists("Concept_Data.dlcw"):
-			self.concept_data=Fernet_Decrypt_Load(self.password(),"Concept_Data.dlcw")
-			if self.concept_data==False:
-				DTFrame.DTMessageBox(self,"Error","Concept data error!")
-				self.app.quit()
-		else:
-			self.concept_data=[]
-			Fernet_Encrypt_Save(self.password(),self.concept_data,"Diary_Data.dlcw")
-		
-		if os.path.exists("Library_Data.dlcw"):
-			self.library_data=Fernet_Decrypt_Load(self.password(),"Library_Data.dlcw")
-			if self.library_data==False:
-				DTFrame.DTMessageBox(self,"Error","Library data error!")
-				self.app.quit()
-		else:
-			self.library_data={}
-			Fernet_Encrypt_Save(self.password(),self.library_data,"Library_Data.dlcw")
+		self.diary_data=self.data[0]
+		self.concept_data=self.data[1]
+		self.library_data=self.data[2]
 
+		if os.path.exists("cache"):
+			self.cache=Fernet_Decrypt_Load(self.password(),"cache")
+			if self.cache==False:
+				DTFrame.DTMessageBox(self,"Error","Cache data error!")
+				self.app.quit()
+		else:
+			self.cache={}
+			Fernet_Encrypt_Save(self.password(),self.cache,"cache")
+		
 		self.library_base=Fernet_Decrypt(self.password(),self.UserSetting().value("LibraryBase"))
 		if self.library_base==False:
 			dlg=QFileDialog(self)
@@ -62,7 +58,6 @@ class LobbySession(DTSession.DTMainSession):
 				self.library_base=dlg.getExistingDirectory()
 			self.UserSetting().setValue("LibraryBase",Fernet_Encrypt(self.password(),self.library_base))
 
-	
 	def dataValidityCheck(self):
 		return True
 	
@@ -74,23 +69,22 @@ class LobbySession(DTSession.DTMainSession):
 		self.setCentralWidget(self.lobby)
 		
 		from session.DiarySession import DiarySession
-		self.diary_dump=[]
+		self.diary_heap=[]
 		diary=DiarySession(self.app,self)
 		diary.initialize()
-		self.diary_dump.append(diary)
+		self.diary_heap.append(diary)
 
 		from session.ConceptSession import ConceptSession
-		self.concept_dump=[]
+		self.concept_heap=[]
 		concept=ConceptSession(self.app,self)
 		concept.initialize()
-		self.concept_dump.append(concept)
-
+		self.concept_heap.append(concept)
 
 		from session.LibrarySession import LibrarySession
-		self.library_dump=[]
+		self.library_heap=[]
 		library=LibrarySession(self.app,self)
 		library.initialize()
-		self.library_dump.append(library)
+		self.library_heap.append(library)
 
 	def restoreWindowStatus(self):
 		try:
@@ -103,45 +97,102 @@ class LobbySession(DTSession.DTMainSession):
 		super().initializeSignal()
 		self.installEventFilter(self)
 		self.refreshModuleSingal()
+	
+	def initializeMenu(self):
+		self.addActionToMainMenu(self.lobby.actionSwitch_Secure_Mode)
+		self.addActionToMainMenu(self.lobby.actionCheck_Library)
+		self.addSeparatorToMainMenu()
+		self.addActionToMainMenu(self.lobby.actionExport_to_Json)
+		super().initializeMenu()
 
 	
 	def refreshModuleSingal(self):
+		"""模块间交互的信号与槽
+		"""
+
 		def slot(id):
-			for concept in self.concept_dump:
-				concept.show()
-				concept.setFocus()
-				concept.concept_module.showConcept(id)
+			"""diary、library的concept列表点击concept，在所有可见的concept中showConcept
+
+			Args:
+				id (int): ConceptId
+			"""
+			flag=False
+			for concept in self.concept_heap:
+				if concept.isVisible()==True:
+					flag=True
+					concept.concept_module.showConcept(id)
+			#如果全部都隐藏着，开启一个
+			if flag==False:
+				self.concept_heap[0].show()
 		
-		for diary in self.diary_dump:
+		def slot2(line):
+			"""concept、Library的text列表点击line，在所有可见的diary中showDay和showLine
+
+			Args:
+				line (dict): 从textList中传出来的标准line字典
+			"""			
+			y=line["y"]
+			m=line["m"]
+			d=line["d"]
+			index=line["index"]
+
+			flag=False
+			for diary in self.diary_heap:
+				if diary.isVisible()==True:
+					flag=True
+					diary.diary_module.showDay(QDate(y,m,d))
+					diary.diary_module.textList.setCurrentRow(index)
+			#如果全部都隐藏着，开启一个
+			if flag==False:
+				self.diary_heap[0].show()
+
+		for diary in self.diary_heap:
 			diary.diary_module.conceptTable.conceptClicked.connect(slot)
 		
-		for library in self.library_dump:
+		for library in self.library_heap:
 			library.library_module.conceptTable.conceptClicked.connect(slot)
+			library.library_module.textList.textClicked.connect(slot2)
+		
+		for concept in self.concept_heap:
+			concept.concept_module.textList.textClicked.connect(slot2)
 
 	def saveWindowStatus(self):
 		self.UserSetting().setValue("WindowStatus/LobbySize",self.size())
 		self.UserSetting().setValue("WindowStatus/LobbyPos",self.pos())
-		self.UserSetting().setValue("WindowStatus/DiarySize",self.diary_dump[0].size())
-		self.UserSetting().setValue("WindowStatus/DiaryPos",self.diary_dump[0].pos())
-		self.UserSetting().setValue("WindowStatus/ConceptSize",self.concept_dump[0].size())
-		self.UserSetting().setValue("WindowStatus/ConceptPos",self.concept_dump[0].pos())
-		self.UserSetting().setValue("WindowStatus/LibrarySize",self.library_dump[0].size())
-		self.UserSetting().setValue("WindowStatus/LibraryPos",self.library_dump[0].pos())
+		self.UserSetting().setValue("WindowStatus/DiarySize",self.diary_heap[0].size())
+		self.UserSetting().setValue("WindowStatus/DiaryPos",self.diary_heap[0].pos())
+		self.UserSetting().setValue("WindowStatus/ConceptSize",self.concept_heap[0].size())
+		self.UserSetting().setValue("WindowStatus/ConceptPos",self.concept_heap[0].pos())
+		self.UserSetting().setValue("WindowStatus/LibrarySize",self.library_heap[0].size())
+		self.UserSetting().setValue("WindowStatus/LibraryPos",self.library_heap[0].pos())
 
 	def saveData(self):
-		Fernet_Encrypt_Save(self.password(),self.diary_data,"Diary_Data.dlcw")
-		Fernet_Encrypt_Save(self.password(),self.concept_data,"Concept_Data.dlcw")
-		Fernet_Encrypt_Save(self.password(),self.library_data,"Library_Data.dlcw")
+		Fernet_Encrypt_Save(self.password(),self.data,"data.dlcw")
+		Fernet_Encrypt_Save(self.password(),self.cache,"cache")
+		pass
 
 	def saveAllEncryptData(self):
 		super().saveAllEncryptData()
 		self.saveData()
 		self.UserSetting().setValue("LibraryBase",Fernet_Encrypt(self.password(),self.library_base))
 	
+	def backup(self):
+		self.saveData()
+		super().backup()
+
 	def setting(self):
 		from session.SettingSession import SettingSession
 		dlg=SettingSession(self,self.app)
 		dlg.exec_()
+
+	def bossComing(self):
+		for diary in self.diary_heap:
+			diary.hide()
+		for concept in self.concept_heap:
+			concept.hide()
+		for library in self.library_heap:
+			library.hide()
+		super().bossComing()
 
 	#################################################################
 
@@ -171,6 +222,94 @@ class LobbySession(DTSession.DTMainSession):
 		except:
 			return None
 
+	def getDiaryLineList(self,search_list=[],date_range_list=[],concept_name_list=[],rank=False):
+		
+		def add_all_lines():
+			for year in self.diary_data:
+				for month in self.diary_data[year]:
+					for day in self.diary_data[year][month]:
+						index=0
+						for line in self.diary_data[year][month][day]:
+							line_list.append({
+								"y":int(year),
+								"m":int(month),
+								"d":int(day),
+								"text":line["text"],
+								"conept":line["concept"],
+								"concept_az":[self.concept_data[id]["az"] for id in line["concept"]],
+								"index":index,
+								"rank":0
+							})
+							index+=1
+							
+			
+		def add_line_in_dates(begin:QDate,end:QDate=None):
+			if end==None:
+				end=QDate(begin)
+
+			while begin<=end:
+				year,month,day=QDate_to_Tuple(begin)
+				try:
+					index=0
+					for line in self.diary_data[str(year)][str(month)][str(day)]:
+						line_list.append({
+							"y":int(year),
+							"m":int(month),
+							"d":int(day),
+							"text":line["text"],
+							"conept":line["concept"],
+							"concept_az":[self.concept_data[id]["az"] for id in line["concept"]],
+							"index":index,
+							"rank":0
+						})
+						index+=1
+				except:
+					pass
+				begin=begin.addDays(1)
+		
+		def namelist_in_text(text):
+			# 判断文本是否包含搜索列表中的所有元素，如果全部包含则返回非零值（True），否则返回0（False）
+			return not len([i for i in search_list if i.lower() not in text.lower()])
+		
+		line_list=[]
+		if date_range_list==[]:
+			add_all_lines()
+		else:
+			for date_range in date_range_list:
+				if type(date_range)==tuple:
+					add_line_in_dates(*date_range)
+				else:
+					add_line_in_dates(date_range)
+		
+		if concept_name_list!=[]:
+			concept_name_list=[ Str_to_AZ(concept_name) for concept_name in concept_name_list]
+			
+			if rank==True:
+				new_list=[]
+				for line in line_list:
+					if List_Difference(concept_name_list,line["concept_az"])==[]:
+						line["rank"]=len(List_Intersection(concept_name_list,line["concept_az"]))*2
+						new_list.append(line)
+				line_list=new_list
+			else:
+				line_list=[line for line in line_list if List_Difference(concept_name_list,line["concept_az"])==[] ]
+		
+		if search_list!=[]:
+			if rank==True:
+				new_list=[]
+				for line in line_list:
+					text=line["text"]
+					if namelist_in_text(text):
+						line["rank"]+=sum( [ text.lower().count(i.lower()) for i in search_list if i.lower() in text.lower()] )
+						new_list.append(line)
+				line_list=new_list
+			else:
+				line_list=[line for line in line_list if namelist_in_text(line["text"])]
+
+		if rank==True:
+			line_list=sorted(line_list,key=lambda x:x["rank"],reverse=True)
+		return line_list
+
 	def addDiaryDay(self, date:QDate):
 		"""在diary_data中创建对应date的列表容器，并返回该列表容器
 
@@ -179,7 +318,7 @@ class LobbySession(DTSession.DTMainSession):
 
 		Returns:
 			[type]: 返回该列表容器
-		"""	
+		"""
 
 		year, month, day= map(str, QDate_to_Tuple(date))
 		
@@ -366,6 +505,9 @@ class LobbySession(DTSession.DTMainSession):
 
 	#################################################################
 
+	def getLibraryData(self):
+		return self.library_data
+
 	def getLibraryFile(self,date:QDate,name):
 		year, month, day= map(str, QDate_to_Tuple(date))
 		try:
@@ -373,7 +515,7 @@ class LobbySession(DTSession.DTMainSession):
 		except:
 			return None
 
-	def getLibraryFileList(self,name_list=[],date_range_list=[],concept_name_list=[]):
+	def getLibraryFileList(self,name_list=[],date_range_list=[],concept_name_list=[],TYPE=None):
 		
 		def add_all_files():
 			for y in self.library_data:
@@ -381,9 +523,9 @@ class LobbySession(DTSession.DTMainSession):
 					for d in self.library_data[y][m]:
 						for file_name,file in self.library_data[y][m][d].items():
 							file_list.append({
-								"y":y,
-								"m":m,
-								"d":d,
+								"y":int(y),
+								"m":int(m),
+								"d":int(d),
 								"type":file["type"],
 								"name":file_name,
 								"url":file["url"],
@@ -396,9 +538,9 @@ class LobbySession(DTSession.DTMainSession):
 				end=QDate(begin)
 
 			while begin<=end:
-				y,m,d=map(str,QDate_to_Tuple(begin))
+				y,m,d=QDate_to_Tuple(begin)
 				try:
-					for file_name,file in self.library_data[y][m][d].items():
+					for file_name,file in self.library_data[str(y)][str(m)][str(d)].items():
 						file_list.append({
 							"y":y,
 							"m":m,
@@ -427,6 +569,9 @@ class LobbySession(DTSession.DTMainSession):
 				else:
 					add_file_in_dates(date_range)
 		
+		if TYPE!=None:
+			file_list=[file for file in file_list if file["type"]==TYPE ]
+		
 		if concept_name_list!=[]:
 			concept_name_list=[ Str_to_AZ(concept_name) for concept_name in concept_name_list]
 			file_list=[file for file in file_list if List_Difference(concept_name_list,file["concept_az"])==[] ]
@@ -434,19 +579,23 @@ class LobbySession(DTSession.DTMainSession):
 		if name_list!=[]:
 			file_list=[file for file in file_list if namelist_in_filename(file["name"])]
 
+
 		return file_list
 
-	def addLibraryFile(self, date:QDate, url:str, concept:list=[]):
+	def addLibraryFile(self, date:QDate, url:str, concept:list=[],just_do_it=False):
 		"如果是file类型，url为原始地址；如果是link类型，url为网站地址"
 		y, m, d= map(str, QDate_to_Tuple(date))
 		
 		if url[:8]=="file:///":
-			type=0
+			if os.path.isdir(url[8:]):
+				type=0 # folder=0
+			else:
+				type=1 # file=1
 			old_dir=url[8:]
 			name=os.path.basename(old_dir)
 
 			# 禁止从library_base层添加文件
-			if self.library_base in os.path.dirname(old_dir):
+			if self.library_base in os.path.dirname(old_dir) and just_do_it==False:
 				if os.path.dirname(old_dir).replace(self.library_base+"/","").count("/")<=2:
 					DTFrame.DTMessageBox(self,"Error","Do not add file from library_base",DTIcon.Warning())
 					return None
@@ -461,7 +610,7 @@ class LobbySession(DTSession.DTMainSession):
 					os.makedirs(new_base)
 				
 				# 检查日期文件夹中是否已存在同名文件
-				if name in os.listdir(new_base):
+				if name in os.listdir(new_base) and just_do_it==False:
 					DTFrame.DTMessageBox(self,"Error","%s already exsit in %s!"%(name,new_base),DTIcon.Warning())
 					return None
 				
@@ -473,7 +622,7 @@ class LobbySession(DTSession.DTMainSession):
 				DTFrame.DTMessageBox(self,"Error",str(e),DTIcon.Warning())
 				return None
 		else:
-			type=1
+			type=2 # link=2
 			status,res=GetWebPageResponse(url)
 			if status==True:
 				
@@ -504,7 +653,10 @@ class LobbySession(DTSession.DTMainSession):
 						name=res
 					else:
 						DTFrame.DTMessageBox(self,"Warning",str(res),DTIcon.Warning())
-						return None
+						name="Unknow%s"%time.time_ns()
+			else:
+				DTFrame.DTMessageBox(self,"Warning",str(res),DTIcon.Warning())
+				name="Unknow%s"%time.time_ns()
 
 		if self.library_data.get(y)==None:
 			self.library_data[y]={}
@@ -523,7 +675,7 @@ class LobbySession(DTSession.DTMainSession):
 		
 		return name,self.library_data[y][m][d][name]
 	
-	def renameLibraryFile(self,date:QDate,old_name,new_name):
+	def renameLibraryFile(self,date:QDate,old_name,new_name,rename_operation=True):
 		y, m, d= map(str, QDate_to_Tuple(date))
 
 
@@ -531,7 +683,7 @@ class LobbySession(DTSession.DTMainSession):
 		old_url=file["url"]
 		new_url=file["url"].replace(old_name,new_name)
 		
-		if file["type"]==0:
+		if file["type"]!=2 and rename_operation==True:
 			try:
 				os.rename(os.path.join(self.library_base,old_url),os.path.join(self.library_base,new_url))
 			except Exception as e:
@@ -567,9 +719,8 @@ class LobbySession(DTSession.DTMainSession):
 				file=concept["file"][concept["file"].index(old_file)]
 				file["name"]=new_name
 				file["url"]=new_url
-		
-
-	def deleteLibraryFile(self, delete_file_list):
+	
+	def deleteLibraryFile(self, delete_file_list, delete_operation=True):
 		"""删除多个LibraryFile
 
 		Args:
@@ -582,15 +733,23 @@ class LobbySession(DTSession.DTMainSession):
 			name=file["name"]
 			url=file["url"]
 
-			if file["type"]==0:
+			if file["type"]!=2 and delete_operation==True:
 				try:
 					res=Delete_to_Recyclebin(os.path.join(self.library_base,url))
 					if res==False:
 						DTFrame.DTMessageBox(self,"Error","Failed to delete %s"%name,DTIcon.Warning())
+						return
 				except Exception as e:
 					# 出错
 					DTFrame.DTMessageBox(self,"Error",str(e),DTIcon.Warning())
-			
+					return
+		
+		for file in delete_file_list:
+			year=str(file["y"])
+			month=str(file["m"])
+			day=str(file["d"])
+			name=file["name"]
+			url=file["url"]
 			del self.library_data[year][month][day][name]
 
 		# 删除Diary链接的file
@@ -603,3 +762,70 @@ class LobbySession(DTSession.DTMainSession):
 		# 删除Concept链接的file
 		for concept in self.concept_data:
 			concept["file"]=List_Difference_Full(concept["file"],delete_file_list)
+	
+	def generateDiaryConceptFileDict(self,date:QDate,type:int,name:str,url:str):
+		
+		y,m,d=QDate_to_Tuple(date)
+		file={
+			"y":y,
+			"m":m,
+			"d":d,
+			"type":type,
+			"name":name,
+			"url":url
+		}
+		return file
+	
+	######################################################################
+
+	def parseSearchText(self,search:str):
+		"""
+		name1
+		name1 name2 [ConceptA]
+		name (2021.7.4) [ConceptA] name2
+		(2021.7.4) [ConceptA] name
+		(2021.7.4-2021.7.21) [ConceptA] [Concept B] name
+		"""
+		if search.strip()!="":
+			search=" "+search+" "
+			
+			TYPE=re.findall("(?<= \{).*?(?=\} )",search)
+			search=re.sub("\{.*?\}","",search)
+			if TYPE!=[]:
+				TYPE=int(TYPE[0])
+			else:
+				TYPE=None
+			
+			concept_list=re.findall("(?<= \[).*?(?=\] )",search)
+			search=re.sub("\[.*?\]","",search)
+			
+			date_str_list=re.findall("(?<= \().*?(?=\) )",search)
+			date_range_list=[]
+			search=re.sub("\(.*?\)","",search)
+			for i in date_str_list:
+				if i.count("-")==0 and i.count(".")==2:
+					try:
+						y,m,d=map(int,i.split("."))
+						date=QDate(y,m,d)
+						if date.isValid():
+							date_range_list.append(date)
+					except:
+						pass
+				elif i.count("-")==1 and i.count(".")==4:
+					try:
+						begin,end=i.split("-")
+						by,bm,bd=map(int,begin.split("."))
+						ey,em,ed=map(int,end.split("."))
+						begin,end=QDate(by,bm,bd),QDate(ey,em,ed)
+						if begin.isValid() and end.isValid():
+							date_range_list.append((begin,end))
+					except:
+						pass
+				else:
+					pass
+
+			name_list=search.split()
+
+			return name_list,date_range_list,concept_list,TYPE
+		else:
+			return [],[],[],None
