@@ -150,6 +150,7 @@ class Ui_Concept(object):
         self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.textViewer = QTextBrowser(self.tab_textviewer)
         self.textViewer.setObjectName(u"textViewer")
+        self.textViewer.setOpenExternalLinks(True)
 
         self.horizontalLayout_2.addWidget(self.textViewer)
 

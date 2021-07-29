@@ -340,7 +340,7 @@ class Diary(QWidget,Ui_Diary):
 			if delete_id_list!=[]:
 				if DTFrame.DTConfirmBox(self,"Delete Confirm",warning_text,DTIcon.Question()).exec_():
 					line["concept"]=List_Difference(line["concept"],delete_id_list)
-					self.showLine()
+					self.refresh()
 	
 	def deleteLineFile(self):
 		index=self.textList.currentRow()
@@ -360,7 +360,7 @@ class Diary(QWidget,Ui_Diary):
 			if delete_filename_list!=[]:
 				if DTFrame.DTConfirmBox(self,"Delete Confirm",warning_text,DTIcon.Question()).exec_():
 					line["file"]=[file for file in line["file"] if file["name"] not in delete_filename_list]
-					self.showLine()
+					self.refresh()
 	
 	def findText(self):
 		def slot():

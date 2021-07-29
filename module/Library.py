@@ -50,6 +50,12 @@ class Library(QWidget,Ui_Library):
 
 		self.fileTable.setFileList(self.Headquarter.getLibraryFileList(name_list,date_range_list,concept_list,TYPE))
 
+		self.lineEdit_name.clear()
+		self.dateEdit.clear()
+		self.conceptTable.Clear()
+		self.textList.clear()
+		self.textViewer.clear()
+
 	def refreshTab(self):
 		
 		def ShowFileConcept():
@@ -111,7 +117,11 @@ class Library(QWidget,Ui_Library):
 
 
 	def refresh(self):
+		row=self.fileTable.currentRow()
 		self.showSearch()
+		
+		if row!=-1:
+			self.fileTable.setCurrentItem(self.fileTable.item(row,0))
 		self.showFile()
 	
 	def saveFileName(self):
@@ -130,38 +140,46 @@ class Library(QWidget,Ui_Library):
 		self.showSearch()
 	
 	def addFileConcept(self,id_list):
-		date=self.dateEdit.date()
-		name=self.lineEdit_name.text()
-		
-		# file中添加concept
-		current_file=self.Headquarter.getLibraryFile(self.dateEdit.date(),name)
-		if current_file!=None:
-			current_file["concept"]=List_Union(current_file["concept"],id_list)
-			self.showFile()
+		row=self.fileTable.currentRow()
+		if row!=-1:
+			date=self.dateEdit.date()
+			name=self.lineEdit_name.text()
 			
-			# concept中添加file
-			file=self.Headquarter.generateDiaryConceptFileDict(date,current_file["type"],name,current_file["url"])
-			for id in id_list:
-				concept=self.Headquarter.getConcept(id)
-				concept["file"]=List_Union_Full(concept["file"],[file])
-
+			# file中添加concept
+			current_file=self.Headquarter.getLibraryFile(self.dateEdit.date(),name)
+			if current_file!=None:
+				current_file["concept"]=List_Union(current_file["concept"],id_list)
+				self.showFile()
+				
+				# concept中添加file
+				file=self.Headquarter.generateDiaryConceptFileDict(date,current_file["type"],name,current_file["url"])
+				for id in id_list:
+					concept=self.Headquarter.getConcept(id)
+					concept["file"]=List_Union_Full(concept["file"],[file])
+		else:
+			self.conceptTable.Clear()
+	
 	def addFileText(self,text_list):
-		date=self.dateEdit.date()
-		name=self.lineEdit_name.text()
-		
-		# file中添加concept
-		current_file=self.Headquarter.getLibraryFile(self.dateEdit.date(),name)
-		if current_file!=None:
+		row=self.fileTable.currentRow()
+		if row!=-1:
+			date=self.dateEdit.date()
+			name=self.lineEdit_name.text()
 			
-			# text中添加file
-			file=self.Headquarter.generateDiaryConceptFileDict(date,current_file["type"],name,current_file["url"])
-			for text in text_list:
-				line=self.Headquarter.getDiaryDayLine(QDate(text["y"],text["m"],text["d"]),text["index"])
-				if file not in line["file"]:
-					line["file"].append(file)
-		
-			self.refreshTab()
-			self.textList.setFocus()
+			# file中添加concept
+			current_file=self.Headquarter.getLibraryFile(self.dateEdit.date(),name)
+			if current_file!=None:
+				
+				# text中添加file
+				file=self.Headquarter.generateDiaryConceptFileDict(date,current_file["type"],name,current_file["url"])
+				for text in text_list:
+					line=self.Headquarter.getDiaryDayLine(QDate(text["y"],text["m"],text["d"]),text["index"])
+					if file not in line["file"]:
+						line["file"].append(file)
+			
+				self.refreshTab()
+				self.textList.setFocus()
+		else:
+			self.textList.clear()
 
 	###################################################################
 

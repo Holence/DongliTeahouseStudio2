@@ -14,6 +14,8 @@ class DiarySession(DTFrame.DTMainWindow):
 		# focusInEvent和mousePressEvent都试了，都不可能捕获子控件的事件，所以只有点击到TitleBar或者window的空白区域，才可能被触发
 		if (event.type()==QEvent.MouseButtonPress and event.button()==Qt.LeftButton) or event.type()==QEvent.FocusIn:
 			# print(watched)
+			if hasattr(self.Headquarter.lobby,"DataChecker"):
+				self.Headquarter.lobby.checkDataCompleteness()
 			if self.Headquarter.WindowFocusing()!=self:
 				self.Headquarter.setWindowFocusing(self)
 				# print("Now focused in",self.Headquarter.WindowFocusing())
@@ -79,7 +81,7 @@ class DiarySession(DTFrame.DTMainWindow):
 		self.menu_edit=QMenu("Edit",self)
 		self.menu_edit.setIcon(QIcon(":/icon/white/white_pen-tool.svg"))
 		self.menu_edit.addAction(self.diary_module.actionAdd_Line)
-		self.menu_edit.addAction(self.diary_module.actionDelete)
+		# self.menu_edit.addAction(self.diary_module.actionDelete)
 		self.addMenuToMainMenu(self.menu_edit)
 		
 		self.addActionToMainMenu(self.diary_module.actionSwitch_Eidt_View)

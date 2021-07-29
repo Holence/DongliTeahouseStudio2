@@ -18,6 +18,7 @@ class Lobby(QWidget,Ui_Lobby):
 		self.actionExport_to_Json.triggered.connect(self.ExportToJson)
 		self.actionCheck_Library.triggered.connect(self.checkLibrary)
 		self.actionSwitch_Secure_Mode.triggered.connect(self.switchSecureMode)
+		self.actionCheck_Data_Completeness.triggered.connect(self.checkDataCompleteness)
 
 		self.SecureMode=False
 		
@@ -86,7 +87,7 @@ else:
 		module=LibraryCheck(self.Headquarter)
 		dlg.setCentralWidget(module)
 		dlg.buttonBox.hide()
-		dlg.setMinimumSize(1500,1100)
+		dlg.setMinimumSize(1500,800)
 		dlg.exec_()
 
 		for diary in self.Headquarter.diary_heap:
@@ -95,3 +96,283 @@ else:
 			concept.concept_module.refresh()
 		for library in self.Headquarter.library_heap:
 			library.library_module.refresh()
+	
+	def checkDataCompleteness(self):
+
+		def check():
+			diary_data=self.Headquarter.diary_data
+			concept_data=self.Headquarter.concept_data
+			library_data=self.Headquarter.library_data
+
+			
+			# Diary
+			error="\n\n--------------------------------------------Diary--------------------------------------------\n\n"
+			for year in diary_data:
+				for month in diary_data[year]:
+					for day in diary_data[year][month]:
+						line_index=0
+						for line in diary_data[year][month][day]:
+							
+							try:
+								if type(line["text"])!=str:
+									error+="%s.%s.%s line_index:%s text is not str\n"%(year,month,day,line_index)
+							except Exception as e:
+								error+="%s.%s.%s line_index:%s %s\n"%(year,month,day,line_index,e)
+							
+							# concept start
+							try:
+								concept=line["concept"]
+								if type(concept)!=list:
+									error+="%s.%s.%s line_index:%s \"concept\":%s is not list\n"%(year,month,day,line_index,concept)
+								else:
+									for id in concept:
+										if type(id)!=int:
+											error+="%s.%s.%s line_index:%s concept:%s is not int\n"%(year,month,day,line_index,id)
+										elif id<0:
+											error+="%s.%s.%s line_index:%s concept:%s < 0 \n"%(year,month,day,line_index,id)
+
+										try:
+											concept_data[id]
+										except:
+											error+="%s.%s.%s line_index:%s concept:%s is not in concept_data\n"%(year,month,day,line_index,id)
+							except Exception as e:
+								error+="%s.%s.%s line_index:%s %s\n"%(year,month,day,line_index,e)
+							# concept end
+
+							# file start
+							try:
+								file=line["file"]
+								if type(file)!=list:
+									error+="%s.%s.%s line_index:%s file:%s is not list\n"%(year,month,day,line_index,file)
+								else:
+									# file loop start
+									file_index=0
+									for file in line["file"]:
+										# single file start
+										try:
+
+											y=file["y"]
+											m=file["m"]
+											d=file["d"]
+											name=file["name"]
+											
+											try:
+												library_file=library_data[str(y)][str(m)][str(d)][name]
+												if library_file["type"]!=file["type"] or library_file["url"]!=file["url"]:
+													error+="%s.%s.%s line_index:%s file_index:%s is not equals to file in library_data: \"y\":%s \"m\":%s \"d\":%s \"name\":%s\n"%(year,month,day,line_index,file_index,y,m,d,name)
+											except:
+												error+="%s.%s.%s line_index:%s file_index:%s \"y\":%s \"m\":%s \"d\":%s \"name\":%s is not in library_data\n"%(year,month,day,line_index,file_index,y,m,d,name)
+											# single file end
+											
+										except Exception as e:
+											error+="%s.%s.%s line_index:%s file_index:%s %s\n"%(year,month,day,line_index,file_index,e)
+										
+										file_index+=1
+										# file loop end
+
+							except Exception as e:
+								error+="%s.%s.%s line_index:%s %s\n"%(year,month,day,line_index,e)
+							# file end
+
+							line_index+=1
+
+			# Concept
+			error+="\n\n--------------------------------------------Concept--------------------------------------------\n\n"
+			index=0
+			for concept in concept_data:
+				try:
+					concept_id=concept["id"]
+					if type(concept_id)!=int:
+						error+="concept:%s id:%s is not int\n"%(index,concept_id)
+					elif concept_id<0:
+						error+="concept:%s id:%s < 0 \n"%(index,concept_id)
+					elif concept_id!=index:
+						error+="concept:%s != id:%s\n"%(index,concept_id)
+				except Exception as e:
+					error+="concept:%s %s \n"%(index,e)
+				
+				try:
+					name=concept["name"]
+					if type(name)!=str:
+						error+="concept:%s name:%s is not str\n"%(index,name)
+				except Exception as e:
+					error+="concept:%s %s \n"%(index,e)
+				
+				try:
+					detail=concept["detail"]
+					if type(detail)!=str:
+						error+="concept:%s detail:%s is not str\n"%(index,detail)
+				except Exception as e:
+					error+="concept:%s %s \n"%(index,e)
+				
+				try:
+					parent=concept["parent"]
+					if type(parent)!=list:
+						error+="concept:%s parent:%s is not list\n"%(index,parent)
+					else:
+						for id in parent:
+							try:
+								concept_data[id]
+							except:
+								error+="concept:%s parent:%s is not in concept_data\n"%(index,id)
+							
+							if concept_id not in concept_data[id]["child"]:
+								error+="concept:%s parent:%s is not in concept:%s 's child\n"%(index,id,id)
+
+				except Exception as e:
+					error+="concept:%s %s \n"%(index,e)
+				
+				try:
+					child=concept["child"]
+					if type(child)!=list:
+						error+="concept:%s child:%s is not list\n"%(index,child)
+					else:
+						for id in child:
+							try:
+								concept_data[id]
+							except:
+								error+="concept:%s child:%s is not in concept_data\n"%(index,id)
+							
+							if concept_id not in concept_data[id]["parent"]:
+								error+="concept:%s child:%s is not in concept:%s 's parent\n"%(index,id,id)
+				except Exception as e:
+					error+="concept:%s %s \n"%(index,e)
+				
+				try:
+					relative=concept["relative"]
+					if type(relative)!=list:
+						error+="concept:%s relative:%s is not list\n"%(index,relative)
+					else:
+						for id in relative:
+							try:
+								concept_data[id]
+							except:
+								error+="concept:%s relative:%s is not in concept_data\n"%(index,id)
+							
+							if concept_id not in concept_data[id]["relative"]:
+								error+="concept:%s relative:%s is not in concept:%s 's relative\n"%(index,id,id)
+				except Exception as e:
+					error+="concept:%s %s \n"%(index,e)
+				
+				try:
+					az=concept["az"]
+					if type(az)!=str:
+						error+="concept:%s az:%s is not str\n"%(index,az)
+				except Exception as e:
+					error+="concept:%s %s \n"%(index,e)
+				
+				# file start
+				try:
+					file=concept["file"]
+					if type(file)!=list:
+						error+="concept:%s file:%s is not list\n"%(index,file)
+					else:
+						# file loop start
+						file_index=0
+						for file in concept["file"]:
+							# single file start
+							try:
+
+								y=file["y"]
+								m=file["m"]
+								d=file["d"]
+								name=file["name"]
+								
+								try:
+									library_file=library_data[str(y)][str(m)][str(d)][name]
+									if library_file["type"]!=file["type"] or library_file["url"]!=file["url"]:
+										error+="concept:%s file_index:%s is not equals to file in library_data: \"y\":%s \"m\":%s \"d\":%s \"name\":%s\n"%(index,file_index,y,m,d,name)
+									if concept_id not in library_file["concept"]:
+										error+="concept:%s file_index:%s is not in file in library_data: \"y\":%s \"m\":%s \"d\":%s \"name\":%s 's concept\n"%(index,file_index,y,m,d,name)
+								except:
+									error+="concept:%s file_index:%s \"y\":%s \"m\":%s \"d\":%s \"name\":%s is not in library_data\n"%(index,file_index,y,m,d,name)
+								# single file end
+								
+							except Exception as e:
+								error+="concept:%s file_index:%s %s\n"%(index,file_index,e)
+							
+							file_index+=1
+							# file loop end
+
+				except Exception as e:
+					error+="concept:%s %s\n"%(index,e)
+				# file end
+
+				index+=1
+
+			# Library
+			error+="\n\n--------------------------------------------Library--------------------------------------------\n\n"
+			for year in library_data:
+				for month in library_data[year]:
+					for day in library_data[year][month]:
+						for file_name in library_data[year][month][day]:
+							
+							if type(file_name)!=str:
+								error+="%s.%s.%s file_name:%s is not str\n"%(year,month,day,file_name)
+							file=library_data[year][month][day][file_name]
+
+							try:
+								TYPE=file["type"]
+								if TYPE not in [0,1,2]:
+									error+="%s.%s.%s file_name:%s \"type\"%s is not in [0,1,2] \n"%(year,month,day,file_name,TYPE)
+							except Exception as e:
+								error+="%s.%s.%s file_name:%s %s\n"%(year,month,day,file_name,e)
+							
+							try:
+								url=file["url"]
+								if type(url)!=str:
+									error+="%s.%s.%s file_name:%s \"url\":%s is not str\n"%(year,month,day,file_name,url)
+								else:
+									if TYPE==0 or TYPE==1:
+										ss=url.split("/")
+										if ss[0].isdigit() and ss[1].isdigit() and ss[2].isdigit() and len(ss)==4:
+											pass
+										else:
+											error+="%s.%s.%s file_name:%s \"url\":%s wrong format \n"%(year,month,day,file_name,url)
+									elif TYPE==2:
+										pass
+									else:
+										error+="%s.%s.%s file_name:%s \"url\":%s check yourself\n"%(year,month,day,file_name,url)
+							except Exception as e:
+								error+="%s.%s.%s file_name:%s %s\n"%(year,month,day,file_name,e)
+							
+							try:
+								concept=file["concept"]
+								if type(concept)!=list:
+									error+="%s.%s.%s file_name:%s \"concept\":%s is not list\n"%(year,month,day,file_name,concept)
+								else:
+									for id in concept:
+										if type(id)!=int:
+											error+="%s.%s.%s file_name:%s concept:%s is not int\n"%(year,month,day,file_name,id)
+										elif id<0:
+											error+="%s.%s.%s file_name:%s concept:%s < 0 \n"%(year,month,day,file_name,id)
+
+										try:
+											file_dict=self.Headquarter.generateDiaryConceptFileDict(QDate(int(year),int(month),int(day)),TYPE,file_name,url)
+											if file_dict not in concept_data[id]["file"]:
+												error+="%s.%s.%s file_name:%s is not in concept:%s 's file\n"%(year,month,day,file_name,id)
+										except:
+											error+="%s.%s.%s file_name:%s concept:%s is not in concept_data\n"%(year,month,day,file_name,id)
+							except Exception as e:
+								error+="%s.%s.%s file_name:%s %s\n"%(year,month,day,file_name,e)
+			
+			return error
+		
+		def slot():
+			self.DataChecker.deleteLater()
+			del self.DataChecker
+		
+		error=check()
+
+		try:
+			self.DataChecker.errorText.setPlainText(error)
+		except:
+			self.DataChecker=DTFrame.DTMainWindow(self.Headquarter.app)
+			self.DataChecker.initialize()
+			self.DataChecker.setWindowTitle("Check Data Completeness")
+			self.DataChecker.actionExit.triggered.disconnect(self.DataChecker.close)
+			self.DataChecker.actionExit.triggered.connect(slot)
+			self.DataChecker.errorText=QPlainTextEdit(error)
+			self.DataChecker.setMinimumSize(600,800)
+			self.DataChecker.setCentralWidget(self.DataChecker.errorText)
+			self.DataChecker.show()

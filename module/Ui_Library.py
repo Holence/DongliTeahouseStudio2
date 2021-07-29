@@ -12,9 +12,9 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
-from widget import TextList
 from widget import ConceptTable
 from widget import FileTable
+from widget import TextList
 
 import DTPySide.DT_rc
 
@@ -127,6 +127,7 @@ class Ui_Library(object):
         self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.textViewer = QTextBrowser(self.tab_textviewer)
         self.textViewer.setObjectName(u"textViewer")
+        self.textViewer.setOpenExternalLinks(True)
 
         self.horizontalLayout_2.addWidget(self.textViewer)
 

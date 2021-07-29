@@ -72,9 +72,9 @@ class Concept(QWidget,Ui_Concept):
 		self.showConcept(self.current_id)
 	
 	def showSearch(self):
-		concept_list=self.Headquarter.getConceptData()
 		search=self.lineEdit_search.text()
-		self.conceptTable.setConceptList(concept_list,search)
+		concept_id_list=self.Headquarter.getConceptIDList(search)
+		self.conceptTable.setConceptIDList(concept_id_list)
 
 	def refreshTab(self):
 		def showConceptTextList():
@@ -110,32 +110,39 @@ class Concept(QWidget,Ui_Concept):
 					id_list.append(child_id)
 					deepin(child_id)
 		
-		id_list=[]
-		state=self.checkBox.checkState()
-		if state==Qt.Unchecked:
-			self.checkBox.setText("Only Root")
-			id_list.append(self.current_id)
-		elif state==Qt.PartiallyChecked:
-			self.checkBox.setText("Only Child")
-			deepin(self.current_id)
-		elif state==Qt.Checked:
-			self.checkBox.setText("Both Root and Child")
-			id_list.append(self.current_id)
-			deepin(self.current_id)
-		
+		if self.current_id!=-1:
 
-		self.fileTable.Clear()
-		self.textList.clear()
-		self.textViewer.clear()
-		if self.tabWidget.currentIndex()==0:
-			showConceptFile()
-		elif self.tabWidget.currentIndex()==1:
-			showConceptTextList()
-		else:
-			ShowConceptText()
+			id_list=[]
+			state=self.checkBox.checkState()
+			if state==Qt.Unchecked:
+				self.checkBox.setText("Only Root")
+				id_list.append(self.current_id)
+			elif state==Qt.PartiallyChecked:
+				self.checkBox.setText("Only Child")
+				deepin(self.current_id)
+			elif state==Qt.Checked:
+				self.checkBox.setText("Both Root and Child")
+				id_list.append(self.current_id)
+				deepin(self.current_id)
+			
+
+			self.fileTable.Clear()
+			self.textList.clear()
+			self.textViewer.clear()
+			if self.tabWidget.currentIndex()==0:
+				showConceptFile()
+			elif self.tabWidget.currentIndex()==1:
+				showConceptTextList()
+			else:
+				ShowConceptText()
 
 
 	def showConcept(self, id:int):
+		
+		# 如果列表中选中的不是这个id，就清空选中，减少一些误导
+		row=self.conceptTable.currentRow()
+		if row!=-1 and int(self.conceptTable.item(row,0).text())!=id:
+			self.conceptTable.clearSelection()
 		
 		self.current_id=id
 		if self.current_id!=-1:
@@ -218,13 +225,16 @@ class Concept(QWidget,Ui_Concept):
 			self.refreshTab()
 	
 	def addConceptText(self,text_list):
-		for text in text_list:
-			line=self.Headquarter.getDiaryDayLine(QDate(text["y"],text["m"],text["d"]),text["index"])
-			if self.current_id not in line["concept"]:
-				line["concept"].append(self.current_id)
-		
-		self.refreshTab()
-		self.textList.setFocus()
+		if self.current_id!=-1:
+			for text in text_list:
+				line=self.Headquarter.getDiaryDayLine(QDate(text["y"],text["m"],text["d"]),text["index"])
+				if self.current_id not in line["concept"]:
+					line["concept"].append(self.current_id)
+			
+			self.refreshTab()
+			self.textList.setFocus()
+		else:
+			self.textList.clear()
 	
 	#############################################################################################
 
@@ -283,7 +293,6 @@ class Concept(QWidget,Ui_Concept):
 		delete_file_list=[]
 		warning_text="You want to delete concept linked file:\n\n"
 		for model_index in self.fileTable.selectionModel().selectedRows():
-
 			row=model_index.row()
 			type=int(self.fileTable.item(row,0).text())
 			y,m,d=map(int,self.fileTable.item(row,1).text().split("."))
@@ -291,7 +300,7 @@ class Concept(QWidget,Ui_Concept):
 			name=self.fileTable.item(row,3).text()
 			url=self.fileTable.item(row,4).text().replace(self.Headquarter.library_base+"/","")
 			
-			self.Headquarter.generateDiaryConceptFileDict(date,type,name,url)
+			delete_file_list.append(self.Headquarter.generateDiaryConceptFileDict(date,type,name,url))
 			
 			warning_text+="%s\n"%(name)
 		

@@ -24,13 +24,18 @@ class DiarySearch(Ui_DiarySearch,QWidget):
 			self.diary.textList.setCurrentRow(index)
 		
 		self.listWidget.textClicked.connect(slot)
+		self.listWidget.setAcceptDrops(False)
 	
 	def showSearch(self):
 		search=self.lineEdit.text()
+		search_list,date_range_list,concept_list,_=self.Headquarter.parseSearchText(search)
+
 		if search.strip()=="":
 			return
 		
-		search_list,date_range_list,concept_list,_=self.Headquarter.parseSearchText(search)
+		if search_list==[] and date_range_list==[] and concept_list==[]:
+			self.listWidget.clear()
+			return
 		
 		rank=False
 		if self.checkBox.checkState()==Qt.Checked:

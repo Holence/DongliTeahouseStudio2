@@ -190,7 +190,11 @@
             <number>0</number>
            </property>
            <item>
-            <widget class="QTextBrowser" name="textViewer"/>
+            <widget class="QTextBrowser" name="textViewer">
+             <property name="openExternalLinks">
+              <bool>true</bool>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -216,11 +220,6 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>TextList</class>
-   <extends>QListWidget</extends>
-   <header>widget</header>
-  </customwidget>
-  <customwidget>
    <class>ConceptTable</class>
    <extends>QTableWidget</extends>
    <header>widget</header>
@@ -228,6 +227,11 @@
   <customwidget>
    <class>FileTable</class>
    <extends>QTableWidget</extends>
+   <header>widget</header>
+  </customwidget>
+  <customwidget>
+   <class>TextList</class>
+   <extends>QListWidget</extends>
    <header>widget</header>
   </customwidget>
  </customwidgets>

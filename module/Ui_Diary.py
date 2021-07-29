@@ -111,6 +111,7 @@ class Ui_Diary(object):
         self.textViewer = QTextBrowser(self.page_view)
         self.textViewer.setObjectName(u"textViewer")
         self.textViewer.setMinimumSize(QSize(600, 600))
+        self.textViewer.setOpenExternalLinks(True)
 
         self.horizontalLayout_2.addWidget(self.textViewer)
 
@@ -132,40 +133,40 @@ class Ui_Diary(object):
         self.calendar.setGridVisible(True)
         self.calendar.setNavigationBarVisible(False)
         self.splitter.addWidget(self.calendar)
-        self.widget = QWidget(self.splitter)
-        self.widget.setObjectName(u"widget")
-        self.verticalLayout_concept = QVBoxLayout(self.widget)
+        self.layoutWidget = QWidget(self.splitter)
+        self.layoutWidget.setObjectName(u"layoutWidget")
+        self.verticalLayout_concept = QVBoxLayout(self.layoutWidget)
         self.verticalLayout_concept.setSpacing(0)
         self.verticalLayout_concept.setObjectName(u"verticalLayout_concept")
         self.verticalLayout_concept.setContentsMargins(0, 0, 0, 0)
-        self.label = QLabel(self.widget)
+        self.label = QLabel(self.layoutWidget)
         self.label.setObjectName(u"label")
 
         self.verticalLayout_concept.addWidget(self.label)
 
-        self.conceptTable = ConceptTable(self.widget)
+        self.conceptTable = ConceptTable(self.layoutWidget)
         self.conceptTable.setObjectName(u"conceptTable")
 
         self.verticalLayout_concept.addWidget(self.conceptTable)
 
-        self.splitter.addWidget(self.widget)
-        self.widget1 = QWidget(self.splitter)
-        self.widget1.setObjectName(u"widget1")
-        self.verticalLayout_file = QVBoxLayout(self.widget1)
+        self.splitter.addWidget(self.layoutWidget)
+        self.layoutWidget1 = QWidget(self.splitter)
+        self.layoutWidget1.setObjectName(u"layoutWidget1")
+        self.verticalLayout_file = QVBoxLayout(self.layoutWidget1)
         self.verticalLayout_file.setSpacing(0)
         self.verticalLayout_file.setObjectName(u"verticalLayout_file")
         self.verticalLayout_file.setContentsMargins(0, 0, 0, 0)
-        self.label_2 = QLabel(self.widget1)
+        self.label_2 = QLabel(self.layoutWidget1)
         self.label_2.setObjectName(u"label_2")
 
         self.verticalLayout_file.addWidget(self.label_2)
 
-        self.fileTable = FileTable(self.widget1)
+        self.fileTable = FileTable(self.layoutWidget1)
         self.fileTable.setObjectName(u"fileTable")
 
         self.verticalLayout_file.addWidget(self.fileTable)
 
-        self.splitter.addWidget(self.widget1)
+        self.splitter.addWidget(self.layoutWidget1)
         self.splitter_whole.addWidget(self.splitter)
 
         self.horizontalLayout.addWidget(self.splitter_whole)

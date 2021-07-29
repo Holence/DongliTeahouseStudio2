@@ -35,8 +35,15 @@ class DesktopButton(QPushButton):
 			
 			# cache中没有
 			if data==None or force==True:
-				if "bilibili" in self.url:
-					status,data=GetWebFavIcon("https://www.bilibili.com/")
+
+				redirect_dict={
+					"bilibili":"https://www.bilibili.com/favicon.ico",
+					"douban":"https://img3.doubanio.com/favicon.ico"
+				}
+				for key,value in redirect_dict.items():
+					if key in self.url:
+						status,data=GetWebPagePic(value)
+						break
 				else:
 					status,data=GetWebFavIcon(self.url)
 				# 载入成功

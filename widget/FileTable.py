@@ -22,46 +22,121 @@ class LoadThumbnailThread(QThread):
 		ext=url.split(".")[-1].lower()
 		cache_name=QDate_to_Str(QDate(y,m,d),"0")+name
 
-		if self.file["type"]==2 and "bilibili" in url:
-			data=self.Headquarter.cache.get("bilibili就你多事")
-			if data==None or self.force==True:
-				status,data=GetWebFavIcon("https://www.bilibili.com/")
+		redirect_dict={
+			"bilibili":"https://www.bilibili.com/favicon.ico",
+			"douban":"https://img3.doubanio.com/favicon.ico"
+		}
+
+		if self.file["type"]==2:
+			for key,value in redirect_dict.items():
+				if key in url:
+
+					data=self.Headquarter.cache.get(key)
+					if data==None or self.force==True:
+						status,data=GetWebPagePic(value)
+						if status==True:
+
+							self.Headquarter.qlock.lock()
+							self.Headquarter.cache[key]=data
+							self.Headquarter.qlock.unlock()
+							
+							pixmap=QPixmap()
+							ba = QByteArray(data)
+							pixmap.loadFromData(ba, "ico")
+							icon=QIcon(pixmap)
+						else:
+							self.Headquarter.qlock.lock()
+							self.Headquarter.cache[key]=-1
+							self.Headquarter.qlock.unlock()
+							icon=QIcon(":/icon/white/white_globe.svg")
+					elif data==-1:
+						icon=QIcon(":/icon/white/white_globe.svg")
+					else:
+						pixmap=QPixmap()
+						ba = QByteArray(data)
+						pixmap.loadFromData(ba, ext)
+						icon=QIcon(pixmap)
+					
+					self.parent().lock.lock()
+					try:
+						if url==self.parent().item(self.row,4).text():
+							self.parent().item(self.row,3).setIcon(icon)
+					except:
+						pass
+					self.parent().lock.unlock()
+					return
+
+
+		data=self.Headquarter.cache.get(cache_name)
+		
+		# cache中没有，或者要刷新
+		if data==None or self.force==True:
+			# 文件
+			if self.file["type"]!=2:
+				url=os.path.join(self.Headquarter.library_base,url).replace("\\","/")
+				
+				if self.file["type"]==0 or ext not in image_extension:
+					# folder或者其他类型文件
+					file_info=QFileInfo(url)
+					icon=QFileIconProvider().icon(file_info)
+				else:
+					# 图片
+					pixmap=QPixmap()
+					pixmap.load(url)
+					pixmap=pixmap.scaled(self.ROWHEIGHT,self.ROWHEIGHT,Qt.KeepAspectRatio,Qt.FastTransformation)
+
+					# convert QPixmap to bytes
+					ba = QByteArray()
+					buff = QBuffer(ba)
+					buff.open(QIODevice.WriteOnly)
+					pixmap.save(buff, ext)
+					pixmap_bytes = ba.data()
+					
+					self.Headquarter.qlock.lock()
+					self.Headquarter.cache[cache_name]=pixmap_bytes
+					self.Headquarter.qlock.unlock()
+
+					icon=QIcon(pixmap)
+			
+			# link
+			elif self.file["type"]==2:
+				status,data=GetWebFavIcon(url)
 				if status==True:
 
 					self.Headquarter.qlock.lock()
-					self.Headquarter.cache["bilibili就你多事"]=data
+					self.Headquarter.cache[cache_name]=data
 					self.Headquarter.qlock.unlock()
 					
 					pixmap=QPixmap()
 					ba = QByteArray(data)
-					pixmap.loadFromData(ba, "ico")
+					if not pixmap.loadFromData(ba, "ico"):
+						if not pixmap.loadFromData(ba, "png"): # 有的favicon竟然是png……
+								pixmap.loadFromData(ba, "svg") # 有的favicon竟然是svg……
 					icon=QIcon(pixmap)
 				else:
+					#一些防爬的就算了，标记-1，制定icon的时候给globe就行了
 					self.Headquarter.qlock.lock()
-					self.Headquarter.cache["bilibili就你多事"]=-1
+					self.Headquarter.cache[cache_name]=-1
 					self.Headquarter.qlock.unlock()
+					
 					icon=QIcon(":/icon/white/white_globe.svg")
-			elif data==-1:
-				icon=QIcon(":/icon/white/white_globe.svg")
-			else:
-				pixmap=QPixmap()
-				ba = QByteArray(data)
-				pixmap.loadFromData(ba, ext)
-				icon=QIcon(pixmap)
 			
 			self.parent().lock.lock()
-			self.parent().item(self.row,3).setIcon(icon)
+			try:
+				if url==self.parent().item(self.row,4).text():
+					self.parent().item(self.row,3).setIcon(icon)
+			except:
+				pass
 			self.parent().lock.unlock()
 			return
-
-
-		data=self.Headquarter.cache.get(cache_name)
+		
 		# cache中有
-		if data!=None or self.force==True:
+		else:
 			if data==-1: #一些防爬的就算了，标记-1，制定icon的时候给globe就行了
 				icon=QIcon(":/icon/white/white_globe.svg")
 			else:
 				if type!=2:
+					url=os.path.join(self.Headquarter.library_base,url).replace("\\","/")
 					# convert bytes to QPixmap
 					pixmap=QPixmap()
 					ba = QByteArray(data)
@@ -77,65 +152,13 @@ class LoadThumbnailThread(QThread):
 					icon=QIcon(pixmap)
 			
 			self.parent().lock.lock()
-			self.parent().item(self.row,3).setIcon(icon)
+			try:
+				if url==self.parent().item(self.row,4).text():
+					self.parent().item(self.row,3).setIcon(icon)
+			except:
+				pass
 			self.parent().lock.unlock()
 			return
-		
-		# cache中没有
-		# 文件
-		if self.file["type"]!=2:
-			url=os.path.join(self.Headquarter.library_base,url).replace("\\","/")
-			
-			if self.file["type"]==0 or ext not in image_extension:
-				# folder或者其他类型文件
-				file_info=QFileInfo(url)
-				icon=QFileIconProvider().icon(file_info)
-			else:
-				# 图片
-				pixmap=QPixmap()
-				pixmap.load(url)
-				pixmap=pixmap.scaled(self.ROWHEIGHT,self.ROWHEIGHT,Qt.KeepAspectRatio,Qt.FastTransformation)
-
-				# convert QPixmap to bytes
-				ba = QByteArray()
-				buff = QBuffer(ba)
-				buff.open(QIODevice.WriteOnly)
-				pixmap.save(buff, ext)
-				pixmap_bytes = ba.data()
-				
-				self.Headquarter.qlock.lock()
-				self.Headquarter.cache[cache_name]=pixmap_bytes
-				self.Headquarter.qlock.unlock()
-
-				icon=QIcon(pixmap)
-		
-		# link
-		elif self.file["type"]==2:
-			status,data=GetWebFavIcon(url)
-			if status==True:
-
-				self.Headquarter.qlock.lock()
-				self.Headquarter.cache[cache_name]=data
-				self.Headquarter.qlock.unlock()
-				
-				pixmap=QPixmap()
-				ba = QByteArray(data)
-				if not pixmap.loadFromData(ba, "ico"):
-					if not pixmap.loadFromData(ba, "png"): # 有的favicon竟然是png……
-							pixmap.loadFromData(ba, "svg") # 有的favicon竟然是svg……
-				icon=QIcon(pixmap)
-			else:
-				#一些防爬的就算了，标记-1，制定icon的时候给globe就行了
-				self.Headquarter.qlock.lock()
-				self.Headquarter.cache[cache_name]=-1
-				self.Headquarter.qlock.unlock()
-				
-				icon=QIcon(":/icon/white/white_globe.svg")
-		
-		self.parent().lock.lock()
-		self.parent().item(self.row,3).setIcon(icon)
-		self.parent().lock.unlock()
-		return
 
 
 from filetype import image_extension
@@ -183,7 +206,7 @@ class FileTable(DTWidget.DTHorizontalTabel):
 			url=self.item(row,4).text().replace(self.Headquarter.library_base+"/","")
 			file_list.append(self.Headquarter.generateDiaryConceptFileDict(QDate(y,m,d),type,name,url))
 
-			if self.item(row,0).text()=="0":
+			if self.item(row,0).text()!="2":
 				url="file:///"+self.item(row,4).text()
 			url_list.append(QUrl(url))
 		
@@ -263,6 +286,7 @@ class FileTable(DTWidget.DTHorizontalTabel):
 		self.setIconSize(QSize(self.ROWHEIGHT,self.ROWHEIGHT))
 
 		self.lock=QMutex(QMutex.NonRecursive) # 更新icon时防止多线程在刷新完列表之前就去更新
+		self.thread_list=[]
 
 		self.__altPressed=False
 		self.installEventFilter(self)
@@ -276,13 +300,16 @@ class FileTable(DTWidget.DTHorizontalTabel):
 		Args:
 			file_list (list): 元素具有y,m,d,name,type,url属性
 		"""
-
+		
 		self.StoreTableStatus()
 		self.Clear()
 
+		self.lock.lock()
+
+		self.thread_list=[]
+
 		row=0
 		# 更新icon时防止多线程在刷新完列表之前就去更新
-		self.lock.lock()
 		for file in file_list:
 
 			y=file["y"]
@@ -294,6 +321,7 @@ class FileTable(DTWidget.DTHorizontalTabel):
 			
 			if type==0:
 				ext="folder"
+				url=os.path.join(self.Headquarter.library_base,url).replace("\\","/")
 			elif type==1:
 				url=os.path.join(self.Headquarter.library_base,url).replace("\\","/")
 				ext=url.split(".")[-1].lower()
@@ -301,6 +329,7 @@ class FileTable(DTWidget.DTHorizontalTabel):
 				ext="link"
 
 			loading_thread=LoadThumbnailThread(self,self.Headquarter,file,row,self.ROWHEIGHT)
+			self.thread_list.append(loading_thread)
 			loading_thread.finished.connect(loading_thread.deleteLater)
 			loading_thread.start()
 			
@@ -308,7 +337,8 @@ class FileTable(DTWidget.DTHorizontalTabel):
 			self.setRowHeight(row,self.ROWHEIGHT)
 			row+=1
 		
-		self.RestoreTableStatus()
+		# self.RestoreTableStatus()
+		
 		self.lock.unlock()
 
 	def openFile(self):
@@ -346,3 +376,8 @@ class FileTable(DTWidget.DTHorizontalTabel):
 					DTFrame.DTMessageBox(self,"Warning","Could not open file! Try running Check Library.\n\n%s"%e,DTIcon.Warning())
 		else:
 			os.system("start explorer \"%s\""%url)
+	
+	def Clear(self):
+		self.lock.lock()
+		super().Clear()
+		self.lock.unlock()

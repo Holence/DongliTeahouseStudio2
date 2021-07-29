@@ -10,6 +10,8 @@ class LobbySession(DTSession.DTMainSession):
 		# focusInEvent和mousePressEvent都试了，都不可能捕获子控件的事件，所以只有点击到TitleBar或者window的空白区域，才可能被触发
 		if (event.type()==QEvent.MouseButtonPress and event.button()==Qt.LeftButton) or event.type()==QEvent.FocusIn:
 			# print(watched)
+			if hasattr(self.lobby,"DataChecker"):
+				self.lobby.checkDataCompleteness()
 			if self.WindowFocusing()!=self:
 				self.setWindowFocusing(self)
 				# print("Now focused in",self.WindowFocusing())
@@ -58,6 +60,7 @@ class LobbySession(DTSession.DTMainSession):
 				self.library_base=dlg.getExistingDirectory()
 			self.UserSetting().setValue("LibraryBase",Fernet_Encrypt(self.password(),self.library_base))
 
+		
 	def dataValidityCheck(self):
 		return True
 	
@@ -97,10 +100,12 @@ class LobbySession(DTSession.DTMainSession):
 		super().initializeSignal()
 		self.installEventFilter(self)
 		self.refreshModuleSingal()
+		self.addAction(self.lobby.actionCheck_Data_Completeness)
 	
 	def initializeMenu(self):
 		self.addActionToMainMenu(self.lobby.actionSwitch_Secure_Mode)
 		self.addActionToMainMenu(self.lobby.actionCheck_Library)
+		self.addActionToMainMenu(self.lobby.actionCheck_Data_Completeness)
 		self.addSeparatorToMainMenu()
 		self.addActionToMainMenu(self.lobby.actionExport_to_Json)
 		super().initializeMenu()
@@ -124,6 +129,7 @@ class LobbySession(DTSession.DTMainSession):
 			#如果全部都隐藏着，开启一个
 			if flag==False:
 				self.concept_heap[0].show()
+				self.concept_heap[0].concept_module.showConcept(id)
 		
 		def slot2(line):
 			"""concept、Library的text列表点击line，在所有可见的diary中showDay和showLine
@@ -145,6 +151,8 @@ class LobbySession(DTSession.DTMainSession):
 			#如果全部都隐藏着，开启一个
 			if flag==False:
 				self.diary_heap[0].show()
+				self.diary_heap[0].diary_module.showDay(QDate(y,m,d))
+				self.diary_heap[0].diary_module.textList.setCurrentRow(index)
 
 		for diary in self.diary_heap:
 			diary.diary_module.conceptTable.conceptClicked.connect(slot)
@@ -235,7 +243,7 @@ class LobbySession(DTSession.DTMainSession):
 								"m":int(month),
 								"d":int(day),
 								"text":line["text"],
-								"conept":line["concept"],
+								"concept":line["concept"],
 								"concept_az":[self.concept_data[id]["az"] for id in line["concept"]],
 								"index":index,
 								"rank":0
@@ -257,7 +265,7 @@ class LobbySession(DTSession.DTMainSession):
 							"m":int(month),
 							"d":int(day),
 							"text":line["text"],
-							"conept":line["concept"],
+							"concept":line["concept"],
 							"concept_az":[self.concept_data[id]["az"] for id in line["concept"]],
 							"index":index,
 							"rank":0
@@ -281,7 +289,10 @@ class LobbySession(DTSession.DTMainSession):
 				else:
 					add_line_in_dates(date_range)
 		
-		if concept_name_list!=[]:
+		if concept_name_list==None:
+			# 搜索没有链接concept的内容
+			line_list=[line for line in line_list if line["concept"]==[] ]
+		elif concept_name_list!=[]:
 			concept_name_list=[ Str_to_AZ(concept_name) for concept_name in concept_name_list]
 			
 			if rank==True:
@@ -355,6 +366,24 @@ class LobbySession(DTSession.DTMainSession):
 		except:
 			return None
 	
+	def getConceptIDList(self,search:str):
+		id_list=[]
+		if search=="\^p":
+			# no parent
+			id_list=[concept["id"] for concept in self.concept_data if concept["parent"]==[] ]
+		elif search=="\^c":
+			# no child
+			id_list=[concept["id"] for concept in self.concept_data if concept["child"]==[] ]
+		elif search=="\^pc" or search=="\^cp":
+			# no parent and no child
+			id_list=[concept["id"] for concept in self.concept_data if concept["parent"]==[] and concept["child"]==[] ]
+		else:
+			for concept in self.concept_data:
+				if search in concept["name"] or search.lower() in concept["az"] or search in concept["detail"]:
+					id_list.append(concept["id"])
+		
+		return id_list
+
 	def appendConcept(self):
 		"""在concept_data中append concept字典容器，返回该字典容器
 
@@ -532,6 +561,7 @@ class LobbySession(DTSession.DTMainSession):
 								"concept":file["concept"],
 								"concept_az":[self.concept_data[id]["az"] for id in file["concept"]]
 							})
+							
 
 		def add_file_in_dates(begin:QDate,end:QDate=None):
 			if end==None:
@@ -553,6 +583,7 @@ class LobbySession(DTSession.DTMainSession):
 						})
 				except:
 					pass
+				
 				begin=begin.addDays(1)
 		
 		def namelist_in_filename(file_name):
@@ -568,17 +599,19 @@ class LobbySession(DTSession.DTMainSession):
 					add_file_in_dates(*date_range)
 				else:
 					add_file_in_dates(date_range)
-		
+
 		if TYPE!=None:
 			file_list=[file for file in file_list if file["type"]==TYPE ]
 		
-		if concept_name_list!=[]:
+		if concept_name_list==None:
+			# 搜索没有链接concept的内容
+			file_list=[file for file in file_list if file["concept"]==[] ]
+		elif concept_name_list!=[]:
 			concept_name_list=[ Str_to_AZ(concept_name) for concept_name in concept_name_list]
 			file_list=[file for file in file_list if List_Difference(concept_name_list,file["concept_az"])==[] ]
 		
 		if name_list!=[]:
 			file_list=[file for file in file_list if namelist_in_filename(file["name"])]
-
 
 		return file_list
 
@@ -792,25 +825,50 @@ class LobbySession(DTSession.DTMainSession):
 			TYPE=re.findall("(?<= \{).*?(?=\} )",search)
 			search=re.sub("\{.*?\}","",search)
 			if TYPE!=[]:
-				TYPE=int(TYPE[0])
+				if str.isdigit(TYPE[0]):
+					TYPE=int(TYPE[0])
+				else:
+					TYPE=None
 			else:
 				TYPE=None
 			
 			concept_list=re.findall("(?<= \[).*?(?=\] )",search)
 			search=re.sub("\[.*?\]","",search)
+			# []表示搜索没有链接concept的内容
+			if concept_list==[""]:
+				concept_list=None
 			
 			date_str_list=re.findall("(?<= \().*?(?=\) )",search)
 			date_range_list=[]
 			search=re.sub("\(.*?\)","",search)
 			for i in date_str_list:
-				if i.count("-")==0 and i.count(".")==2:
-					try:
-						y,m,d=map(int,i.split("."))
-						date=QDate(y,m,d)
-						if date.isValid():
-							date_range_list.append(date)
-					except:
-						pass
+				if i.count("-")==0:
+					
+					# (2021)==(2021.1.1-2021.12.31)
+					if i.count(".")==0 and i.isdigit():
+						date_range_list.append((QDate(int(i),1,1),QDate(int(i),12,31)))
+					
+					# (2021.7)==(2021.7.1-2021.7.31)
+					elif i.count(".")==1:
+						try:
+							y,m=map(int,i.split("."))
+							begin=QDate(y,m,1)
+							if begin.isValid():
+								end=begin.daysInMonth()
+								end=QDate(y,m,end)
+								date_range_list.append((begin,end))
+						except:
+							pass
+					# (2021.7.20)
+					elif i.count(".")==2:
+						try:
+							y,m,d=map(int,i.split("."))
+							date=QDate(y,m,d)
+							if date.isValid():
+								date_range_list.append(date)
+						except:
+							pass
+				# (2021.1.1-2021.12.31)
 				elif i.count("-")==1 and i.count(".")==4:
 					try:
 						begin,end=i.split("-")

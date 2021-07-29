@@ -77,34 +77,6 @@ class ConceptTable(DTWidget.DTHorizontalTabel):
 		self.RestoreTableStatus()
 		
 		self.selectRow(self.rowCount()-1)
-
-	def setConceptList(self, concept_list, search=""):
-		"""设置concepttable为concept_list，适用于Concept搜索table
-
-		Args:
-			concept_list (list): 列表元素是一个个含有id,name,detail,az属性的concept
-			search (str, optional): 搜索过滤. Defaults to "".
-		"""
-		self.StoreTableStatus()
-		self.Clear()
-
-		id_str_width=len(str(len(concept_list)))
-		row=0
-		if search=="":
-			for concept in concept_list:
-				id=f"%{id_str_width}s"%concept["id"]
-				name=concept["name"]
-				self.addRow(row,[QTableWidgetItem(id),QTableWidgetItem(name)])
-				row+=1
-		else:
-			for concept in concept_list:
-				if search in concept["name"] or search.lower() in concept["az"] or search in concept["detail"]:
-					id=f"%{id_str_width}s"%concept["id"]
-					name=concept["name"]
-					self.addRow(row,[QTableWidgetItem(id),QTableWidgetItem(name)])
-					row+=1
-		
-		self.RestoreTableStatus()
 	
 	def setConceptIDList(self, concept_id_list):
 		"""设置concepttable为concept_id_list对应的concept_list，适用于diary、file的concept链接列表，以及concept的parent、relative的concept链接列表

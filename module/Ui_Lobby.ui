@@ -208,6 +208,18 @@
     <string>Password is needed when opening modules if turned on.</string>
    </property>
   </action>
+  <action name="actionCheck_Data_Completeness">
+   <property name="icon">
+    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
+     <normaloff>:/icon/white/white_shield.svg</normaloff>:/icon/white/white_shield.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Check Data Completeness</string>
+   </property>
+   <property name="shortcut">
+    <string>F4</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
