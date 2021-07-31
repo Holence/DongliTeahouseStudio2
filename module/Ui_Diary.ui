@@ -121,14 +121,21 @@
       <widget class="QWidget" name="layoutWidget">
        <layout class="QVBoxLayout" name="verticalLayout_concept">
         <property name="spacing">
-         <number>0</number>
+         <number>4</number>
         </property>
         <item>
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>Concept</string>
-          </property>
-         </widget>
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Concept</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="ConceptSearch" name="lineEdit_concept"/>
+          </item>
+         </layout>
         </item>
         <item>
          <widget class="ConceptTable" name="conceptTable"/>
@@ -138,7 +145,7 @@
       <widget class="QWidget" name="layoutWidget1">
        <layout class="QVBoxLayout" name="verticalLayout_file">
         <property name="spacing">
-         <number>0</number>
+         <number>4</number>
         </property>
         <item>
          <widget class="QLabel" name="label_2">
@@ -332,6 +339,11 @@
   <customwidget>
    <class>TextList</class>
    <extends>QListWidget</extends>
+   <header>widget</header>
+  </customwidget>
+  <customwidget>
+   <class>ConceptSearch</class>
+   <extends>QLineEdit</extends>
    <header>widget</header>
   </customwidget>
  </customwidgets>

@@ -59,7 +59,6 @@ class LobbySession(DTSession.DTMainSession):
 				DTFrame.DTMessageBox(self,"Information","You need to set Library Base first!")
 				self.library_base=dlg.getExistingDirectory()
 			self.UserSetting().setValue("LibraryBase",Fernet_Encrypt(self.password(),self.library_base))
-
 		
 	def dataValidityCheck(self):
 		return True
@@ -101,6 +100,7 @@ class LobbySession(DTSession.DTMainSession):
 		self.installEventFilter(self)
 		self.refreshModuleSingal()
 		self.addAction(self.lobby.actionCheck_Data_Completeness)
+		self.addAction(self.lobby.actionSave_Data)
 	
 	def initializeMenu(self):
 		self.addActionToMainMenu(self.lobby.actionSwitch_Secure_Mode)
@@ -108,6 +108,7 @@ class LobbySession(DTSession.DTMainSession):
 		self.addActionToMainMenu(self.lobby.actionCheck_Data_Completeness)
 		self.addSeparatorToMainMenu()
 		self.addActionToMainMenu(self.lobby.actionExport_to_Json)
+		self.addActionToMainMenu(self.lobby.actionSave_Data)
 		super().initializeMenu()
 
 	
@@ -136,7 +137,7 @@ class LobbySession(DTSession.DTMainSession):
 
 			Args:
 				line (dict): 从textList中传出来的标准line字典
-			"""			
+			"""
 			y=line["y"]
 			m=line["m"]
 			d=line["d"]
@@ -174,10 +175,14 @@ class LobbySession(DTSession.DTMainSession):
 		self.UserSetting().setValue("WindowStatus/LibrarySize",self.library_heap[0].size())
 		self.UserSetting().setValue("WindowStatus/LibraryPos",self.library_heap[0].pos())
 
-	def saveData(self):
-		Fernet_Encrypt_Save(self.password(),self.data,"data.dlcw")
-		Fernet_Encrypt_Save(self.password(),self.cache,"cache")
-		pass
+	def saveData(self,force=False):
+		try:
+			Fernet_Encrypt_Save(self.password(),self.data,"data.dlcw")
+			Fernet_Encrypt_Save(self.password(),self.cache,"cache")
+			if force==True:
+				self.app.TrayIcon.showMessage("Information","Data Saved Successfully!",DTIcon.Information())
+		except:
+			self.app.TrayIcon.showMessage("Error","Error occured during Data Saving!",DTIcon.Error())
 
 	def saveAllEncryptData(self):
 		super().saveAllEncryptData()
@@ -201,6 +206,7 @@ class LobbySession(DTSession.DTMainSession):
 		for library in self.library_heap:
 			library.hide()
 		super().bossComing()
+
 
 	#################################################################
 
@@ -684,6 +690,13 @@ class LobbySession(DTSession.DTMainSession):
 					status,res=GetWebPageTitle(response=res)
 					if status==True:
 						name=res
+						if self.library_data[y][m][d].get(name)!=None:
+							warning="Already have web page named %s in %s.%s.%s,\n\nwhich url is %s\n\nYou want to add still?"%(name,y,m,d,self.library_data[y][m][d].get(name)["url"])
+							dlg=DTFrame.DTConfirmBox(self,"Warning",warning,DTIcon.Warning())
+							if dlg.exec_():
+								name=name+str(time.time_ns())
+							else:
+								return None
 					else:
 						DTFrame.DTMessageBox(self,"Warning",str(res),DTIcon.Warning())
 						name="Unknow%s"%time.time_ns()

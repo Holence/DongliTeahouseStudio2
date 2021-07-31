@@ -5,6 +5,7 @@ from session.LobbySession import LobbySession
 class ConceptTree(DTWidget.DTTree):
 	
 	conceptClicked=Signal(int)
+	conceptDoubleClicked=Signal(int)
 	conceptDropped=Signal(list)
 
 	def startDrag(self, actions:Qt.DropActions):
@@ -54,17 +55,24 @@ class ConceptTree(DTWidget.DTTree):
 		self.setMinimumHeight(200)
 		self.setColumn(["ID","Name"])
 
+		self.itemClicked.connect(self.itemClickedSlot)
 		self.itemDoubleClicked.connect(self.itemDoubleClickedSlot)
-	
+
 	def setHeadquarter(self,Headquarter: LobbySession):
 		self.Headquarter=Headquarter
 		self.setStyleSheet("font-family: %s"%self.Headquarter.app.Font().family())
+	
+	def itemClickedSlot(self):
+		"""双击table中的元素，emit附带concept id的conceptClicked信号（用于出去跳转展示concept）
+		"""
+		id=int(self.currentItem().text(0))
+		self.conceptClicked.emit(id)
 	
 	def itemDoubleClickedSlot(self):
 		"""双击table中的元素，emit附带concept id的conceptClicked信号（用于出去跳转展示concept）
 		"""
 		id=int(self.currentItem().text(0))
-		self.conceptClicked.emit(id)
+		self.conceptDoubleClicked.emit(id)
 	
 	def setChildTree(self,root_id):
 		

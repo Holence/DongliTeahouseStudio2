@@ -35,6 +35,10 @@ class Concept(QWidget,Ui_Concept):
 		self.childTree.setHeadquarter(self.Headquarter)
 		self.relativeTable.setHeadquarter(self.Headquarter)
 
+		self.lineEdit_parent.setHeadquarter(self.Headquarter)
+		self.lineEdit_child.setHeadquarter(self.Headquarter)
+		self.lineEdit_relative.setHeadquarter(self.Headquarter)
+
 
 	def initializeSignal(self):
 		# 添加concept
@@ -53,14 +57,19 @@ class Concept(QWidget,Ui_Concept):
 		
 		# 点击concept，展示concept
 		self.conceptTable.conceptClicked.connect(self.showConcept)
-		self.childTree.conceptClicked.connect(self.showConcept)
-		self.relativeTable.conceptClicked.connect(self.showConcept)
-		self.parentTable.conceptClicked.connect(self.showConcept)
+		self.childTree.conceptDoubleClicked.connect(self.showConcept)
+		self.relativeTable.conceptDoubleClicked.connect(self.showConcept)
+		self.parentTable.conceptDoubleClicked.connect(self.showConcept)
 
 		# 添加concept链接
 		self.parentTable.conceptDropped.connect(self.addParent)
+		self.lineEdit_parent.conceptAdd.connect(self.addParent)
+		
 		self.childTree.conceptDropped.connect(self.addChild)
+		self.lineEdit_child.conceptAdd.connect(self.addChild)
+
 		self.relativeTable.conceptDropped.connect(self.addRelative)
+		self.lineEdit_relative.conceptAdd.connect(self.addRelative)
 
 		self.checkBox.stateChanged.connect(self.refreshTab)
 		self.tabWidget.currentChanged.connect(self.refreshTab)
@@ -137,33 +146,36 @@ class Concept(QWidget,Ui_Concept):
 				ShowConceptText()
 
 
-	def showConcept(self, id:int):
+	def showConcept(self, id:int,force=False):
 		
-		# 如果列表中选中的不是这个id，就清空选中，减少一些误导
-		row=self.conceptTable.currentRow()
-		if row!=-1 and int(self.conceptTable.item(row,0).text())!=id:
-			self.conceptTable.clearSelection()
-		
-		self.current_id=id
-		if self.current_id!=-1:
-			concept=self.Headquarter.getConcept(id)
-			self.lineEdit_name.setText(concept["name"])
-			self.plainTextEdit_detail.setPlainText(concept["detail"])
-			
-			self.refreshTab()
+		if not self.window().isSelect() or force==True:
+			# 如果列表中选中的不是这个id，就清空选中，减少一些误导
 
-			# parent child relative
-			self.parentTable.setConceptIDList(concept["parent"])
-			self.childTree.setChildTree(self.current_id)
-			self.relativeTable.setConceptIDList(concept["relative"])
-		else:
-			self.lineEdit_name.clear()
-			self.plainTextEdit_detail.clear()
-			self.fileTable.Clear()
-			self.textViewer.clear()
-			self.parentTable.Clear()
-			self.childTree.clear()
-			self.relativeTable.Clear()
+			row=self.conceptTable.currentRow()
+			
+			if row!=-1 and int(self.conceptTable.item(row,0).text())!=id:
+				self.conceptTable.clearSelection()
+
+			self.current_id=id
+			if self.current_id!=-1:
+				concept=self.Headquarter.getConcept(id)
+				self.lineEdit_name.setText(concept["name"])
+				self.plainTextEdit_detail.setPlainText(concept["detail"])
+				
+				self.refreshTab()
+
+				# parent child relative
+				self.parentTable.setConceptIDList(concept["parent"])
+				self.childTree.setChildTree(self.current_id)
+				self.relativeTable.setConceptIDList(concept["relative"])
+			else:
+				self.lineEdit_name.clear()
+				self.plainTextEdit_detail.clear()
+				self.fileTable.Clear()
+				self.textViewer.clear()
+				self.parentTable.Clear()
+				self.childTree.clear()
+				self.relativeTable.Clear()
 	
 	def addConcept(self):
 		if self.lineEdit_name.hasFocus():
@@ -172,7 +184,7 @@ class Concept(QWidget,Ui_Concept):
 			self.saveDetail()
 
 		new_concept=self.Headquarter.appendConcept()
-		self.showConcept(new_concept["id"])
+		self.showConcept(new_concept["id"],force=True)
 		self.conceptTable.appendConcept(new_concept["id"],new_concept["name"])
 		self.lineEdit_name.setFocus()
 	
@@ -365,11 +377,13 @@ class Concept(QWidget,Ui_Concept):
 		for item in self.childTree.selectedItems():
 			id=int(item.text(0))
 			if id in concept["child"]:
-				delete_id_list.append(id)
-				delete_id_str+="%s: %s\n"%(id,self.Headquarter.getConcept(id)["name"])
+				if id not in delete_id_list:
+					delete_id_list.append(id)
+					delete_id_str+="%s: %s\n"%(id,self.Headquarter.getConcept(id)["name"])
 			else:
-				not_child_list.append(id)
-				not_child_str+="%s: %s\n"%(id,self.Headquarter.getConcept(id)["name"])
+				if id not in delete_id_list:
+					not_child_list.append(id)
+					not_child_str+="%s: %s\n"%(id,self.Headquarter.getConcept(id)["name"])
 
 		if delete_id_list!=[] and not_child_list==[]:
 			warning_text+=delete_id_str

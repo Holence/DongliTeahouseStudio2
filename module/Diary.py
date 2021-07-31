@@ -24,6 +24,7 @@ class Diary(QWidget,Ui_Diary):
 		self.textList.setObjectName("DiaryTextList%s"%len(self.Headquarter.diary_heap)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
 		self.conceptTable.setHeadquarter(self.Headquarter)
 		self.conceptTable.setObjectName("DiaryConceptTable%s"%len(self.Headquarter.diary_heap)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
+		self.lineEdit_concept.setHeadquarter(self.Headquarter)
 		self.fileTable.setHeadquarter(self.Headquarter)
 		self.fileTable.setObjectName("DiaryFileTable%s"%len(self.Headquarter.diary_heap)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
 	
@@ -56,6 +57,7 @@ class Diary(QWidget,Ui_Diary):
 
 		# 添加line链接concept
 		self.conceptTable.conceptDropped.connect(self.addLineConcept)
+		self.lineEdit_concept.conceptAdd.connect(self.addLineConcept)
 
 		self.fileTable.fileDropped.connect(self.addLineFile)
 

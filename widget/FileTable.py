@@ -168,10 +168,11 @@ class FileTable(DTWidget.DTHorizontalTabel):
 	fileDropped=Signal(list,list)
 	
 	def eventFilter(self, watched: QObject, event:QKeyEvent) -> bool:
-		if event.type()==QEvent.KeyPress or event.type()==QEvent.KeyRelease:
+		if event.type()==QEvent.KeyPress:
 			if event.key()==Qt.Key_Alt:
 				self.__altPressed=True
-			else:
+		if event.type()==QEvent.KeyRelease:
+			if event.key()==Qt.Key_Alt:
 				self.__altPressed=False
 		return False # 这里是让继续延续event的处理，不要被filter掉了
 	
@@ -229,6 +230,9 @@ class FileTable(DTWidget.DTHorizontalTabel):
 			event.ignore()
 		elif event.mimeData().hasUrls():
 			event.acceptProposedAction()
+		elif event.mimeData().hasText():
+			if [False for url in event.mimeData().text().split() if "http" not in url].count(False)==0:
+				event.acceptProposedAction()
 	
 	def dragMoveEvent(self, event: QDragMoveEvent):
 		# 淦！为什么接受资源管理器拖进来的文件，还得implement这个event。
@@ -236,13 +240,16 @@ class FileTable(DTWidget.DTHorizontalTabel):
 		event.acceptProposedAction()
 
 	def dropEvent(self, event:QDropEvent):
-		url_list=[url.toString() for url in event.mimeData().urls()]
+
+		if event.mimeData().hasUrls():
+			url_list=[url.toString() for url in event.mimeData().urls()]
+		elif event.mimeData().hasText():
+			url_list=[url.strip() for url in event.mimeData().text().split()]
 		
 		try:
 			file_list=json.loads((event.mimeData().data("FileList").data().decode("utf-8")))
 		except:
 			file_list=[]
-		
 		self.fileDropped.emit(url_list,file_list)
 	
 	def mousePressEvent(self, event: QMouseEvent):

@@ -211,11 +211,24 @@
      <widget class="QWidget" name="layoutWidget">
       <layout class="QVBoxLayout" name="verticalLayout_PCR">
        <item>
-        <widget class="QLabel" name="label_parent">
-         <property name="text">
-          <string>Parent</string>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_parent">
+         <item>
+          <widget class="QLabel" name="label_parent">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Parent</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="ConceptSearch" name="lineEdit_parent"/>
+         </item>
+        </layout>
        </item>
        <item>
         <widget class="ConceptTable" name="parentTable">
@@ -234,11 +247,24 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="label_child">
-         <property name="text">
-          <string>Child</string>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_child">
+         <item>
+          <widget class="QLabel" name="label_child">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Child</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="ConceptSearch" name="lineEdit_child"/>
+         </item>
+        </layout>
        </item>
        <item>
         <widget class="ConceptTree" name="childTree">
@@ -257,11 +283,24 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="label_relative">
-         <property name="text">
-          <string>Relative</string>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_5">
+         <item>
+          <widget class="QLabel" name="label_relative">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Relative</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="ConceptSearch" name="lineEdit_relative"/>
+         </item>
+        </layout>
        </item>
        <item>
         <widget class="ConceptTable" name="relativeTable">
@@ -336,6 +375,11 @@
   <customwidget>
    <class>ConceptTree</class>
    <extends>QTreeWidget</extends>
+   <header>widget</header>
+  </customwidget>
+  <customwidget>
+   <class>ConceptSearch</class>
+   <extends>QLineEdit</extends>
    <header>widget</header>
   </customwidget>
  </customwidgets>

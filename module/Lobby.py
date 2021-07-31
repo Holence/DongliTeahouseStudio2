@@ -19,6 +19,7 @@ class Lobby(QWidget,Ui_Lobby):
 		self.actionCheck_Library.triggered.connect(self.checkLibrary)
 		self.actionSwitch_Secure_Mode.triggered.connect(self.switchSecureMode)
 		self.actionCheck_Data_Completeness.triggered.connect(self.checkDataCompleteness)
+		self.actionSave_Data.triggered.connect(lambda:self.Headquarter.saveData(force=True))
 
 		self.SecureMode=False
 		
@@ -363,16 +364,20 @@ else:
 			del self.DataChecker
 		
 		error=check()
-
+		
 		try:
 			self.DataChecker.errorText.setPlainText(error)
 		except:
 			self.DataChecker=DTFrame.DTMainWindow(self.Headquarter.app)
 			self.DataChecker.initialize()
 			self.DataChecker.setWindowTitle("Check Data Completeness")
+
 			self.DataChecker.actionExit.triggered.disconnect(self.DataChecker.close)
 			self.DataChecker.actionExit.triggered.connect(slot)
+			self.DataChecker.TitleBar.btn_close.clicked.disconnect(self.DataChecker.close)
+			self.DataChecker.TitleBar.btn_close.clicked.connect(slot)
+
 			self.DataChecker.errorText=QPlainTextEdit(error)
-			self.DataChecker.setMinimumSize(600,800)
+			self.DataChecker.setMinimumSize(300,500)
 			self.DataChecker.setCentralWidget(self.DataChecker.errorText)
 			self.DataChecker.show()

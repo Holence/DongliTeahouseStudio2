@@ -16,6 +16,7 @@ from widget import ConceptTable
 from widget import FileTable
 from DTPySide.DTWidget import DTPlainTextEdit
 from widget import TextList
+from widget import ConceptSearch
 
 import DTPySide.DT_rc
 
@@ -136,13 +137,23 @@ class Ui_Diary(object):
         self.layoutWidget = QWidget(self.splitter)
         self.layoutWidget.setObjectName(u"layoutWidget")
         self.verticalLayout_concept = QVBoxLayout(self.layoutWidget)
-        self.verticalLayout_concept.setSpacing(0)
+        self.verticalLayout_concept.setSpacing(4)
         self.verticalLayout_concept.setObjectName(u"verticalLayout_concept")
         self.verticalLayout_concept.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_3 = QHBoxLayout()
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.label = QLabel(self.layoutWidget)
         self.label.setObjectName(u"label")
 
-        self.verticalLayout_concept.addWidget(self.label)
+        self.horizontalLayout_3.addWidget(self.label)
+
+        self.lineEdit_concept = ConceptSearch(self.layoutWidget)
+        self.lineEdit_concept.setObjectName(u"lineEdit_concept")
+
+        self.horizontalLayout_3.addWidget(self.lineEdit_concept)
+
+
+        self.verticalLayout_concept.addLayout(self.horizontalLayout_3)
 
         self.conceptTable = ConceptTable(self.layoutWidget)
         self.conceptTable.setObjectName(u"conceptTable")
@@ -153,7 +164,7 @@ class Ui_Diary(object):
         self.layoutWidget1 = QWidget(self.splitter)
         self.layoutWidget1.setObjectName(u"layoutWidget1")
         self.verticalLayout_file = QVBoxLayout(self.layoutWidget1)
-        self.verticalLayout_file.setSpacing(0)
+        self.verticalLayout_file.setSpacing(4)
         self.verticalLayout_file.setObjectName(u"verticalLayout_file")
         self.verticalLayout_file.setContentsMargins(0, 0, 0, 0)
         self.label_2 = QLabel(self.layoutWidget1)

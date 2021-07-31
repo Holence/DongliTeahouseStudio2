@@ -202,9 +202,12 @@ class Library(QWidget,Ui_Library):
 			date=QDate(y,m,d)
 			name=self.fileTable.item(row,3).text()
 			url=self.fileTable.item(row,4).text().replace(self.Headquarter.library_base+"/","")
-			
 			delete_file_list.append(self.Headquarter.generateDiaryConceptFileDict(date,type,name,url))
-			warning_text+="%s\n"%os.path.join(self.Headquarter.library_base,url)
+			if type!=2:
+				warning_text+="%s\n"%os.path.join(self.Headquarter.library_base,url)
+			else:
+				warning_text+="%s\n"%url
+
 		
 		if delete_file_list!=[]:
 			if DTFrame.DTConfirmBox(self,"Delete Confirm",warning_text,DTIcon.Question()).exec_():

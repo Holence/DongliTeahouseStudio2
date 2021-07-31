@@ -17,6 +17,7 @@ from widget import FileTable
 from DTPySide.DTWidget import DTPlainTextEdit
 from widget import TextList
 from widget import ConceptTree
+from widget import ConceptSearch
 
 import DTPySide.DT_rc
 
@@ -165,26 +166,53 @@ class Ui_Concept(object):
         self.verticalLayout_PCR = QVBoxLayout(self.layoutWidget)
         self.verticalLayout_PCR.setObjectName(u"verticalLayout_PCR")
         self.verticalLayout_PCR.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_parent = QHBoxLayout()
+        self.horizontalLayout_parent.setObjectName(u"horizontalLayout_parent")
         self.label_parent = QLabel(self.layoutWidget)
         self.label_parent.setObjectName(u"label_parent")
+        sizePolicy2 = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.label_parent.sizePolicy().hasHeightForWidth())
+        self.label_parent.setSizePolicy(sizePolicy2)
 
-        self.verticalLayout_PCR.addWidget(self.label_parent)
+        self.horizontalLayout_parent.addWidget(self.label_parent)
+
+        self.lineEdit_parent = ConceptSearch(self.layoutWidget)
+        self.lineEdit_parent.setObjectName(u"lineEdit_parent")
+
+        self.horizontalLayout_parent.addWidget(self.lineEdit_parent)
+
+
+        self.verticalLayout_PCR.addLayout(self.horizontalLayout_parent)
 
         self.parentTable = ConceptTable(self.layoutWidget)
         self.parentTable.setObjectName(u"parentTable")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
-        sizePolicy2.setHorizontalStretch(0)
-        sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.parentTable.sizePolicy().hasHeightForWidth())
-        self.parentTable.setSizePolicy(sizePolicy2)
+        sizePolicy3 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.parentTable.sizePolicy().hasHeightForWidth())
+        self.parentTable.setSizePolicy(sizePolicy3)
         self.parentTable.setMinimumSize(QSize(250, 0))
 
         self.verticalLayout_PCR.addWidget(self.parentTable)
 
+        self.horizontalLayout_child = QHBoxLayout()
+        self.horizontalLayout_child.setObjectName(u"horizontalLayout_child")
         self.label_child = QLabel(self.layoutWidget)
         self.label_child.setObjectName(u"label_child")
+        sizePolicy2.setHeightForWidth(self.label_child.sizePolicy().hasHeightForWidth())
+        self.label_child.setSizePolicy(sizePolicy2)
 
-        self.verticalLayout_PCR.addWidget(self.label_child)
+        self.horizontalLayout_child.addWidget(self.label_child)
+
+        self.lineEdit_child = ConceptSearch(self.layoutWidget)
+        self.lineEdit_child.setObjectName(u"lineEdit_child")
+
+        self.horizontalLayout_child.addWidget(self.lineEdit_child)
+
+
+        self.verticalLayout_PCR.addLayout(self.horizontalLayout_child)
 
         self.childTree = ConceptTree(self.layoutWidget)
         self.childTree.setObjectName(u"childTree")
@@ -194,15 +222,27 @@ class Ui_Concept(object):
 
         self.verticalLayout_PCR.addWidget(self.childTree)
 
+        self.horizontalLayout_5 = QHBoxLayout()
+        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
         self.label_relative = QLabel(self.layoutWidget)
         self.label_relative.setObjectName(u"label_relative")
+        sizePolicy2.setHeightForWidth(self.label_relative.sizePolicy().hasHeightForWidth())
+        self.label_relative.setSizePolicy(sizePolicy2)
 
-        self.verticalLayout_PCR.addWidget(self.label_relative)
+        self.horizontalLayout_5.addWidget(self.label_relative)
+
+        self.lineEdit_relative = ConceptSearch(self.layoutWidget)
+        self.lineEdit_relative.setObjectName(u"lineEdit_relative")
+
+        self.horizontalLayout_5.addWidget(self.lineEdit_relative)
+
+
+        self.verticalLayout_PCR.addLayout(self.horizontalLayout_5)
 
         self.relativeTable = ConceptTable(self.layoutWidget)
         self.relativeTable.setObjectName(u"relativeTable")
-        sizePolicy2.setHeightForWidth(self.relativeTable.sizePolicy().hasHeightForWidth())
-        self.relativeTable.setSizePolicy(sizePolicy2)
+        sizePolicy3.setHeightForWidth(self.relativeTable.sizePolicy().hasHeightForWidth())
+        self.relativeTable.setSizePolicy(sizePolicy3)
         self.relativeTable.setMinimumSize(QSize(250, 0))
 
         self.verticalLayout_PCR.addWidget(self.relativeTable)

@@ -5,6 +5,7 @@ from session.LobbySession import LobbySession
 class ConceptTable(DTWidget.DTHorizontalTabel):
 	
 	conceptClicked=Signal(int)
+	conceptDoubleClicked=Signal(int)
 	conceptDropped=Signal(list)
 
 	def startDrag(self, actions:Qt.DropActions):
@@ -55,17 +56,24 @@ class ConceptTable(DTWidget.DTHorizontalTabel):
 		self.setMinimumHeight(150)
 		self.setColumn(["ID","Name"])
 
+		self.itemClicked.connect(self.itemClickedSlot)
 		self.itemDoubleClicked.connect(self.itemDoubleClickedSlot)
 	
 	def setHeadquarter(self,Headquarter: LobbySession):
 		self.Headquarter=Headquarter
 		self.setStyleSheet("font-family: %s"%self.Headquarter.app.Font().family())
 	
-	def itemDoubleClickedSlot(self):
+	def itemClickedSlot(self):
 		"""双击table中的元素，emit附带concept id的conceptClicked信号（用于出去跳转展示concept）
 		"""
 		id=int(self.item(self.currentRow(),0).text())
 		self.conceptClicked.emit(id)
+
+	def itemDoubleClickedSlot(self):
+		"""双击table中的元素，emit附带concept id的conceptClicked信号（用于出去跳转展示concept）
+		"""
+		id=int(self.item(self.currentRow(),0).text())
+		self.conceptDoubleClicked.emit(id)
 
 	def appendConcept(self, id:int, name:str):
 
@@ -75,7 +83,7 @@ class ConceptTable(DTWidget.DTHorizontalTabel):
 		self.addRow(self.rowCount(),[QTableWidgetItem(id),QTableWidgetItem(name)])
 
 		self.RestoreTableStatus()
-		
+		self.clearSelection()
 		self.selectRow(self.rowCount()-1)
 	
 	def setConceptIDList(self, concept_id_list):
