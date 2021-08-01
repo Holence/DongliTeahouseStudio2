@@ -44,7 +44,8 @@ class DiarySession(DTFrame.DTMainWindow):
 		super().initializeSignal()
 		self.installEventFilter(self)
 		self.diary_module.conceptTable.installEventFilter(self)
-		self.diary_module.fileTable.installEventFilter(self)
+		self.diary_module.fileTab.fileTable.installEventFilter(self)
+		self.diary_module.fileTab.fileList.installEventFilter(self)
 		self.diary_module.textList.installEventFilter(self)
 		self.diary_module.textEdit.installEventFilter(self)
 		self.diary_module.textViewer.installEventFilter(self)
@@ -63,6 +64,7 @@ class DiarySession(DTFrame.DTMainWindow):
 
 		self.addAction(self.diary_module.actionSwitch_Eidt_View)
 		self.addAction(self.diary_module.actionFind_Text)
+		self.addAction(self.diary_module.actionAdd_Concept)
 	
 	def initializeMenu(self):
 
@@ -81,6 +83,7 @@ class DiarySession(DTFrame.DTMainWindow):
 		self.menu_edit=QMenu("Edit",self)
 		self.menu_edit.setIcon(QIcon(":/icon/white/white_pen-tool.svg"))
 		self.menu_edit.addAction(self.diary_module.actionAdd_Line)
+		self.menu_edit.addAction(self.diary_module.actionAdd_Concept)
 		# self.menu_edit.addAction(self.diary_module.actionDelete)
 		self.addMenuToMainMenu(self.menu_edit)
 		

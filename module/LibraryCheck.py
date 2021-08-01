@@ -49,7 +49,7 @@ class LibraryCheck(Ui_LibraryCheck,QWidget):
 			url=self.redundant.item(row).text()
 			y,m,d,_=url.replace(self.Headquarter.library_base+"/","").split("/")
 			date=QDate(int(y),int(m),int(d))
-			self.Headquarter.addLibraryFile(date,"file:///"+url,[],just_do_it=True)
+			self.Headquarter.addLibraryFile(date,"file:///"+url,[],force=True)
 			self.plainTextEdit.appendPlainText("Added %s\n"%url)
 		
 		self.refresh()

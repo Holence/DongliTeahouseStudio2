@@ -38,10 +38,6 @@ class LobbySession(DTSession.DTMainSession):
 		else:
 			self.data=[{},[],{}]
 			Fernet_Encrypt_Save(self.password(),self.data,"data.dlcw")
-		
-		self.diary_data=self.data[0]
-		self.concept_data=self.data[1]
-		self.library_data=self.data[2]
 
 		if os.path.exists("cache"):
 			self.cache=Fernet_Decrypt_Load(self.password(),"cache")
@@ -211,7 +207,7 @@ class LobbySession(DTSession.DTMainSession):
 	#################################################################
 
 	def getDiaryData(self):
-		return self.diary_data
+		return self.data[0]
 
 	def getDiaryDay(self, date:QDate):
 		"""获取一日的diary_data，若存在则返回该日字典，若不存在则返回None
@@ -225,32 +221,32 @@ class LobbySession(DTSession.DTMainSession):
 
 		year, month, day= map(str, QDate_to_Tuple(date))
 		try:
-			return self.diary_data[year][month][day]
+			return self.data[0][year][month][day]
 		except:
 			return None
 	
 	def getDiaryDayLine(self, date:QDate, index:int):
 		year, month, day= map(str, QDate_to_Tuple(date))
 		try:
-			return self.diary_data[year][month][day][index]
+			return self.data[0][year][month][day][index]
 		except:
 			return None
 
 	def getDiaryLineList(self,search_list=[],date_range_list=[],concept_name_list=[],rank=False):
 		
 		def add_all_lines():
-			for year in self.diary_data:
-				for month in self.diary_data[year]:
-					for day in self.diary_data[year][month]:
+			for year in self.data[0]:
+				for month in self.data[0][year]:
+					for day in self.data[0][year][month]:
 						index=0
-						for line in self.diary_data[year][month][day]:
+						for line in self.data[0][year][month][day]:
 							line_list.append({
 								"y":int(year),
 								"m":int(month),
 								"d":int(day),
 								"text":line["text"],
 								"concept":line["concept"],
-								"concept_az":[self.concept_data[id]["az"] for id in line["concept"]],
+								"concept_az":[self.data[1][id]["az"] for id in line["concept"]],
 								"index":index,
 								"rank":0
 							})
@@ -265,14 +261,14 @@ class LobbySession(DTSession.DTMainSession):
 				year,month,day=QDate_to_Tuple(begin)
 				try:
 					index=0
-					for line in self.diary_data[str(year)][str(month)][str(day)]:
+					for line in self.data[0][str(year)][str(month)][str(day)]:
 						line_list.append({
 							"y":int(year),
 							"m":int(month),
 							"d":int(day),
 							"text":line["text"],
 							"concept":line["concept"],
-							"concept_az":[self.concept_data[id]["az"] for id in line["concept"]],
+							"concept_az":[self.data[1][id]["az"] for id in line["concept"]],
 							"index":index,
 							"rank":0
 						})
@@ -339,24 +335,24 @@ class LobbySession(DTSession.DTMainSession):
 
 		year, month, day= map(str, QDate_to_Tuple(date))
 		
-		if self.diary_data.get(year)==None:
-			self.diary_data[year]={}
-			self.diary_data=dict(sorted(self.diary_data.items(),key=lambda x:int(x[0])))
+		if self.data[0].get(year)==None:
+			self.data[0][year]={}
+			self.data[0]=dict(sorted(self.data[0].items(),key=lambda x:int(x[0])))
 		
-		if self.diary_data[year].get(month)==None:
-			self.diary_data[year][month]={}
-			self.diary_data[year]=dict(sorted(self.diary_data[year].items(),key=lambda x:int(x[0])))
+		if self.data[0][year].get(month)==None:
+			self.data[0][year][month]={}
+			self.data[0][year]=dict(sorted(self.data[0][year].items(),key=lambda x:int(x[0])))
 		
-		if self.diary_data[year][month].get(day)==None:
-			self.diary_data[year][month][day]=[]
-			self.diary_data[year][month]=dict(sorted(self.diary_data[year][month].items(),key=lambda x:int(x[0])))
+		if self.data[0][year][month].get(day)==None:
+			self.data[0][year][month][day]=[]
+			self.data[0][year][month]=dict(sorted(self.data[0][year][month].items(),key=lambda x:int(x[0])))
 		
-		return self.diary_data[year][month][day]
+		return self.data[0][year][month][day]
 	
 	#################################################################
 
 	def getConceptData(self):
-		return self.concept_data
+		return self.data[1]
 
 	def getConcept(self, id:int):
 		"""获取指定的concept，若存在则返回该concept字典，若不存在则返回None
@@ -368,7 +364,7 @@ class LobbySession(DTSession.DTMainSession):
 			[type]: 该concept的字典
 		"""
 		try:
-			return self.concept_data[id]
+			return self.data[1][id]
 		except:
 			return None
 	
@@ -376,15 +372,15 @@ class LobbySession(DTSession.DTMainSession):
 		id_list=[]
 		if search=="\^p":
 			# no parent
-			id_list=[concept["id"] for concept in self.concept_data if concept["parent"]==[] ]
+			id_list=[concept["id"] for concept in self.data[1] if concept["parent"]==[] ]
 		elif search=="\^c":
 			# no child
-			id_list=[concept["id"] for concept in self.concept_data if concept["child"]==[] ]
+			id_list=[concept["id"] for concept in self.data[1] if concept["child"]==[] ]
 		elif search=="\^pc" or search=="\^cp":
 			# no parent and no child
-			id_list=[concept["id"] for concept in self.concept_data if concept["parent"]==[] and concept["child"]==[] ]
+			id_list=[concept["id"] for concept in self.data[1] if concept["parent"]==[] and concept["child"]==[] ]
 		else:
-			for concept in self.concept_data:
+			for concept in self.data[1]:
 				if search in concept["name"] or search.lower() in concept["az"] or search in concept["detail"]:
 					id_list.append(concept["id"])
 		
@@ -396,8 +392,8 @@ class LobbySession(DTSession.DTMainSession):
 		Returns:
 			[type]: 返回该字典容器
 		"""
-		self.concept_data.append({
-			"id": len(self.concept_data),
+		self.data[1].append({
+			"id": len(self.data[1]),
 			"name": "",
 			"detail": "", 
 			"parent": [],
@@ -406,7 +402,7 @@ class LobbySession(DTSession.DTMainSession):
 			"az": "",
 			"file": [],
 		})
-		return self.concept_data[-1]
+		return self.data[1][-1]
 	
 	def deleteConcept(self,delete_id_list:list):
 		
@@ -428,36 +424,36 @@ class LobbySession(DTSession.DTMainSession):
 		delete_id_list=sorted(delete_id_list)
 		
 		New_ID_Dict={} # 存储 原id 以及 对应的前移id
-		for i in range(len(self.concept_data)):
+		for i in range(len(self.data[1])):
 			New_ID_Dict[i]=CalcNewID(i)
 		
 		# Diary链接的concept中，剔除delete_id_list中的id，并且改需要前移的id
-		for year in self.diary_data:
-			for month in self.diary_data[year]:
-				for day in self.diary_data[year][month]:
-					for line in self.diary_data[year][month][day]:
+		for year in self.data[0]:
+			for month in self.data[0][year]:
+				for day in self.data[0][year][month]:
+					for line in self.data[0][year][month][day]:
 						line["concept"]=Bake_ID_List(line["concept"])
 
 		# Library链接的concept中，剔除delete_id_list中的id，并且改需要前移的id
-		for year in self.library_data:
-			for month in self.library_data[year]:
-				for day in self.library_data[year][month]:
-					for file in self.library_data[year][month][day]:
-						file=self.library_data[year][month][day][file]
+		for year in self.data[2]:
+			for month in self.data[2][year]:
+				for day in self.data[2][year][month]:
+					for file in self.data[2][year][month][day]:
+						file=self.data[2][year][month][day][file]
 						file["concept"]=Bake_ID_List(file["concept"])
 
 		# 还是别在for循环中用remove或者pop了，太麻烦了，这样一句话就完事，运算效率还高
-		self.concept_data=[concept for concept in self.concept_data if concept["id"] not in delete_id_list]
+		self.data[1]=[concept for concept in self.data[1] if concept["id"] not in delete_id_list]
 
 		# Concept中改需要前移的id
-		for concept in self.concept_data:
+		for concept in self.data[1]:
 			concept["id"]=New_ID_Dict[concept["id"]]
 			concept["parent"]=Bake_ID_List(concept["parent"])
 			concept["child"]=Bake_ID_List(concept["child"])
 			concept["relative"]=Bake_ID_List(concept["relative"])
 
 	def addParent(self,concept_id,parent_id_list):
-		concept=self.concept_data[concept_id]
+		concept=self.data[1][concept_id]
 			
 		for parent_id in List_Difference(parent_id_list,concept["parent"]):
 			
@@ -468,18 +464,18 @@ class LobbySession(DTSession.DTMainSession):
 
 			# 禁止隔一辈的乱伦，隔数辈的允许组成有向图
 			if parent_id in concept["child"]:
-				DTFrame.DTMessageBox(self,"Information","%s is already %s's child."%(self.concept_data[parent_id]["name"],self.concept_data[concept_id]["name"]),DTIcon.Information())
+				DTFrame.DTMessageBox(self,"Information","%s is already %s's child."%(self.data[1][parent_id]["name"],self.data[1][concept_id]["name"]),DTIcon.Information())
 				continue
 			
 			concept["parent"].append(parent_id)
-			if concept_id not in self.concept_data[parent_id]["child"]:
-				self.concept_data[parent_id]["child"].append(concept_id)
+			if concept_id not in self.data[1][parent_id]["child"]:
+				self.data[1][parent_id]["child"].append(concept_id)
 			else:
 				# 数据错误
 				DTFrame.DTMessageBox(self,"Error","Error occured during adding parent!\n\n%s is already %s's child."%(concept_id,parent_id),DTIcon.Error())
 	
 	def addChild(self,concept_id,child_id_list):
-		concept=self.concept_data[concept_id]
+		concept=self.data[1][concept_id]
 			
 		for child_id in List_Difference(child_id_list,concept["child"]):
 			
@@ -490,18 +486,18 @@ class LobbySession(DTSession.DTMainSession):
 
 			# 禁止隔一辈的乱伦，隔数辈的允许组成有向图
 			if child_id in concept["parent"]:
-				DTFrame.DTMessageBox(self,"Information","%s is already %s's parent."%(self.concept_data[child_id]["name"],self.concept_data[concept_id]["name"]),DTIcon.Information())
+				DTFrame.DTMessageBox(self,"Information","%s is already %s's parent."%(self.data[1][child_id]["name"],self.data[1][concept_id]["name"]),DTIcon.Information())
 				continue
 			
 			concept["child"].append(child_id)
-			if concept_id not in self.concept_data[child_id]["parent"]:
-				self.concept_data[child_id]["parent"].append(concept_id)
+			if concept_id not in self.data[1][child_id]["parent"]:
+				self.data[1][child_id]["parent"].append(concept_id)
 			else:
 				# 数据错误
 				DTFrame.DTMessageBox(self,"Error","Error occured during adding child!\n\n%s is already %s's parent."%(concept_id,child_id),DTIcon.Error())
 
 	def addRelative(self,concept_id,relative_id_list):
-		concept=self.concept_data[concept_id]
+		concept=self.data[1][concept_id]
 		
 		for relative_id in List_Difference(relative_id_list,concept["relative"]):
 			
@@ -511,8 +507,8 @@ class LobbySession(DTSession.DTMainSession):
 				continue
 
 			concept["relative"].append(relative_id)
-			if concept_id not in self.concept_data[relative_id]["relative"]:
-				self.concept_data[relative_id]["relative"].append(concept_id)
+			if concept_id not in self.data[1][relative_id]["relative"]:
+				self.data[1][relative_id]["relative"].append(concept_id)
 			else:
 				# 数据错误
 				DTFrame.DTMessageBox(self,"Error","Error occured during adding relative!\n\n%s is already %s's relative."%(concept_id,relative_id),DTIcon.Error())
@@ -541,22 +537,22 @@ class LobbySession(DTSession.DTMainSession):
 	#################################################################
 
 	def getLibraryData(self):
-		return self.library_data
+		return self.data[2]
 
 	def getLibraryFile(self,date:QDate,name):
 		year, month, day= map(str, QDate_to_Tuple(date))
 		try:
-			return self.library_data[year][month][day][name]
+			return self.data[2][year][month][day][name]
 		except:
 			return None
 
 	def getLibraryFileList(self,name_list=[],date_range_list=[],concept_name_list=[],TYPE=None):
 		
 		def add_all_files():
-			for y in self.library_data:
-				for m in self.library_data[y]:
-					for d in self.library_data[y][m]:
-						for file_name,file in self.library_data[y][m][d].items():
+			for y in self.data[2]:
+				for m in self.data[2][y]:
+					for d in self.data[2][y][m]:
+						for file_name,file in self.data[2][y][m][d].items():
 							file_list.append({
 								"y":int(y),
 								"m":int(m),
@@ -565,7 +561,7 @@ class LobbySession(DTSession.DTMainSession):
 								"name":file_name,
 								"url":file["url"],
 								"concept":file["concept"],
-								"concept_az":[self.concept_data[id]["az"] for id in file["concept"]]
+								"concept_az":[self.data[1][id]["az"] for id in file["concept"]]
 							})
 							
 
@@ -576,7 +572,7 @@ class LobbySession(DTSession.DTMainSession):
 			while begin<=end:
 				y,m,d=QDate_to_Tuple(begin)
 				try:
-					for file_name,file in self.library_data[str(y)][str(m)][str(d)].items():
+					for file_name,file in self.data[2][str(y)][str(m)][str(d)].items():
 						file_list.append({
 							"y":y,
 							"m":m,
@@ -585,7 +581,7 @@ class LobbySession(DTSession.DTMainSession):
 							"name":file_name,
 							"url":file["url"],
 							"concept":file["concept"],
-							"concept_az":[self.concept_data[id]["az"] for id in file["concept"]]
+							"concept_az":[self.data[1][id]["az"] for id in file["concept"]]
 						})
 				except:
 					pass
@@ -621,7 +617,14 @@ class LobbySession(DTSession.DTMainSession):
 
 		return file_list
 
-	def addLibraryFile(self, date:QDate, url:str, concept:list=[],just_do_it=False):
+	def addLibraryFile(self, date:QDate, url:str, concept:list, force=False):
+		# 他奶奶的，这里concept本来写成了默认参数, concept:list=[]，
+		# 然后又在Library的addFile的循环中调用的时候在这个参数的空什么都没写（其他几个地方如果为空倒是写了）
+		# 然后在addFile的循环中，这个[]的地址就一直没变，
+		# 就算你多次拖、改日期改年份拖，进来的时候，这里的[]的地址一直都是最初def这个函数时创建的那个地址，
+		# 然后就他妈的，对一个文件的concept进行操作，其他几个都他妈"瞬间"同化，
+		# （试了上一版本的程序也出错，可以明明记得之前测试的时候，这么基本的操作没有bug的）。
+		# 两个多小时摸不着头脑，还以为灵异事件见鬼了电脑坏掉了，结果是你丫Python的狗屎特性
 		"如果是file类型，url为原始地址；如果是link类型，url为网站地址"
 		y, m, d= map(str, QDate_to_Tuple(date))
 		
@@ -634,7 +637,7 @@ class LobbySession(DTSession.DTMainSession):
 			name=os.path.basename(old_dir)
 
 			# 禁止从library_base层添加文件
-			if self.library_base in os.path.dirname(old_dir) and just_do_it==False:
+			if self.library_base in os.path.dirname(old_dir) and force==False:
 				if os.path.dirname(old_dir).replace(self.library_base+"/","").count("/")<=2:
 					DTFrame.DTMessageBox(self,"Error","Do not add file from library_base",DTIcon.Warning())
 					return None
@@ -649,7 +652,7 @@ class LobbySession(DTSession.DTMainSession):
 					os.makedirs(new_base)
 				
 				# 检查日期文件夹中是否已存在同名文件
-				if name in os.listdir(new_base) and just_do_it==False:
+				if name in os.listdir(new_base) and force==False:
 					DTFrame.DTMessageBox(self,"Error","%s already exsit in %s!"%(name,new_base),DTIcon.Warning())
 					return None
 				
@@ -690,8 +693,15 @@ class LobbySession(DTSession.DTMainSession):
 					status,res=GetWebPageTitle(response=res)
 					if status==True:
 						name=res
-						if self.library_data[y][m][d].get(name)!=None:
-							warning="Already have web page named %s in %s.%s.%s,\n\nwhich url is %s\n\nYou want to add still?"%(name,y,m,d,self.library_data[y][m][d].get(name)["url"])
+
+						try:
+							self.data[2][y][m][d][name]
+							already_have=True
+						except:
+							already_have=False
+
+						if already_have:
+							warning="Already have web page named %s in %s.%s.%s,\n\nwhich url is %s\n\nYou want to add still?"%(name,y,m,d,self.data[2][y][m][d].get(name)["url"])
 							dlg=DTFrame.DTConfirmBox(self,"Warning",warning,DTIcon.Warning())
 							if dlg.exec_():
 								name=name+str(time.time_ns())
@@ -704,30 +714,33 @@ class LobbySession(DTSession.DTMainSession):
 				DTFrame.DTMessageBox(self,"Warning",str(res),DTIcon.Warning())
 				name="Unknow%s"%time.time_ns()
 
-		if self.library_data.get(y)==None:
-			self.library_data[y]={}
+		if self.data[2].get(y)==None:
+			self.data[2][y]={}
 		
-		if self.library_data[y].get(m)==None:
-			self.library_data[y][m]={}
+		if self.data[2][y].get(m)==None:
+			self.data[2][y][m]={}
 		
-		if self.library_data[y][m].get(d)==None:
-			self.library_data[y][m][d]={}
+		if self.data[2][y][m].get(d)==None:
+			self.data[2][y][m][d]={}
 		
-		self.library_data[y][m][d][name]={
+		self.data[2][y][m][d][name]={
 			"type": type,
 			"concept": concept,
 			"url": url
 		}
 		
-		return name,self.library_data[y][m][d][name]
+		return name,self.data[2][y][m][d][name]
 	
 	def renameLibraryFile(self,date:QDate,old_name,new_name,rename_operation=True):
 		y, m, d= map(str, QDate_to_Tuple(date))
 
 
-		file=self.library_data[y][m][d][old_name]
+		file=self.data[2][y][m][d][old_name]
 		old_url=file["url"]
-		new_url=file["url"].replace(old_name,new_name)
+		if file["type"]!=2:
+			new_url=file["url"].replace(old_name,new_name)
+		else:
+			new_url=old_url
 		
 		if file["type"]!=2 and rename_operation==True:
 			try:
@@ -736,9 +749,17 @@ class LobbySession(DTSession.DTMainSession):
 				DTFrame.DTMessageBox(self,"Error",str(e),DTIcon.Error())
 				return
 		
+		old_cache_name=QDate_to_Str(QDate(int(y),int(m),int(d)),"0")+old_name
+		new_cache_name=QDate_to_Str(QDate(int(y),int(m),int(d)),"0")+new_name
+		if self.cache.get(old_cache_name)!=None:
+			cache=self.cache[old_cache_name]
+			del self.cache[old_cache_name]
+			self.cache[new_cache_name]=cache
+
+		
 		file["url"]=new_url
-		del self.library_data[y][m][d][old_name]
-		self.library_data[y][m][d][new_name]=file
+		del self.data[2][y][m][d][old_name]
+		self.data[2][y][m][d][new_name]=file
 		
 		old_file={
 			"y":int(y),
@@ -750,17 +771,17 @@ class LobbySession(DTSession.DTMainSession):
 		}
 
 		# 重命名diary line链接的file
-		for year in self.diary_data:
-			for month in self.diary_data[year]:
-				for day in self.diary_data[year][month]:
-					for line in self.diary_data[year][month][day]:
+		for year in self.data[0]:
+			for month in self.data[0][year]:
+				for day in self.data[0][year][month]:
+					for line in self.data[0][year][month][day]:
 						if old_file in line["file"]:
 							file=line["file"][line["file"].index(old_file)]
 							file["name"]=new_name
 							file["url"]=new_url
 		
 		# 重命名Concept链接的file
-		for concept in self.concept_data:
+		for concept in self.data[1]:
 			if old_file in concept["file"]:
 				file=concept["file"][concept["file"].index(old_file)]
 				file["name"]=new_name
@@ -772,6 +793,7 @@ class LobbySession(DTSession.DTMainSession):
 		Args:
 			delete_file_list (list): 元素为diary line["file"]和concept["file"]的字典标准型（包含y,m,d,type,name,url）
 		"""
+		success_deleted_file=[]
 		for file in delete_file_list:
 			year=str(file["y"])
 			month=str(file["m"])
@@ -784,30 +806,35 @@ class LobbySession(DTSession.DTMainSession):
 					res=Delete_to_Recyclebin(os.path.join(self.library_base,url))
 					if res==False:
 						DTFrame.DTMessageBox(self,"Error","Failed to delete %s"%name,DTIcon.Warning())
-						return
+						continue
+					else:
+						success_deleted_file.append(file)
+						del self.data[2][year][month][day][name]
+						cache_name=QDate_to_Str(QDate(int(year),int(month),int(day)),"0")+name
+						if self.cache.get(cache_name)!=None:
+							del self.cache[cache_name]
+
 				except Exception as e:
 					# 出错
 					DTFrame.DTMessageBox(self,"Error",str(e),DTIcon.Warning())
-					return
-		
-		for file in delete_file_list:
-			year=str(file["y"])
-			month=str(file["m"])
-			day=str(file["d"])
-			name=file["name"]
-			url=file["url"]
-			del self.library_data[year][month][day][name]
+					continue
+			else:
+				del self.data[2][year][month][day][name]
+				cache_name=QDate_to_Str(QDate(int(year),int(month),int(day)),"0")+name
+				if self.cache.get(cache_name)!=None:
+					del self.cache[cache_name]
+				success_deleted_file.append(file)
 
 		# 删除Diary链接的file
-		for year in self.diary_data:
-			for month in self.diary_data[year]:
-				for day in self.diary_data[year][month]:
-					for line in self.diary_data[year][month][day]:
-						line["file"]=List_Difference_Full(line["file"],delete_file_list)
+		for year in self.data[0]:
+			for month in self.data[0][year]:
+				for day in self.data[0][year][month]:
+					for line in self.data[0][year][month][day]:
+						line["file"]=List_Difference_Full(line["file"],success_deleted_file)
 		
 		# 删除Concept链接的file
-		for concept in self.concept_data:
-			concept["file"]=List_Difference_Full(concept["file"],delete_file_list)
+		for concept in self.data[1]:
+			concept["file"]=List_Difference_Full(concept["file"],success_deleted_file)
 	
 	def generateDiaryConceptFileDict(self,date:QDate,type:int,name:str,url:str):
 		

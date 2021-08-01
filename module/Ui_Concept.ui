@@ -145,7 +145,7 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="FileTable" name="fileTable"/>
+             <widget class="FileTab" name="fileTab" native="true"/>
             </item>
            </layout>
           </widget>
@@ -350,15 +350,58 @@
     <string>Del</string>
    </property>
   </action>
+  <action name="actionAdd_Parent">
+   <property name="icon">
+    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
+     <normaloff>:/icon/white/white_user-plus.svg</normaloff>:/icon/white/white_user-plus.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Add Parent</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+1</string>
+   </property>
+  </action>
+  <action name="actionAdd_Child">
+   <property name="icon">
+    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
+     <normaloff>:/icon/white/white_user-plus.svg</normaloff>:/icon/white/white_user-plus.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Add Child</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+2</string>
+   </property>
+  </action>
+  <action name="actionAdd_Relative">
+   <property name="icon">
+    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
+     <normaloff>:/icon/white/white_user-plus.svg</normaloff>:/icon/white/white_user-plus.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Add Relative</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+3</string>
+   </property>
+  </action>
+  <action name="actionSearch_Concept">
+   <property name="icon">
+    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
+     <normaloff>:/icon/white/white_search.svg</normaloff>:/icon/white/white_search.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Search Concept</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
    <class>ConceptTable</class>
-   <extends>QTableWidget</extends>
-   <header>widget</header>
-  </customwidget>
-  <customwidget>
-   <class>FileTable</class>
    <extends>QTableWidget</extends>
    <header>widget</header>
   </customwidget>
@@ -381,6 +424,12 @@
    <class>ConceptSearch</class>
    <extends>QLineEdit</extends>
    <header>widget</header>
+  </customwidget>
+  <customwidget>
+   <class>FileTab</class>
+   <extends>QWidget</extends>
+   <header>widget</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

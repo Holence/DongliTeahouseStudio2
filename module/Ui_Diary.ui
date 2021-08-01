@@ -155,7 +155,14 @@
          </widget>
         </item>
         <item>
-         <widget class="FileTable" name="fileTable"/>
+         <widget class="FileTab" name="fileTab" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -319,15 +326,22 @@
     <string>Ctrl+F</string>
    </property>
   </action>
+  <action name="actionAdd_Concept">
+   <property name="icon">
+    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
+     <normaloff>:/icon/white/white_hash.svg</normaloff>:/icon/white/white_hash.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Add Concept</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
    <class>ConceptTable</class>
-   <extends>QTableWidget</extends>
-   <header>widget</header>
-  </customwidget>
-  <customwidget>
-   <class>FileTable</class>
    <extends>QTableWidget</extends>
    <header>widget</header>
   </customwidget>
@@ -345,6 +359,12 @@
    <class>ConceptSearch</class>
    <extends>QLineEdit</extends>
    <header>widget</header>
+  </customwidget>
+  <customwidget>
+   <class>FileTab</class>
+   <extends>QWidget</extends>
+   <header>widget</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

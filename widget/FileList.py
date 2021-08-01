@@ -1,10 +1,40 @@
 # # --
 from DTPySide import *
 
-class FileTable(DTWidget.DTHorizontalTabel):
+class FileList(QListWidget):
 
 	fileDropped=Signal(list,list)
-	
+
+	def eventFilter(self, watched: QObject, event:QEvent) -> bool:
+		if event.type()==QEvent.KeyPress:
+			if event.key()==Qt.Key_Control:
+				self.__ctrlPressed=True
+		if event.type()==QEvent.KeyRelease:
+			if event.key()==Qt.Key_Control:
+				self.__ctrlPressed=False
+		return False # 这里是让继续延续event的处理，不要被filter掉了
+
+	def wheelEvent(self, event: QWheelEvent):
+		if self.__ctrlPressed==True:
+			xscrolls = event.angleDelta().x()
+			yscrolls = event.angleDelta().y()
+			
+			#放大
+			if xscrolls>0 or yscrolls>0:
+				icon_size=self.iconSize()+QSize(self.step,self.step)
+				grid_size=self.gridSize()+QSize(self.step,self.step)
+			#缩小
+			elif xscrolls<0 or yscrolls<0 and self.iconSize().width()-self.step>32:
+				icon_size=self.iconSize()-QSize(self.step,self.step)
+				grid_size=self.gridSize()-QSize(self.step,self.step)
+			else:
+				return False
+			
+			self.setIconSize(icon_size)
+			self.setGridSize(grid_size)
+		else:
+			super().wheelEvent(event)
+		
 	def startDrag(self, actions:Qt.DropActions):
 		######################################################################
 		# MIME通信规则：
@@ -30,14 +60,21 @@ class FileTable(DTWidget.DTHorizontalTabel):
 		for model_index in self.selectionModel().selectedRows():
 			row=model_index.row()
 			
-			type=int(self.item(row,0).text())
-			y,m,d=map(int,self.item(row,1).text().split("."))
-			name=self.item(row,3).text()
-			url=self.item(row,4).text().replace(self.Headquarter.library_base+"/","")
-			file_list.append(self.Headquarter.generateDiaryConceptFileDict(QDate(y,m,d),type,name,url))
+			url=self.item(row).toolTip().replace(self.Headquarter.library_base+"/","")
+			if url[:4]=="http":
+				name=self.item(row).text()
+				date=Str_To_QDate(name[name.rfind("|")+1:][1:-1],".")
+				name=name[:name.rfind("|")]
+			else:
+				y,m,d=url.split("/")[:3]
+				date=QDate(int(y),int(m),int(d))
+				name=self.item(row).text()
+
+			type=self.Headquarter.getLibraryFile(date,name)["type"]
+			file_list.append(self.Headquarter.generateDiaryConceptFileDict(date,type,name,url))
 
 			if type!=2:
-				url="file:///"+self.item(row,4).text()
+				url="file:///"+self.item(row).toolTip()
 			url_list.append(QUrl(url))
 		
 		#防止拖到自己的里面
@@ -87,11 +124,18 @@ class FileTable(DTWidget.DTHorizontalTabel):
 			for model_index in self.selectionModel().selectedRows():
 				row=model_index.row()
 
-				type=int(self.item(row,0).text())
-				y,m,d=map(int,self.item(row,1).text().split("."))
-				name=self.item(row,3).text()
-				url=self.item(row,4).text().replace(self.Headquarter.library_base+"/","")
-				file=self.Headquarter.generateDiaryConceptFileDict(QDate(y,m,d),type,name,url)
+				url=self.item(row).toolTip().replace(self.Headquarter.library_base+"/","")
+				if url[:4]=="http":
+					name=self.item(row).text()
+					date=Str_To_QDate(name[name.rfind("|")+1:][1:-1],".")
+					name=name[:name.rfind("|")]
+				else:
+					y,m,d=url.split("/")[:3]
+					date=QDate(int(y),int(m),int(d))
+					name=self.item(row).text()
+
+				type=self.Headquarter.getLibraryFile(date,name)["type"]
+				file=self.Headquarter.generateDiaryConceptFileDict(date,type,name,url)
 				
 				from widget.FileTab import LoadThumbnailThread
 				loading_thread=LoadThumbnailThread(self,self.Headquarter,file,row,force=True)
@@ -111,19 +155,37 @@ class FileTable(DTWidget.DTHorizontalTabel):
 			
 		else:
 			super().mousePressEvent(event)
-
+	
 	def __init__(self, parent):
 		super().__init__(parent=parent)
 		self.setMinimumHeight(150)
-		self.setColumn(["Type","Date","Ext","File","Url"])
-		self.setColumnHidden(4,True)
+		
+		self.setEditTriggers(QAbstractItemView.NoEditTriggers)
+		self.setSelectionMode(QAbstractItemView.ExtendedSelection)
+		self.setDragEnabled(True)
+		self.setDragDropMode(QAbstractItemView.DragDrop)
+		self.setViewMode(QListView.IconMode)
 
-		self.setIconSize(QSize(32,32))
+		self.setStyleSheet("""
+		QListWidget::item:!selected{
+			background:transparent;
+			border:none;
+		}
+		""")
+		
+		self.step=4
+		self.setIconSize(QSize(self.step*10,self.step*10))
+		self.setGridSize(QSize(self.step*15,self.step*20))
+		self.setWordWrap(True)
+		
+		self.setResizeMode(QListView.Adjust)
+		self.__ctrlPressed=False
+		self.installEventFilter(self)
 
 		self.lock=QMutex(QMutex.NonRecursive) # 更新icon时防止多线程在刷新完列表之前就去更新
 		self.thread_list=[]
-
+	
 	def Clear(self):
 		self.lock.lock()
-		super().Clear()
+		super().clear()
 		self.lock.unlock()

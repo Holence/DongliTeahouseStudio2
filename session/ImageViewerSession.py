@@ -47,18 +47,23 @@ class ImageLabel(QLabel):
 		self.set_pic(self.index)
 
 	def set_pic(self,index):
-		pix=QPixmap(self.pic_list[index])
-		
-		pw,ph=pix.width(),pix.height()
-		lw,lh=self.width(),self.height()
+		if os.path.getsize(self.pic_list[index])/1024/1024<50:
+			pix=QPixmap(self.pic_list[index])
+			
+			pw,ph=pix.width(),pix.height()
+			lw,lh=self.width(),self.height()
 
-		if pw/lw>ph/lh:
-			pix=pix.scaledToWidth(lw, Qt.SmoothTransformation)
+			if pw/lw>ph/lh:
+				pix=pix.scaledToWidth(lw, Qt.SmoothTransformation)
+			else:
+				pix=pix.scaledToHeight(lh, Qt.SmoothTransformation)
+			
+			self.titleChange.emit("Dongli Teahouse Image Viewer - %s"%os.path.basename(self.pic_list[index])+" [%s/%s]"%(self.index+1,len(self.pic_list)))
+			self.setPixmap(pix)
 		else:
-			pix=pix.scaledToHeight(lh, Qt.SmoothTransformation)
-		
-		self.titleChange.emit("Dongli Teahouse Image Viewer - %s"%os.path.basename(self.pic_list[index])+" [%s/%s]"%(self.index+1,len(self.pic_list)))
-		self.setPixmap(pix)
+			self.titleChange.emit("Dongli Teahouse Image Viewer - %s"%os.path.basename(self.pic_list[index])+" [%s/%s]"%(self.index+1,len(self.pic_list)))
+			self.setPixmap(QPixmap())
+			self.setText("Image larger than 50MB.")
 
 class ImageViewerSession(DTFrame.DTMainWindow):
 	"MyImageViewer(pic_list,index)，传入包含所有url的pic_list，以及双击打开时的index"

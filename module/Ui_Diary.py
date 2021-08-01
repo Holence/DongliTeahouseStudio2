@@ -13,10 +13,10 @@ from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
 from widget import ConceptTable
-from widget import FileTable
 from DTPySide.DTWidget import DTPlainTextEdit
 from widget import TextList
 from widget import ConceptSearch
+from widget import FileTab
 
 import DTPySide.DT_rc
 
@@ -77,6 +77,11 @@ class Ui_Diary(object):
         icon7 = QIcon()
         icon7.addFile(u":/icon/white/white_search.svg", QSize(), QIcon.Normal, QIcon.Off)
         self.actionFind_Text.setIcon(icon7)
+        self.actionAdd_Concept = QAction(Diary)
+        self.actionAdd_Concept.setObjectName(u"actionAdd_Concept")
+        icon8 = QIcon()
+        icon8.addFile(u":/icon/white/white_hash.svg", QSize(), QIcon.Normal, QIcon.Off)
+        self.actionAdd_Concept.setIcon(icon8)
         self.horizontalLayout = QHBoxLayout(Diary)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.splitter_whole = QSplitter(Diary)
@@ -172,10 +177,15 @@ class Ui_Diary(object):
 
         self.verticalLayout_file.addWidget(self.label_2)
 
-        self.fileTable = FileTable(self.layoutWidget1)
-        self.fileTable.setObjectName(u"fileTable")
+        self.fileTab = FileTab(self.layoutWidget1)
+        self.fileTab.setObjectName(u"fileTab")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.MinimumExpanding)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.fileTab.sizePolicy().hasHeightForWidth())
+        self.fileTab.setSizePolicy(sizePolicy1)
 
-        self.verticalLayout_file.addWidget(self.fileTable)
+        self.verticalLayout_file.addWidget(self.fileTab)
 
         self.splitter.addWidget(self.layoutWidget1)
         self.splitter_whole.addWidget(self.splitter)
@@ -252,6 +262,10 @@ class Ui_Diary(object):
         self.actionFind_Text.setText(QCoreApplication.translate("Diary", u"Find Text", None))
 #if QT_CONFIG(shortcut)
         self.actionFind_Text.setShortcut(QCoreApplication.translate("Diary", u"Ctrl+F", None))
+#endif // QT_CONFIG(shortcut)
+        self.actionAdd_Concept.setText(QCoreApplication.translate("Diary", u"Add Concept", None))
+#if QT_CONFIG(shortcut)
+        self.actionAdd_Concept.setShortcut(QCoreApplication.translate("Diary", u"Ctrl+E", None))
 #endif // QT_CONFIG(shortcut)
         self.label.setText(QCoreApplication.translate("Diary", u"Concept", None))
         self.label_2.setText(QCoreApplication.translate("Diary", u"File", None))

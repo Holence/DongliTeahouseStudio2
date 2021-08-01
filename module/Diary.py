@@ -25,8 +25,9 @@ class Diary(QWidget,Ui_Diary):
 		self.conceptTable.setHeadquarter(self.Headquarter)
 		self.conceptTable.setObjectName("DiaryConceptTable%s"%len(self.Headquarter.diary_heap)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
 		self.lineEdit_concept.setHeadquarter(self.Headquarter)
-		self.fileTable.setHeadquarter(self.Headquarter)
-		self.fileTable.setObjectName("DiaryFileTable%s"%len(self.Headquarter.diary_heap)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
+		self.fileTab.setHeadquarter(self.Headquarter)
+		self.fileTab.fileTable.setObjectName("DiaryFileTable%s"%len(self.Headquarter.diary_heap)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
+		self.fileTab.fileList.setObjectName("DiaryFileList%s"%len(self.Headquarter.diary_heap)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
 	
 	def initializeSignal(self):
 		self.actionSwitch_Eidt_View.triggered.connect(self.switchEditAndView)
@@ -48,9 +49,9 @@ class Diary(QWidget,Ui_Diary):
 		
 		# 点击（更换选中的）一行
 		self.textList.currentRowChanged.connect(self.showLine)
-		
 		# 行排序
 		self.textList.textDropped.connect(self.sortLine)
+		
 		
 		# 保存当前行
 		self.textEdit.editingFinished.connect(self.saveLine)
@@ -58,8 +59,9 @@ class Diary(QWidget,Ui_Diary):
 		# 添加line链接concept
 		self.conceptTable.conceptDropped.connect(self.addLineConcept)
 		self.lineEdit_concept.conceptAdd.connect(self.addLineConcept)
+		self.actionAdd_Concept.triggered.connect(self.lineEdit_concept.setFocus)
 
-		self.fileTable.fileDropped.connect(self.addLineFile)
+		self.fileTab.fileDropped.connect(self.addLineFile)
 
 		self.actionFind_Text.triggered.connect(self.findText)
 	
@@ -93,12 +95,12 @@ class Diary(QWidget,Ui_Diary):
 			
 			self.textList.setTextList("Diary",date)
 			self.conceptTable.setConceptIDList(concept_id_list)
-			self.fileTable.setFileList(file_list)
+			self.fileTab.setFileList(file_list)
 			self.textViewer.setMarkdown(text)
 		else:
 			self.textList.clear()
 			self.conceptTable.Clear()
-			self.fileTable.Clear()
+			self.fileTab.Clear()
 			self.textViewer.clear()
 
 		
@@ -119,7 +121,7 @@ class Diary(QWidget,Ui_Diary):
 				if line!=None:
 					self.textEdit.setPlainText(line["text"])
 					self.conceptTable.setConceptIDList(line["concept"])
-					self.fileTable.setFileList(line["file"])
+					self.fileTab.setFileList(line["file"])
 					
 
 	def sortLine(self):
@@ -266,6 +268,7 @@ class Diary(QWidget,Ui_Diary):
 				line["concept"].append(id)
 			
 			self.conceptTable.setConceptIDList(line["concept"])
+			self.textEdit.setFocus()
 
 	def addLineFile(self,url_list,file_list):
 		index=self.textList.currentRow()
@@ -290,14 +293,14 @@ class Diary(QWidget,Ui_Diary):
 				# line中添加file
 				line["file"]=List_Union_Full(line["file"],file_list)
 
-			self.fileTable.setFileList(line["file"])
+			self.fileTab.setFileList(line["file"])
 
 	def deleteCenter(self):
 		if self.textList.hasFocus():
 			self.deleteLine()
 		elif self.conceptTable.hasFocus():
 			self.deleteLineConcept()
-		elif self.fileTable.hasFocus():
+		elif self.fileTab.fileTable.hasFocus() or self.fileTab.fileList.hasFocus():
 			self.deleteLineFile()
 	
 	def deleteLine(self):
@@ -352,12 +355,26 @@ class Diary(QWidget,Ui_Diary):
 			
 			delete_filename_list=[]
 			warning_text="You want to delete line linked file:\n\n"
-			for model_index in self.fileTable.selectionModel().selectedRows():
-				row=model_index.row()
-				filename=self.fileTable.item(row,3).text()
+			if self.fileTab.stackedWidget.currentIndex()==0:
+				for model_index in self.fileTab.fileTable.selectionModel().selectedRows():
+					row=model_index.row()
+					filename=self.fileTab.fileTable.item(row,3).text()
 				
-				delete_filename_list.append(filename)
-				warning_text+="%s\n"%(filename)
+					delete_filename_list.append(filename)
+					warning_text+="%s\n"%(filename)
+			else:
+				for model_index in self.fileTab.fileList.selectionModel().selectedRows():
+					row=model_index.row()
+
+					url=self.fileTab.fileList.item(row).toolTip().replace(self.Headquarter.library_base+"/","")
+					if url[:4]=="http":
+						name=self.fileTab.fileList.item(row).text()
+						name=name[:name.rfind("|")]
+					else:
+						name=self.fileTab.fileList.item(row).text()
+
+					delete_filename_list.append(name)
+					warning_text+="%s\n"%(name)
 	
 			if delete_filename_list!=[]:
 				if DTFrame.DTConfirmBox(self,"Delete Confirm",warning_text,DTIcon.Question()).exec_():

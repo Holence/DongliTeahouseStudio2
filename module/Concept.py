@@ -26,8 +26,9 @@ class Concept(QWidget,Ui_Concept):
 		self.conceptTable.setHeadquarter(self.Headquarter)
 		self.conceptTable.setObjectName("ConceptConceptTable") #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
 
-		self.fileTable.setHeadquarter(self.Headquarter)
-		self.fileTable.setObjectName("ConceptFileTable%s"%len(self.Headquarter.concept_heap)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
+		self.fileTab.setHeadquarter(self.Headquarter)
+		self.fileTab.fileTable.setObjectName("ConceptFileTable%s"%len(self.Headquarter.concept_heap)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
+		self.fileTab.fileList.setObjectName("ConceptFileList%s"%len(self.Headquarter.concept_heap)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
 		self.textList.setHeadquarter(self.Headquarter)
 		self.textList.setObjectName("ConceptTextList%s"%len(self.Headquarter.concept_heap)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
 		
@@ -47,34 +48,42 @@ class Concept(QWidget,Ui_Concept):
 		
 		# search
 		self.lineEdit_search.textEdited.connect(self.showSearch)
+		def slot():
+			self.conceptTable.setFocus()
+			self.conceptTable.selectRow(0)
+		self.lineEdit_search.returnPressed.connect(slot)
+		self.actionSearch_Concept.triggered.connect(self.lineEdit_search.setFocus)
+
+		# 点击concept，展示concept
+		self.conceptTable.conceptClicked.connect(self.showConcept)
+		self.conceptTable.conceptReturnPressed.connect(self.showConcept)
 
 		#修改concept信息
 		self.lineEdit_name.editingFinished.connect(self.saveName)
 		self.plainTextEdit_detail.editingFinished.connect(self.saveDetail)
 
-		# 添加concept linked file
-		self.fileTable.fileDropped.connect(self.addConceptFile)
 		
-		# 点击concept，展示concept
-		self.conceptTable.conceptClicked.connect(self.showConcept)
-		self.childTree.conceptDoubleClicked.connect(self.showConcept)
-		self.relativeTable.conceptDoubleClicked.connect(self.showConcept)
-		self.parentTable.conceptDoubleClicked.connect(self.showConcept)
+		self.checkBox.stateChanged.connect(self.refreshTab)
+		self.fileTab.fileDropped.connect(self.addConceptFile)
+		self.tabWidget.currentChanged.connect(self.refreshTab)
+		self.textList.textDropped.connect(self.addConceptText)
 
-		# 添加concept链接
+		self.parentTable.conceptDoubleClicked.connect(self.showConcept)
 		self.parentTable.conceptDropped.connect(self.addParent)
 		self.lineEdit_parent.conceptAdd.connect(self.addParent)
+		self.actionAdd_Parent.triggered.connect(self.lineEdit_parent.setFocus)
 		
+		self.childTree.conceptDoubleClicked.connect(self.showConcept)
 		self.childTree.conceptDropped.connect(self.addChild)
 		self.lineEdit_child.conceptAdd.connect(self.addChild)
+		self.actionAdd_Child.triggered.connect(self.lineEdit_child.setFocus)
 
+		self.relativeTable.conceptDoubleClicked.connect(self.showConcept)
 		self.relativeTable.conceptDropped.connect(self.addRelative)
 		self.lineEdit_relative.conceptAdd.connect(self.addRelative)
+		self.actionAdd_Relative.triggered.connect(self.lineEdit_relative.setFocus)
 
-		self.checkBox.stateChanged.connect(self.refreshTab)
-		self.tabWidget.currentChanged.connect(self.refreshTab)
 
-		self.textList.textDropped.connect(self.addConceptText)
 	
 	def refresh(self):
 		self.showSearch()
@@ -110,7 +119,7 @@ class Concept(QWidget,Ui_Concept):
 			for id in id_list:
 				concept=self.Headquarter.getConcept(id)
 				file_list+=concept["file"]
-			self.fileTable.setFileList(file_list)
+			self.fileTab.setFileList(file_list)
 		
 		def deepin(root_id):
 			child_id_list=self.Headquarter.getConcept(root_id)["child"]
@@ -135,7 +144,7 @@ class Concept(QWidget,Ui_Concept):
 				deepin(self.current_id)
 			
 
-			self.fileTable.Clear()
+			self.fileTab.Clear()
 			self.textList.clear()
 			self.textViewer.clear()
 			if self.tabWidget.currentIndex()==0:
@@ -171,7 +180,7 @@ class Concept(QWidget,Ui_Concept):
 			else:
 				self.lineEdit_name.clear()
 				self.plainTextEdit_detail.clear()
-				self.fileTable.Clear()
+				self.fileTab.Clear()
 				self.textViewer.clear()
 				self.parentTable.Clear()
 				self.childTree.clear()
@@ -185,7 +194,8 @@ class Concept(QWidget,Ui_Concept):
 
 		new_concept=self.Headquarter.appendConcept()
 		self.showConcept(new_concept["id"],force=True)
-		self.conceptTable.appendConcept(new_concept["id"],new_concept["name"])
+		self.showSearch()
+		self.conceptTable.clearSelection()
 		self.lineEdit_name.setFocus()
 	
 	def saveName(self):
@@ -220,7 +230,6 @@ class Concept(QWidget,Ui_Concept):
 						# 失败
 						continue
 			else:
-
 				# Library_Data中file添加concept id
 				for new_file in file_list:
 					y=new_file["y"]
@@ -272,7 +281,7 @@ class Concept(QWidget,Ui_Concept):
 	def deleteCenter(self):
 		if self.conceptTable.hasFocus():
 			self.deleteConcept()
-		elif self.fileTable.hasFocus():
+		elif self.fileTab.fileTable.hasFocus() or self.fileTab.fileList.hasFocus():
 			self.deleteConceptFile()
 		elif self.textList.hasFocus():
 			self.deleteConceptText()
@@ -301,35 +310,62 @@ class Concept(QWidget,Ui_Concept):
 				self.refresh()
 	
 	def deleteConceptFile(self):
+		# Only Root时才能选择删除
+		if self.checkBox.checkState()==Qt.Unchecked:
+			delete_file_list=[]
+			warning_text="You want to delete concept linked file:\n\n"
+			if self.fileTab.stackedWidget.currentIndex()==0:
+				for model_index in self.fileTab.fileTable.selectionModel().selectedRows():
+					row=model_index.row()
 
-		delete_file_list=[]
-		warning_text="You want to delete concept linked file:\n\n"
-		for model_index in self.fileTable.selectionModel().selectedRows():
-			row=model_index.row()
-			type=int(self.fileTable.item(row,0).text())
-			y,m,d=map(int,self.fileTable.item(row,1).text().split("."))
-			date=QDate(y,m,d)
-			name=self.fileTable.item(row,3).text()
-			url=self.fileTable.item(row,4).text().replace(self.Headquarter.library_base+"/","")
+					type=int(self.fileTab.fileTable.item(row,0).text())
+					y,m,d=map(int,self.fileTab.fileTable.item(row,1).text().split("."))
+					date=QDate(y,m,d)
+					name=self.fileTab.fileTable.item(row,3).text()
+					url=self.fileTab.fileTable.item(row,4).text().replace(self.Headquarter.library_base+"/","")
+					delete_file_list.append(self.Headquarter.generateDiaryConceptFileDict(date,type,name,url))
+					if type!=2:
+						warning_text+="%s\n"%os.path.join(self.Headquarter.library_base,url)
+					else:
+						warning_text+="%s\n"%url
+			else:
+				for model_index in self.fileTab.fileList.selectionModel().selectedRows():
+					row=model_index.row()
+
+					url=self.fileTab.fileList.item(row).toolTip().replace(self.Headquarter.library_base+"/","")
+					if url[:4]=="http":
+						name=self.fileTab.fileList.item(row).text()
+						date=Str_To_QDate(name[name.rfind("|")+1:][1:-1],".")
+						name=name[:name.rfind("|")]
+					else:
+						y,m,d=url.split("/")[:3]
+						date=QDate(int(y),int(m),int(d))
+						name=self.fileTab.fileList.item(row).text()
+
+					type=self.Headquarter.getLibraryFile(date,name)["type"]
+					delete_file_list.append(self.Headquarter.generateDiaryConceptFileDict(date,type,name,url))
+					if type!=2:
+						warning_text+="%s\n"%os.path.join(self.Headquarter.library_base,url)
+					else:
+						warning_text+="%s\n"%url
 			
-			delete_file_list.append(self.Headquarter.generateDiaryConceptFileDict(date,type,name,url))
-			
-			warning_text+="%s\n"%(name)
+			if delete_file_list!=[]:
+				if DTFrame.DTConfirmBox(self,"Delete Confirm",warning_text,DTIcon.Question()).exec_():
+					concept=self.Headquarter.getConcept(self.current_id)
+					
+					# concept中去除file
+					concept["file"]=List_Difference_Full(concept["file"],delete_file_list)
+					
+					# Library_Data中file去除concept id
+					for delete_file in delete_file_list:
+						file=self.Headquarter.getLibraryFile(QDate(delete_file["y"],delete_file["m"],delete_file["d"]),delete_file["name"])
+						file["concept"].remove(self.current_id)
+					
+					self.refreshTab()
+		else:
+			DTFrame.DTMessageBox(self,"Warning","You can only delete concept file in \"only root\" mode.",DTIcon.Warning())
+			return
 		
-		if delete_file_list!=[]:
-			if DTFrame.DTConfirmBox(self,"Delete Confirm",warning_text,DTIcon.Question()).exec_():
-				concept=self.Headquarter.getConcept(self.current_id)
-				
-				# concept中去除file
-				concept["file"]=List_Difference_Full(concept["file"],delete_file_list)
-				
-				# Library_Data中file去除concept id
-				for delete_file in delete_file_list:
-					file=self.Headquarter.getLibraryFile(QDate(delete_file["y"],delete_file["m"],delete_file["d"]),delete_file["name"])
-					file["concept"].remove(self.current_id)
-				
-				self.refreshTab()
-	
 	def deleteConceptText(self):
 		# Only Root时才能选择删除
 		if self.checkBox.checkState()==Qt.Unchecked:
@@ -349,6 +385,9 @@ class Concept(QWidget,Ui_Concept):
 						line["concept"].remove(self.current_id)
 					
 					self.refreshTab()
+		else:
+			DTFrame.DTMessageBox(self,"Warning","You can only delete concept text in \"only root\" mode.",DTIcon.Warning())
+			return
 
 	def deleteParent(self):
 		delete_id_list=[]

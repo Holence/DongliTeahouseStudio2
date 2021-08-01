@@ -16,8 +16,10 @@ class Library(QWidget,Ui_Library):
 		self.splitter.setStretchFactor(0,3)
 		self.splitter.setStretchFactor(1,1)
 
-		self.fileTable.setHeadquarter(self.Headquarter)
-		self.fileTable.setObjectName("LibraryFileTable") #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
+		self.fileTab.setHeadquarter(self.Headquarter)
+		self.fileTab.fileTable.setObjectName("LibraryFileTable") #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
+		self.fileTab.fileList.setObjectName("LibraryFileList") #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
+		
 		self.textList.setHeadquarter(self.Headquarter)
 		self.textList.setObjectName("LibraryTextList%s"%len(self.Headquarter.library_heap)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
 		self.conceptTable.setHeadquarter(self.Headquarter)
@@ -26,9 +28,15 @@ class Library(QWidget,Ui_Library):
 	def initializeSignal(self):
 		self.actionDelete.triggered.connect(self.deleteCenter)
 		
-		self.lineEdit_search.returnPressed.connect(self.showSearch)
-		self.fileTable.itemClicked.connect(self.showFile)
-		self.fileTable.fileDropped.connect(self.addFile)
+		self.actionSearch_File.triggered.connect(self.lineEdit_search.setFocus)
+		
+		def slot():
+			self.showSearch()
+			self.fileTab.setFocus()
+			self.fileTab.selectRow(0)
+		self.lineEdit_search.returnPressed.connect(slot)
+		self.fileTab.fileClicked.connect(self.showFile)
+		self.fileTab.fileDropped.connect(self.addFile)
 
 		self.lineEdit_name.editingFinished.connect(self.saveFileName)
 		
@@ -45,10 +53,10 @@ class Library(QWidget,Ui_Library):
 			date_range_list=[WhatDayIsToday(1)]
 		
 		if name_list==[] and date_range_list==[] and concept_list==[] and TYPE==None:
-			self.fileTable.Clear()
+			self.fileTab.Clear()
 			return
 
-		self.fileTable.setFileList(self.Headquarter.getLibraryFileList(name_list,date_range_list,concept_list,TYPE))
+		self.fileTab.setFileList(self.Headquarter.getLibraryFileList(name_list,date_range_list,concept_list,TYPE))
 
 		self.lineEdit_name.clear()
 		self.dateEdit.clear()
@@ -98,10 +106,9 @@ class Library(QWidget,Ui_Library):
 				showFileText()
 
 	def showFile(self):
-		row=self.fileTable.currentRow()
-		if row!=-1:
-			date=Str_To_QDate(self.fileTable.item(row,1).text(),".")
-			name=self.fileTable.item(row,3).text()
+		res=self.fileTab.currentFile()
+		if res!=None:
+			date,name=res
 
 			self.dateEdit.setDate(date)
 			self.lineEdit_name.setText(name)
@@ -117,17 +124,17 @@ class Library(QWidget,Ui_Library):
 
 
 	def refresh(self):
-		row=self.fileTable.currentRow()
+		row=self.fileTab.currentRow()
 		self.showSearch()
 		
 		if row!=-1:
-			self.fileTable.setCurrentItem(self.fileTable.item(row,0))
+			self.fileTab.selectRow(row)
 		self.showFile()
 	
 	def saveFileName(self):
-		row=self.fileTable.currentRow()
+		row=self.fileTab.currentRow()
 		if row!=-1:
-			oldname=self.fileTable.item(row,3).text()
+			date,oldname=self.fileTab.currentFile()
 			newname=self.lineEdit_name.text()
 			self.Headquarter.renameLibraryFile(self.dateEdit.date(),oldname,newname)
 			self.refresh()
@@ -136,15 +143,14 @@ class Library(QWidget,Ui_Library):
 		y,m,d=WhatDayIsToday(0)
 		for url in url_list:
 			# Library_Data中file添加file
-			self.Headquarter.addLibraryFile(QDate(y,m,d),url)
+			self.Headquarter.addLibraryFile(QDate(y,m,d),url,[]) # 淦！
 		self.showSearch()
 	
 	def addFileConcept(self,id_list):
-		row=self.fileTable.currentRow()
-		if row!=-1:
-			date=self.dateEdit.date()
-			name=self.lineEdit_name.text()
-			
+		res=self.fileTab.currentFile()
+		if res!=None:
+			date,name=res
+
 			# file中添加concept
 			current_file=self.Headquarter.getLibraryFile(self.dateEdit.date(),name)
 			if current_file!=None:
@@ -160,10 +166,9 @@ class Library(QWidget,Ui_Library):
 			self.conceptTable.Clear()
 	
 	def addFileText(self,text_list):
-		row=self.fileTable.currentRow()
-		if row!=-1:
-			date=self.dateEdit.date()
-			name=self.lineEdit_name.text()
+		res=self.fileTab.currentFile()
+		if res!=None:
+			date,name=res
 			
 			# file中添加concept
 			current_file=self.Headquarter.getLibraryFile(self.dateEdit.date(),name)
@@ -184,7 +189,7 @@ class Library(QWidget,Ui_Library):
 	###################################################################
 
 	def deleteCenter(self):
-		if self.fileTable.hasFocus():
+		if self.fileTab.fileTable.hasFocus() or self.fileTab.fileList.hasFocus():
 			self.deleteFile()
 		elif self.conceptTable.hasFocus():
 			self.deleteFileConcept()
@@ -194,20 +199,40 @@ class Library(QWidget,Ui_Library):
 	def deleteFile(self):
 		delete_file_list=[]
 		warning_text="You want to delete file:\n\n"
-		for model_index in self.fileTable.selectionModel().selectedRows():
-			row=model_index.row()
+		if self.fileTab.stackedWidget.currentIndex()==0:
+			for model_index in self.fileTab.fileTable.selectionModel().selectedRows():
+				row=model_index.row()
 
-			type=int(self.fileTable.item(row,0).text())
-			y,m,d=map(int,self.fileTable.item(row,1).text().split("."))
-			date=QDate(y,m,d)
-			name=self.fileTable.item(row,3).text()
-			url=self.fileTable.item(row,4).text().replace(self.Headquarter.library_base+"/","")
-			delete_file_list.append(self.Headquarter.generateDiaryConceptFileDict(date,type,name,url))
-			if type!=2:
-				warning_text+="%s\n"%os.path.join(self.Headquarter.library_base,url)
-			else:
-				warning_text+="%s\n"%url
+				type=int(self.fileTab.fileTable.item(row,0).text())
+				y,m,d=map(int,self.fileTab.fileTable.item(row,1).text().split("."))
+				date=QDate(y,m,d)
+				name=self.fileTab.fileTable.item(row,3).text()
+				url=self.fileTab.fileTable.item(row,4).text().replace(self.Headquarter.library_base+"/","")
+				delete_file_list.append(self.Headquarter.generateDiaryConceptFileDict(date,type,name,url))
+				if type!=2:
+					warning_text+="%s\n"%os.path.join(self.Headquarter.library_base,url)
+				else:
+					warning_text+="%s\n"%url
+		else:
+			for model_index in self.fileTab.fileList.selectionModel().selectedRows():
+				row=model_index.row()
 
+				url=self.fileTab.fileList.item(row).toolTip().replace(self.Headquarter.library_base+"/","")
+				if url[:4]=="http":
+					name=self.fileTab.fileList.item(row).text()
+					date=Str_To_QDate(name[name.rfind("|")+1:][1:-1],".")
+					name=name[:name.rfind("|")]
+				else:
+					y,m,d=url.split("/")[:3]
+					date=QDate(int(y),int(m),int(d))
+					name=self.fileTab.fileList.item(row).text()
+
+				type=self.Headquarter.getLibraryFile(date,name)["type"]
+				delete_file_list.append(self.Headquarter.generateDiaryConceptFileDict(date,type,name,url))
+				if type!=2:
+					warning_text+="%s\n"%os.path.join(self.Headquarter.library_base,url)
+				else:
+					warning_text+="%s\n"%url
 		
 		if delete_file_list!=[]:
 			if DTFrame.DTConfirmBox(self,"Delete Confirm",warning_text,DTIcon.Question()).exec_():

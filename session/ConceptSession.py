@@ -53,7 +53,8 @@ class ConceptSession(DTFrame.DTMainWindow):
 		self.concept_module.lineEdit_search.installEventFilter(self)
 		self.concept_module.lineEdit_name.installEventFilter(self)
 		self.concept_module.plainTextEdit_detail.installEventFilter(self)
-		self.concept_module.fileTable.installEventFilter(self)
+		self.concept_module.fileTab.fileTable.installEventFilter(self)
+		self.concept_module.fileTab.fileList.installEventFilter(self)
 		self.concept_module.textList.installEventFilter(self)
 		self.concept_module.textViewer.installEventFilter(self)
 		self.concept_module.parentTable.installEventFilter(self)
@@ -62,14 +63,23 @@ class ConceptSession(DTFrame.DTMainWindow):
 
 		self.addAction(self.concept_module.actionAdd_Concept)
 		self.addAction(self.concept_module.actionDelete)
+		self.addAction(self.concept_module.actionSearch_Concept)
+		self.addAction(self.concept_module.actionAdd_Parent)
+		self.addAction(self.concept_module.actionAdd_Child)
+		self.addAction(self.concept_module.actionAdd_Relative)
 	
 	def initializeMenu(self):
 
 		self.menu_edit=QMenu("Edit",self)
 		self.menu_edit.setIcon(QIcon(":/icon/white/white_pen-tool.svg"))
 		self.menu_edit.addAction(self.concept_module.actionAdd_Concept)
+		self.menu_edit.addAction(self.concept_module.actionAdd_Parent)
+		self.menu_edit.addAction(self.concept_module.actionAdd_Child)
+		self.menu_edit.addAction(self.concept_module.actionAdd_Relative)
 		# self.menu_edit.addAction(self.concept_module.actionDelete)
 		self.addMenuToMainMenu(self.menu_edit)
+
+		self.addActionToMainMenu(self.concept_module.actionSearch_Concept)
 
 		self.addSeparatorToMainMenu()
 		super().initializeMenu()

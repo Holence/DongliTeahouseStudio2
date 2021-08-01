@@ -13,8 +13,8 @@ from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
 from widget import ConceptTable
-from widget import FileTable
 from widget import TextList
+from widget import FileTab
 
 import DTPySide.DT_rc
 
@@ -22,12 +22,17 @@ class Ui_Library(object):
     def setupUi(self, Library):
         if not Library.objectName():
             Library.setObjectName(u"Library")
-        Library.resize(727, 428)
+        Library.resize(727, 465)
         self.actionDelete = QAction(Library)
         self.actionDelete.setObjectName(u"actionDelete")
         icon = QIcon()
         icon.addFile(u":/icon/white/white_trash-2.svg", QSize(), QIcon.Normal, QIcon.Off)
         self.actionDelete.setIcon(icon)
+        self.actionSearch_File = QAction(Library)
+        self.actionSearch_File.setObjectName(u"actionSearch_File")
+        icon1 = QIcon()
+        icon1.addFile(u":/icon/white/white_search.svg", QSize(), QIcon.Normal, QIcon.Off)
+        self.actionSearch_File.setIcon(icon1)
         self.horizontalLayout_3 = QHBoxLayout(Library)
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.splitter = QSplitter(Library)
@@ -49,11 +54,15 @@ class Ui_Library(object):
 
         self.verticalLayout.addWidget(self.lineEdit_search)
 
-        self.fileTable = FileTable(self.layoutWidget)
-        self.fileTable.setObjectName(u"fileTable")
-        self.fileTable.setMinimumSize(QSize(300, 0))
+        self.fileTab = FileTab(self.layoutWidget)
+        self.fileTab.setObjectName(u"fileTab")
+        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.MinimumExpanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.fileTab.sizePolicy().hasHeightForWidth())
+        self.fileTab.setSizePolicy(sizePolicy)
 
-        self.verticalLayout.addWidget(self.fileTable)
+        self.verticalLayout.addWidget(self.fileTab)
 
         self.splitter.addWidget(self.layoutWidget)
         self.layoutWidget2 = QWidget(self.splitter)
@@ -86,11 +95,11 @@ class Ui_Library(object):
 
         self.tabWidget = QTabWidget(self.layoutWidget2)
         self.tabWidget.setObjectName(u"tabWidget")
-        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.MinimumExpanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
-        self.tabWidget.setSizePolicy(sizePolicy)
+        sizePolicy1 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.MinimumExpanding)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
+        self.tabWidget.setSizePolicy(sizePolicy1)
         self.tabWidget.setTabPosition(QTabWidget.North)
         self.tab_concept = QWidget()
         self.tab_concept.setObjectName(u"tab_concept")
@@ -100,8 +109,8 @@ class Ui_Library(object):
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.conceptTable = ConceptTable(self.tab_concept)
         self.conceptTable.setObjectName(u"conceptTable")
-        sizePolicy.setHeightForWidth(self.conceptTable.sizePolicy().hasHeightForWidth())
-        self.conceptTable.setSizePolicy(sizePolicy)
+        sizePolicy1.setHeightForWidth(self.conceptTable.sizePolicy().hasHeightForWidth())
+        self.conceptTable.setSizePolicy(sizePolicy1)
         self.conceptTable.setMinimumSize(QSize(250, 0))
 
         self.horizontalLayout.addWidget(self.conceptTable)
@@ -153,6 +162,10 @@ class Ui_Library(object):
         self.actionDelete.setText(QCoreApplication.translate("Library", u"Delete", None))
 #if QT_CONFIG(shortcut)
         self.actionDelete.setShortcut(QCoreApplication.translate("Library", u"Del", None))
+#endif // QT_CONFIG(shortcut)
+        self.actionSearch_File.setText(QCoreApplication.translate("Library", u"Search File", None))
+#if QT_CONFIG(shortcut)
+        self.actionSearch_File.setShortcut(QCoreApplication.translate("Library", u"Ctrl+Q", None))
 #endif // QT_CONFIG(shortcut)
         self.label.setText(QCoreApplication.translate("Library", u"Search", None))
         self.lineEdit_search.setPlaceholderText(QCoreApplication.translate("Library", u"file name (2000.1.1) (2001.1.1-2001.2.1) [conceptA] [conceptB] {1}", None))

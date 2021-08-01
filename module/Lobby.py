@@ -101,9 +101,9 @@ else:
 	def checkDataCompleteness(self):
 
 		def check():
-			diary_data=self.Headquarter.diary_data
-			concept_data=self.Headquarter.concept_data
-			library_data=self.Headquarter.library_data
+			diary_data=self.Headquarter.getDiaryData()
+			concept_data=self.Headquarter.getConceptData()
+			library_data=self.Headquarter.getLibraryData()
 
 			
 			# Diary

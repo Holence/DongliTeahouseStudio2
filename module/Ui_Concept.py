@@ -13,11 +13,11 @@ from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
 from widget import ConceptTable
-from widget import FileTable
 from DTPySide.DTWidget import DTPlainTextEdit
 from widget import TextList
 from widget import ConceptTree
 from widget import ConceptSearch
+from widget import FileTab
 
 import DTPySide.DT_rc
 
@@ -36,6 +36,22 @@ class Ui_Concept(object):
         icon1 = QIcon()
         icon1.addFile(u":/icon/white/white_trash-2.svg", QSize(), QIcon.Normal, QIcon.Off)
         self.actionDelete.setIcon(icon1)
+        self.actionAdd_Parent = QAction(Concept)
+        self.actionAdd_Parent.setObjectName(u"actionAdd_Parent")
+        icon2 = QIcon()
+        icon2.addFile(u":/icon/white/white_user-plus.svg", QSize(), QIcon.Normal, QIcon.Off)
+        self.actionAdd_Parent.setIcon(icon2)
+        self.actionAdd_Child = QAction(Concept)
+        self.actionAdd_Child.setObjectName(u"actionAdd_Child")
+        self.actionAdd_Child.setIcon(icon2)
+        self.actionAdd_Relative = QAction(Concept)
+        self.actionAdd_Relative.setObjectName(u"actionAdd_Relative")
+        self.actionAdd_Relative.setIcon(icon2)
+        self.actionSearch_Concept = QAction(Concept)
+        self.actionSearch_Concept.setObjectName(u"actionSearch_Concept")
+        icon3 = QIcon()
+        icon3.addFile(u":/icon/white/white_search.svg", QSize(), QIcon.Normal, QIcon.Off)
+        self.actionSearch_Concept.setIcon(icon3)
         self.horizontalLayout_3 = QHBoxLayout(Concept)
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.splitter_whole = QSplitter(Concept)
@@ -125,10 +141,10 @@ class Ui_Concept(object):
         self.horizontalLayout.setSpacing(0)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
-        self.fileTable = FileTable(self.tab_file)
-        self.fileTable.setObjectName(u"fileTable")
+        self.fileTab = FileTab(self.tab_file)
+        self.fileTab.setObjectName(u"fileTab")
 
-        self.horizontalLayout.addWidget(self.fileTable)
+        self.horizontalLayout.addWidget(self.fileTab)
 
         self.tabWidget.addTab(self.tab_file, "")
         self.tab_textlist = QWidget()
@@ -272,6 +288,22 @@ class Ui_Concept(object):
         self.actionDelete.setText(QCoreApplication.translate("Concept", u"Delete", None))
 #if QT_CONFIG(shortcut)
         self.actionDelete.setShortcut(QCoreApplication.translate("Concept", u"Del", None))
+#endif // QT_CONFIG(shortcut)
+        self.actionAdd_Parent.setText(QCoreApplication.translate("Concept", u"Add Parent", None))
+#if QT_CONFIG(shortcut)
+        self.actionAdd_Parent.setShortcut(QCoreApplication.translate("Concept", u"Ctrl+1", None))
+#endif // QT_CONFIG(shortcut)
+        self.actionAdd_Child.setText(QCoreApplication.translate("Concept", u"Add Child", None))
+#if QT_CONFIG(shortcut)
+        self.actionAdd_Child.setShortcut(QCoreApplication.translate("Concept", u"Ctrl+2", None))
+#endif // QT_CONFIG(shortcut)
+        self.actionAdd_Relative.setText(QCoreApplication.translate("Concept", u"Add Relative", None))
+#if QT_CONFIG(shortcut)
+        self.actionAdd_Relative.setShortcut(QCoreApplication.translate("Concept", u"Ctrl+3", None))
+#endif // QT_CONFIG(shortcut)
+        self.actionSearch_Concept.setText(QCoreApplication.translate("Concept", u"Search Concept", None))
+#if QT_CONFIG(shortcut)
+        self.actionSearch_Concept.setShortcut(QCoreApplication.translate("Concept", u"Ctrl+R", None))
 #endif // QT_CONFIG(shortcut)
         self.label.setText(QCoreApplication.translate("Concept", u"Search", None))
         self.label_name.setText(QCoreApplication.translate("Concept", u"Name", None))

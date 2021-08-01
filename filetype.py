@@ -541,6 +541,7 @@ text_extension=[
 	"cnf",
 	"contact",
 	"cpp",
+	"cr2",
 	"cs",
 	"csdproj",
 	"csproj",

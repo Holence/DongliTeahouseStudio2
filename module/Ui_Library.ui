@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>727</width>
-    <height>428</height>
+    <height>465</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -42,12 +42,12 @@
         </widget>
        </item>
        <item>
-        <widget class="FileTable" name="fileTable">
-         <property name="minimumSize">
-          <size>
-           <width>300</width>
-           <height>0</height>
-          </size>
+        <widget class="FileTab" name="fileTab" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
          </property>
         </widget>
        </item>
@@ -217,6 +217,18 @@
     <string>Del</string>
    </property>
   </action>
+  <action name="actionSearch_File">
+   <property name="icon">
+    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
+     <normaloff>:/icon/white/white_search.svg</normaloff>:/icon/white/white_search.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Search File</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -225,14 +237,15 @@
    <header>widget</header>
   </customwidget>
   <customwidget>
-   <class>FileTable</class>
-   <extends>QTableWidget</extends>
-   <header>widget</header>
-  </customwidget>
-  <customwidget>
    <class>TextList</class>
    <extends>QListWidget</extends>
    <header>widget</header>
+  </customwidget>
+  <customwidget>
+   <class>FileTab</class>
+   <extends>QWidget</extends>
+   <header>widget</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

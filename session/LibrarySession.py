@@ -40,12 +40,14 @@ class LibrarySession(DTFrame.DTMainWindow):
 		self.installEventFilter(self)
 		self.library_module.lineEdit_search.installEventFilter(self)
 		self.library_module.lineEdit_name.installEventFilter(self)
-		self.library_module.fileTable.installEventFilter(self)
+		self.library_module.fileTab.fileTable.installEventFilter(self)
+		self.library_module.fileTab.fileList.installEventFilter(self)
 		self.library_module.conceptTable.installEventFilter(self)
 		self.library_module.textList.installEventFilter(self)
 		self.library_module.textViewer.installEventFilter(self)
 		
 		self.addAction(self.library_module.actionDelete)
+		self.addAction(self.library_module.actionSearch_File)
 	
 	def initializeMenu(self):
 		
@@ -55,6 +57,7 @@ class LibrarySession(DTFrame.DTMainWindow):
 		# self.addMenuToMainMenu(self.menu_edit)
 
 		# self.addSeparatorToMainMenu()
+		self.addActionToMainMenu(self.library_module.actionSearch_File)
 		
 		super().initializeMenu()
 		
