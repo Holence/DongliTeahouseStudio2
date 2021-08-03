@@ -13,7 +13,9 @@ class DesktopButton(QPushButton):
 		self.setFlat(True)
 		self.setIconSize(QSize(48,48))
 		self.setFixedSize(64,64)
-		
+
+		self.setStyleSheet("QPushbutton:!hover{ background:transparent }")
+
 		if url[:8]=="file:///":
 			self.setToolTip(os.path.basename(url))
 		else:
@@ -42,12 +44,11 @@ class DesktopButton(QPushButton):
 				}
 				for key,value in redirect_dict.items():
 					if key in self.url:
-						status,data=GetWebPagePic(value)
-						break
+						data=GetWebPagePic(value)
 				else:
-					status,data=GetWebFavIcon(self.url)
+					data=GetWebFavIcon(self.url)
 				# 载入成功
-				if status==True:
+				if data!=None:
 					self.Headquarter.cache[cache_name]=data #cache中存储
 					pixmap=QPixmap()
 					ba = QByteArray(data)
@@ -155,7 +156,7 @@ class Desktop(QWidget):
 			if url not in self.url_list:
 				self.url_list.append(url)
 				self.addButtons([url])
-		
+
 		self.saveData()
 	
 	def addButtons(self,url_list):

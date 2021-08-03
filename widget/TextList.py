@@ -76,7 +76,7 @@ class TextList(QListWidget):
 	
 	def __init__(self, parent):
 		super().__init__(parent=parent)
-		self.setStyleSheet("QListWidget{ font-size: 18pt; } QListWidget::item{ border: 2px solid #8C6BBB; border-radius: 10px;}")
+		self.setStyleSheet("QListWidget{ font-size: 18pt; } QListWidget::item{ border: transparent; border-radius: 10px;}")
 		self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
 		self.verticalScrollBar().setSingleStep(18)
 	

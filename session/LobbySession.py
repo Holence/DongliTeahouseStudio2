@@ -665,34 +665,32 @@ class LobbySession(DTSession.DTMainSession):
 				return None
 		else:
 			type=2 # link=2
-			status,res=GetWebPageResponse(url)
-			if status==True:
+			res=GetWebPageResponse(url)
+			if res!=None:
 				
 				# 浏览器拖图片
 				# Yandex浏览器的图片拖出来，附带的url不是临时文件地址，这里就手动下载好了
-				if "image" in res.raw.info()["Content-Type"]:
+				if "image" in res.headers["Content-Type"]:
 					try:
-						type=res.raw.info()["Content-Type"].split("/")[1]
-						status,res=GetWebPagePic(response=res)
-						if status==True:
-							# 在根目录生成临时文件
-							temp_file_url=os.path.join(os.getcwd(),"%s.%s"%(time.time_ns(),type))
-							with open(temp_file_url,"wb") as f:
-								f.write(res)
-							return self.addLibraryFile(date,"file:///"+temp_file_url,concept)
-						else:
-							DTFrame.DTMessageBox(self,"Warning",str(res),DTIcon.Warning())
-							return None
-						
+						type=res.headers["Content-Type"].split("/")[1]
+						img=res.content
+						# 在根目录生成临时文件
+						temp_file_url=os.path.join(os.getcwd(),"%s.%s"%(time.time_ns(),type))
+						with open(temp_file_url,"wb") as f:
+							f.write(img)
+						return self.addLibraryFile(date,"file:///"+temp_file_url,concept)
 					except Exception as e:
-						DTFrame.DTMessageBox(self,"Warning",str(e),DTIcon.Warning())
+						DTFrame.DTMessageBox(self,"Error",str(e),DTIcon.Warning())
 						return None
 				
 				# 普通网页
 				else:
-					status,res=GetWebPageTitle(response=res)
-					if status==True:
-						name=res
+					html=res.text
+					try:
+						tree=etree.HTML(html)
+						title=tree.xpath(".//title/text()")[0]
+						title=urllib.parse.unquote(title,'utf-8')
+						name=str(title)
 
 						try:
 							self.data[2][y][m][d][name]
@@ -707,11 +705,11 @@ class LobbySession(DTSession.DTMainSession):
 								name=name+str(time.time_ns())
 							else:
 								return None
-					else:
+					except:
 						DTFrame.DTMessageBox(self,"Warning",str(res),DTIcon.Warning())
 						name="Unknow%s"%time.time_ns()
 			else:
-				DTFrame.DTMessageBox(self,"Warning",str(res),DTIcon.Warning())
+				DTFrame.DTMessageBox(self,"Warning","Failed to fetch %s"%url,DTIcon.Warning())
 				name="Unknow%s"%time.time_ns()
 
 		if self.data[2].get(y)==None:

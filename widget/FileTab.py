@@ -35,8 +35,8 @@ class LoadThumbnailThread(QThread):
 
 					data=self.Headquarter.cache.get(key)
 					if data==None or self.force==True:
-						status,data=GetWebPagePic(value)
-						if status==True:
+						data=GetWebPagePic(value)
+						if data!=None:
 
 							self.Headquarter.qlock.lock()
 							self.Headquarter.cache[key]=data
@@ -119,8 +119,8 @@ class LoadThumbnailThread(QThread):
 			
 			# link
 			elif self.file["type"]==2:
-				status,data=GetWebFavIcon(url)
-				if status==True:
+				data=GetWebFavIcon(url)
+				if data!=None:
 
 					self.Headquarter.qlock.lock()
 					self.Headquarter.cache[cache_name]=data
