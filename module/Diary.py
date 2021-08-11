@@ -70,6 +70,7 @@ class Diary(QWidget,Ui_Diary):
 		self.showDay()
 		if index!=-1:
 			self.textList.setCurrentRow(index)
+			self.textList.scrollToItem(self.textList.item(index))
 
 	def showDay(self,date=None):
 		"""展示选中的日期，相当于全刷新：textViewer中显示对应日期的文字，textList中显示对应日期的列表，fileTable中显示全部的链接文件

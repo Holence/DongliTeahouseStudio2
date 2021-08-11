@@ -2,7 +2,7 @@
 from DTPySide import *
 from filetype import image_extension
 
-ICONWIDTH=512
+ICONWIDTH=128
 
 class LoadThumbnailThread(QThread):
 
@@ -64,8 +64,8 @@ class LoadThumbnailThread(QThread):
 					self.parent().lock.lock()
 					if "Table" in self.parent().objectName():
 						try:
-							if url==self.parent().item(self.row,4).text():
-								self.parent().item(self.row,3).setIcon(icon)
+							item_list=self.parent().findItems(url,Qt.MatchExactly)
+							self.parent().item(item_list[0].row(),3).setIcon(icon)
 						except:
 							pass
 					elif "List" in self.parent().objectName():
@@ -144,8 +144,8 @@ class LoadThumbnailThread(QThread):
 			self.parent().lock.lock()
 			if "Table" in self.parent().objectName():
 				try:
-					if url==self.parent().item(self.row,4).text():
-						self.parent().item(self.row,3).setIcon(icon)
+					item_list=self.parent().findItems(url,Qt.MatchExactly)
+					self.parent().item(item_list[0].row(),3).setIcon(icon)
 				except:
 					pass
 			elif "List" in self.parent().objectName():
@@ -183,8 +183,8 @@ class LoadThumbnailThread(QThread):
 			self.parent().lock.lock()
 			if "Table" in self.parent().objectName():
 				try:
-					if url==self.parent().item(self.row,4).text():
-						self.parent().item(self.row,3).setIcon(icon)
+					item_list=self.parent().findItems(url,Qt.MatchExactly)
+					self.parent().item(item_list[0].row(),3).setIcon(icon)
 				except:
 					pass
 			elif "List" in self.parent().objectName():
@@ -208,11 +208,15 @@ class FileTab(Ui_FileTab,QWidget):
 		if event.type()==QEvent.KeyPress:
 			if event.key()==Qt.Key_Alt:
 				self.__altPressed=True
+			if event.key()==Qt.Key_Control:
+				self.__ctrlPressed=True
 			if event.key()==Qt.Key_Return:
 				self.openFile()
 		if event.type()==QEvent.KeyRelease:
 			if event.key()==Qt.Key_Alt:
 				self.__altPressed=False
+			if event.key()==Qt.Key_Control:
+				self.__ctrlPressed=False
 		return False # 这里是让继续延续event的处理，不要被filter掉了
 	
 	def __init__(self,parent):
@@ -220,6 +224,7 @@ class FileTab(Ui_FileTab,QWidget):
 		self.setupUi(self)
 		self.file_list=[]
 		self.__altPressed=False
+		self.__ctrlPressed=False
 
 		def slot1(url_list,file_list):
 			self.fileDropped.emit(url_list,file_list)
@@ -232,6 +237,17 @@ class FileTab(Ui_FileTab,QWidget):
 		
 		self.fileTable.itemClicked.connect(slot2)
 		self.fileList.itemClicked.connect(slot2)
+
+		def slot3(o):
+			count=len(o.selectionModel().selectedRows())
+			if count>0:
+				self.label_info.setText("已选中%s个项目"%count)
+			else:
+				self.label_info.clear()
+
+		self.fileTable.selectionModel().selectionChanged.connect(lambda:slot3(self.fileTable))
+		self.fileList.selectionModel().selectionChanged.connect(lambda:slot3(self.fileList))
+
 		self.setStyleSheet("""
 		QPushButton{
 			border: none;
@@ -240,6 +256,10 @@ class FileTab(Ui_FileTab,QWidget):
 			min-height: 24px;
 			min-width: 24px;
 			max-width: 24px;
+		}
+
+		QLabel{
+			font-size: 12pt;
 		}
 		""")
 
@@ -336,9 +356,10 @@ class FileTab(Ui_FileTab,QWidget):
 				self.fileTable.setRowHeight(row,32)
 				row+=1
 			
-			# self.fileTable.RestoreTableStatus()
+			self.label_count.setText("%s个项目  |"%row)
 			
 			self.fileTable.lock.unlock()
+			self.fileTable.RestoreTableStatus()
 
 		def FileListSetFileList(file_list):
 			"""设置filetable为file_list
@@ -364,9 +385,7 @@ class FileTab(Ui_FileTab,QWidget):
 				name=file["name"]
 				url=file["url"]
 				
-				if type==0:
-					url=os.path.join(self.Headquarter.library_base,url).replace("\\","/")
-				elif type==1:
+				if type!=2:
 					url=os.path.join(self.Headquarter.library_base,url).replace("\\","/")
 
 				loading_thread=LoadThumbnailThread(self.fileList,self.Headquarter,file,row)
@@ -383,8 +402,11 @@ class FileTab(Ui_FileTab,QWidget):
 				self.fileList.addItem(item)
 				row+=1
 			
+			self.label_count.setText("%s个项目  |"%row)
+			
 			self.fileList.lock.unlock()
 		
+		self.label_info.clear()
 		self.file_list=file_list
 		if self.stackedWidget.currentIndex()==0:
 			FileTableSetFileList(file_list)
@@ -407,6 +429,9 @@ class FileTab(Ui_FileTab,QWidget):
 		def PicListFromList():
 			return [self.fileList.item(row).toolTip() for row in range(self.fileList.count()) if os.path.splitext(self.fileList.item(row).text())[1][1:].lower() in image_extension]
 
+		if self.fileTable.currentRow()==-1:
+			return
+
 		if self.stackedWidget.currentIndex()==0:
 			url=self.fileTable.item(self.fileTable.currentRow(),4).text()
 			# type=self.fileTable.item(self.fileTable.currentRow(),0).text()
@@ -427,10 +452,10 @@ class FileTab(Ui_FileTab,QWidget):
 				try:
 					os.startfile(url)
 				except Exception as e:
-					DTFrame.DTMessageBox(self,"Warning","Could not open file! Try running Check Library.\n\n%s"%e,DTIcon.Warning())
+					DTFrame.DTMessageBox(self.window(),"Warning","Could not open file! Try running Check Library.\n\n%s"%e,DTIcon.Warning())
 			
 			# 打开图片，自动附加上fileTable中其他的图片
-			elif ext.lower() in image_extension:
+			elif ext.lower() in image_extension and self.__ctrlPressed==True:
 				if os.path.exists(url):
 					if os.path.getsize(url)/1024/1024>50:
 						# 图片大于50mb就算了
@@ -444,12 +469,12 @@ class FileTab(Ui_FileTab,QWidget):
 						self.imageviewer.initialize()
 						self.imageviewer.show()
 				else:
-					DTFrame.DTMessageBox(self,"Warning","Could not open file! Try running Check Library.",DTIcon.Warning())
+					DTFrame.DTMessageBox(self.window(),"Warning","Could not open file! Try running Check Library.",DTIcon.Warning())
 			else:
 				try:
 					os.startfile(url)
 				except Exception as e:
-					DTFrame.DTMessageBox(self,"Warning","Could not open file! Try running Check Library.\n\n%s"%e,DTIcon.Warning())
+					DTFrame.DTMessageBox(self.window(),"Warning","Could not open file! Try running Check Library.\n\n%s"%e,DTIcon.Warning())
 		else:
 			os.system("start explorer \"%s\""%url)
 	

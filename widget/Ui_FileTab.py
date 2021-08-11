@@ -56,7 +56,18 @@ class Ui_FileTab(object):
         self.verticalLayout.addWidget(self.stackedWidget)
 
         self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setSpacing(0)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.label_count = QLabel(FileTab)
+        self.label_count.setObjectName(u"label_count")
+
+        self.horizontalLayout.addWidget(self.label_count)
+
+        self.label_info = QLabel(FileTab)
+        self.label_info.setObjectName(u"label_info")
+
+        self.horizontalLayout.addWidget(self.label_info)
+
         self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         self.horizontalLayout.addItem(self.horizontalSpacer)
@@ -105,6 +116,8 @@ class Ui_FileTab(object):
 
     def retranslateUi(self, FileTab):
         FileTab.setWindowTitle(QCoreApplication.translate("FileTab", u"FileTab", None))
+        self.label_count.setText("")
+        self.label_info.setText("")
         self.pushButton_table.setText("")
         self.pushButton_list.setText("")
     # retranslateUi

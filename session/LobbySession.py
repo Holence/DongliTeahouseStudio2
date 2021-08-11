@@ -152,10 +152,10 @@ class LobbySession(DTSession.DTMainSession):
 				self.diary_heap[0].diary_module.textList.setCurrentRow(index)
 
 		for diary in self.diary_heap:
-			diary.diary_module.conceptTable.conceptClicked.connect(slot)
+			diary.diary_module.conceptTable.conceptDoubleClicked.connect(slot)
 		
 		for library in self.library_heap:
-			library.library_module.conceptTable.conceptClicked.connect(slot)
+			library.library_module.conceptTable.conceptDoubleClicked.connect(slot)
 			library.library_module.textList.textClicked.connect(slot2)
 		
 		for concept in self.concept_heap:
@@ -381,7 +381,7 @@ class LobbySession(DTSession.DTMainSession):
 			id_list=[concept["id"] for concept in self.data[1] if concept["parent"]==[] and concept["child"]==[] ]
 		else:
 			for concept in self.data[1]:
-				if search in concept["name"] or search.lower() in concept["az"] or search in concept["detail"]:
+				if search in concept["name"] or search.lower() in concept["az"] or search.lower() in concept["detail"].lower():
 					id_list.append(concept["id"])
 		
 		return id_list
@@ -636,6 +636,14 @@ class LobbySession(DTSession.DTMainSession):
 			old_dir=url[8:]
 			name=os.path.basename(old_dir)
 
+			try:
+				# link名字和文件夹名相同
+				if self.data[2][y][m][d].get(name)!=None:
+					DTFrame.DTMessageBox(self,"Warning","Already exsist %s in %s.%s.%s"%(name,y,m,d),DTIcon.Warning())
+					return None
+			except:
+				pass
+
 			# 禁止从library_base层添加文件
 			if self.library_base in os.path.dirname(old_dir) and force==False:
 				if os.path.dirname(old_dir).replace(self.library_base+"/","").count("/")<=2:
@@ -699,7 +707,7 @@ class LobbySession(DTSession.DTMainSession):
 							already_have=False
 
 						if already_have:
-							warning="Already have web page named %s in %s.%s.%s,\n\nwhich url is %s\n\nYou want to add still?"%(name,y,m,d,self.data[2][y][m][d].get(name)["url"])
+							warning="Already have web page or file named %s in %s.%s.%s,\n\nwhich url is %s\n\nYou want to add still?"%(name,y,m,d,self.data[2][y][m][d].get(name)["url"])
 							dlg=DTFrame.DTConfirmBox(self,"Warning",warning,DTIcon.Warning())
 							if dlg.exec_():
 								name=name+str(time.time_ns())
@@ -720,7 +728,7 @@ class LobbySession(DTSession.DTMainSession):
 		
 		if self.data[2][y][m].get(d)==None:
 			self.data[2][y][m][d]={}
-		
+
 		self.data[2][y][m][d][name]={
 			"type": type,
 			"concept": concept,
@@ -745,7 +753,7 @@ class LobbySession(DTSession.DTMainSession):
 				os.rename(os.path.join(self.library_base,old_url),os.path.join(self.library_base,new_url))
 			except Exception as e:
 				DTFrame.DTMessageBox(self,"Error",str(e),DTIcon.Error())
-				return
+				return False
 		
 		old_cache_name=QDate_to_Str(QDate(int(y),int(m),int(d)),"0")+old_name
 		new_cache_name=QDate_to_Str(QDate(int(y),int(m),int(d)),"0")+new_name

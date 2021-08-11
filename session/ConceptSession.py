@@ -31,6 +31,9 @@ class ConceptSession(DTFrame.DTMainWindow):
 	def isSelect(self):
 		return self.__selectPressed
 	
+	def setSelect(self,bool):
+		self.__selectPressed=bool
+	
 	def initializeWindow(self):
 		super().initializeWindow()
 		self.setWindowTitle("Concept")

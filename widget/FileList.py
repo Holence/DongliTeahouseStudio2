@@ -142,16 +142,69 @@ class FileList(QListWidget):
 				loading_thread.finished.connect(loading_thread.deleteLater)
 				loading_thread.start()
 		
+		def slot2():
+			url=self.currentItem().toolTip().replace(self.Headquarter.library_base+"/","")
+			if url[:4]=="http":
+				name=self.currentItem().text()
+				date=Str_To_QDate(name[name.rfind("|")+1:][1:-1],".")
+				old_name=name[:name.rfind("|")]
+				type=2
+			else:
+				y,m,d=url.split("/")[:3]
+				date=QDate(int(y),int(m),int(d))
+				old_name=self.currentItem().text()
+				type=0
+
+			dlg=DTFrame.DTDialog(self.window(),"Rename")
+			w=QWidget()
+			l=QVBoxLayout(w)
+			
+			lable1=QLabel("Old Name")
+			l.addWidget(lable1)
+
+			line_edit1=QLineEdit(old_name)
+			line_edit1.setReadOnly(True)
+			l.addWidget(line_edit1)
+
+			lable2=QLabel("New Name")
+			l.addWidget(lable2)
+			line_edit2=QLineEdit(old_name)
+			l.addWidget(line_edit2)
+
+			w.setLayout(l)
+
+			dlg.setCentralWidget(w)
+			dlg.setMinimumSize(600,300)
+
+			if dlg.exec_():
+				new_name=line_edit2.text()
+				res=self.Headquarter.renameLibraryFile(date,old_name,new_name)
+				if res!=False:
+					if type==2:
+						# link的特殊格式
+						self.currentItem().setText(new_name+"|[%s]"%QDate_to_Str(date,"."))
+					else:
+						self.currentItem().setText(new_name)
+						url=self.Headquarter.getLibraryFile(date,new_name)["url"]
+						url=os.path.join(self.Headquarter.library_base,url).replace("\\","/")
+						self.currentItem().setToolTip(url)
+
 		pos=event.pos()
 		if event.button()==Qt.RightButton:
 			
-			menu=QMenu()
-			action=QAction("Refresh Icon")
-			action.triggered.connect(slot)
-			menu.addAction(action)
-			pos=self.mapToGlobal(pos)
-			menu.exec_(pos)
-			
+			if len(self.selectionModel().selectedRows())>0:
+				menu=QMenu()
+				action1=QAction("Refresh Icon")
+				action1.triggered.connect(slot)
+				menu.addAction(action1)
+
+				if len(self.selectionModel().selectedRows())==1 and "Library" not in self.objectName():
+					action2=QAction("Rename")
+					action2.triggered.connect(slot2)
+					menu.addAction(action2)
+				
+				pos=self.mapToGlobal(pos)
+				menu.exec_(pos)
 			
 		else:
 			super().mousePressEvent(event)

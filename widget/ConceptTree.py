@@ -58,6 +58,8 @@ class ConceptTree(DTWidget.DTTree):
 		self.itemClicked.connect(self.itemClickedSlot)
 		self.itemDoubleClicked.connect(self.itemDoubleClickedSlot)
 
+		self.setExpandCheckingColumn(0)
+
 	def setHeadquarter(self,Headquarter: LobbySession):
 		self.Headquarter=Headquarter
 		self.setStyleSheet("font-family: %s"%self.Headquarter.app.Font().family())

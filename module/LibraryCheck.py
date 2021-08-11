@@ -125,6 +125,9 @@ class LibraryCheck(Ui_LibraryCheck,QWidget):
 											for file_name in os.listdir(day_dir):
 												try:
 													data[year][month][day][file_name]
+													# link名字和文件夹名相同
+													if data[year][month][day][file_name]["type"]==2:
+														redundant_file_list.append(os.path.join(day_dir,file_name).replace("\\","/"))
 												except:
 													redundant_file_list.append(os.path.join(day_dir,file_name).replace("\\","/"))
 		row=0

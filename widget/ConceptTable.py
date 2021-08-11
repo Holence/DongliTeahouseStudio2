@@ -11,8 +11,9 @@ class ConceptTable(DTWidget.DTHorizontalTabel):
 
 	def keyPressEvent(self, event: QKeyEvent):
 		if event.key()==Qt.Key_Return:
-			id=int(self.item(self.currentRow(),0).text())
-			self.conceptReturnPressed.emit(id)
+			if self.currentRow()!=-1:
+				id=int(self.item(self.currentRow(),0).text())
+				self.conceptReturnPressed.emit(id)
 		super().keyPressEvent(event)
 
 	def startDrag(self, actions:Qt.DropActions):

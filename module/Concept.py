@@ -93,6 +93,8 @@ class Concept(QWidget,Ui_Concept):
 		search=self.lineEdit_search.text()
 		concept_id_list=self.Headquarter.getConceptIDList(search)
 		self.conceptTable.setConceptIDList(concept_id_list)
+		# 有时候按了shift后添加concept，shift没被消除
+		self.window().setSelect(False)
 
 	def refreshTab(self):
 		def showConceptTextList():
@@ -143,10 +145,6 @@ class Concept(QWidget,Ui_Concept):
 				id_list.append(self.current_id)
 				deepin(self.current_id)
 			
-
-			self.fileTab.Clear()
-			self.textList.clear()
-			self.textViewer.clear()
 			if self.tabWidget.currentIndex()==0:
 				showConceptFile()
 			elif self.tabWidget.currentIndex()==1:
@@ -197,6 +195,8 @@ class Concept(QWidget,Ui_Concept):
 		self.showSearch()
 		self.conceptTable.clearSelection()
 		self.lineEdit_name.setFocus()
+		# 有时候按了shift后添加concept，shift没被消除
+		self.window().setSelect(False)
 	
 	def saveName(self):
 		if self.current_id!=-1:
@@ -264,17 +264,23 @@ class Concept(QWidget,Ui_Concept):
 			self.Headquarter.addParent(self.current_id,id_list)
 			self.parentTable.setConceptIDList(self.Headquarter.getConcept(self.current_id)["parent"])
 			self.childTree.setChildTree(self.current_id)
+			# 有时候按了shift后添加concept，shift没被消除
+			self.window().setSelect(False)
 	
 	def addChild(self,id_list):
 		if self.current_id!=-1:
 			self.Headquarter.addChild(self.current_id,id_list)
 			self.parentTable.setConceptIDList(self.Headquarter.getConcept(self.current_id)["parent"])
 			self.childTree.setChildTree(self.current_id)
+			# 有时候按了shift后添加concept，shift没被消除
+			self.window().setSelect(False)
 	
 	def addRelative(self,id_list):
 		if self.current_id!=-1:
 			self.Headquarter.addRelative(self.current_id,id_list)
 			self.relativeTable.setConceptIDList(self.Headquarter.getConcept(self.current_id)["relative"])
+			# 有时候按了shift后添加concept，shift没被消除
+			self.window().setSelect(False)
 	
 	#############################################################################################
 
