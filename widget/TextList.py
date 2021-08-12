@@ -103,7 +103,6 @@ class TextList(QListWidget):
 	def setTextList(self,Type,args):
 		self.clear()
 		self.text_list=[]
-		day_list=["星期一","星期二","星期三","星期四","星期五","星期六","星期日"]
 
 		if Type=="Diary":
 			date=args
@@ -134,7 +133,7 @@ class TextList(QListWidget):
 						index=0
 						for line in diary_data[year][month][day]:
 							if List_Intersection(line["concept"],id_list)!=[]:
-								text="%s.%s.%s %s\n\n"%(year,month,day,day_list[QDate(int(year),int(month),int(day)).dayOfWeek()-1])+line["text"]
+								text=QLocale().toString(QDate(int(year),int(month),int(day)),"yyyy.M.d ddd")+"\n\n"+line["text"]
 								item=QListWidgetItem(text)
 								self.addItem(item)
 								self.text_list.append({
@@ -155,7 +154,7 @@ class TextList(QListWidget):
 						index=0
 						for line in diary_data[year][month][day]:
 							if List_Intersection_Full(line["file"],[file_dict])!=[]:
-								text="%s.%s.%s %s\n\n"%(year,month,day,day_list[QDate(int(year),int(month),int(day)).dayOfWeek()-1])+line["text"]
+								text=QLocale().toString(QDate(int(year),int(month),int(day)),"yyyy.M.d ddd")+"\n\n"+line["text"]
 								item=QListWidgetItem(text)
 								self.addItem(item)
 								self.text_list.append({
@@ -171,7 +170,7 @@ class TextList(QListWidget):
 				year=line["y"]
 				month=line["m"]
 				day=line["d"]
-				text="%s.%s.%s %s\n\n"%(year,month,day,day_list[QDate(year,month,day).dayOfWeek()-1])+line["text"]
+				text=QLocale().toString(QDate(int(year),int(month),int(day)),"yyyy.M.d ddd")+"\n\n"+line["text"]
 				self.addItem(text)
 				self.text_list.append({
 					"y":year,

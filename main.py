@@ -6,7 +6,7 @@ app=DTAPP([])
 
 app.setWindowIcon(DTIcon.HoloIcon1())
 app.setApplicationName("DongliTeahouseStudio")
-app.setApplicationVersion("2.0.0.3")
+app.setApplicationVersion("2.0.0.4")
 app.setAuthor("鍵山狐")
 app.setLoginEnable(True)
 

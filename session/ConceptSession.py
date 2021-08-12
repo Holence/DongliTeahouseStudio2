@@ -14,7 +14,7 @@ class ConceptSession(DTFrame.DTMainWindow):
 			if self.Headquarter.WindowFocusing()!=self:
 				self.Headquarter.setWindowFocusing(self)
 				# print("Now focused in",self.Headquarter.WindowFocusing())
-				self.concept_module.refresh()
+				self.refresh()
 		if event.type()==QEvent.KeyPress:
 			if event.key()==Qt.Key_Control or event.key()==Qt.Key_Shift:
 				self.__selectPressed=True
@@ -23,6 +23,9 @@ class ConceptSession(DTFrame.DTMainWindow):
 				self.__selectPressed=False
 		return False # 这里是让继续延续event的处理，不要被filter掉了
 	
+	def refresh(self):
+		self.concept_module.refresh()
+
 	def __init__(self, app: DTAPP, Headquarter: LobbySession):
 		super().__init__(app)
 		self.Headquarter=Headquarter

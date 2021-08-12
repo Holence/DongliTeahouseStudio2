@@ -74,7 +74,6 @@ class Library(QWidget,Ui_Library):
 		
 		def showFileText():
 			text=""
-			day_list=["星期一","星期二","星期三","星期四","星期五","星期六","星期日"]
 			diary_data=self.Headquarter.getDiaryData()
 			for year in diary_data:
 				for month in diary_data[year]:
@@ -83,7 +82,7 @@ class Library(QWidget,Ui_Library):
 						for line in diary_data[year][month][day]:
 							if List_Intersection_Full(line["file"],[file_dict])!=[]:
 								if flag==False:
-									text+="%s.%s.%s %s\n\n"%(year,month,day,day_list[QDate(int(year),int(month),int(day)).dayOfWeek()-1])
+									text+=QLocale().toString(QDate(int(year),int(month),int(day)),"yyyy.M.d ddd")+"\n\n"
 									flag=True
 								text+=line["text"]+"\n\n"
 			self.textViewer.setMarkdown(text)

@@ -129,7 +129,7 @@ class FileList(QListWidget):
 		self.fileDropped.emit(url_list,file_list)
 	
 	def mousePressEvent(self, event: QMouseEvent):
-		def slot():
+		def slotRefresh():
 
 			for model_index in self.selectionModel().selectedRows():
 				row=model_index.row()
@@ -152,18 +152,16 @@ class FileList(QListWidget):
 				loading_thread.finished.connect(loading_thread.deleteLater)
 				loading_thread.start()
 		
-		def slot2():
+		def slotRename():
 			url=self.currentItem().toolTip().replace(self.Headquarter.library_base+"/","")
 			if url[:4]=="http":
 				name=self.currentItem().text()
 				date=QDate().fromString(name[name.rfind("|")+1:][1:-1],"yyyy.M.d")
 				old_name=name[:name.rfind("|")]
-				type=2
 			else:
 				y,m,d=url.split("/")[:3]
 				date=QDate(int(y),int(m),int(d))
 				old_name=self.currentItem().text()
-				type=0
 
 			dlg=DTFrame.DTDialog(self.window(),"Rename")
 			w=QWidget()
@@ -190,14 +188,45 @@ class FileList(QListWidget):
 				new_name=line_edit2.text()
 				res=self.Headquarter.renameLibraryFile(date,old_name,new_name)
 				if res!=False:
-					if type==2:
-						# link的特殊格式
-						self.currentItem().setText(new_name+"|[%s]"%date.toString("yyyy.M.d"))
+					self.window().refresh()
+
+		def slotImage():
+			url=self.item(self.currentRow()).toolTip()
+			if os.path.exists(url):
+				pic_list=[self.item(row).toolTip() for row in range(self.count()) if os.path.splitext(self.item(row).text())[1][1:].lower() in image_extension]
+				index=pic_list.index(url)
+				from session import ImageViewerSession
+				self.imageviewer=ImageViewerSession(self.Headquarter.app,pic_list,index)
+				self.imageviewer.initialize()
+				self.imageviewer.show()
+			else:
+				DTFrame.DTMessageBox(self.window(),"Error","%s does not exist! Try running Check Library."%url,DTIcon.Error())
+		
+		def slotLocation():
+			url=self.item(self.currentRow()).toolTip().replace("/","\\")#呵window得用反斜线
+			try:
+				os.popen("explorer /select,\"%s\""%url)
+			except Exception as e:
+				DTFrame.DTMessageBox(self.window(),"Warning","%s does not exist! Try running Check Library.\n\n%s"%(url,e),DTIcon.Warning())
+		
+		def slotCopy():
+			dlg=QFileDialog(self)
+			dst=dlg.getExistingDirectory().replace("/","\\")
+			if dst!="":
+				copy_list=[]
+				for model_index in self.selectionModel().selectedRows():
+					row=model_index.row()
+					url=self.item(row).toolTip().replace("/","\\")
+					if url[:4]!="http":
+						copy_list.append(url)
+				try:
+					res=Win32_Shellcopy(copy_list,dst)
+					if res==True:
+						os.startfile(dst)
 					else:
-						self.currentItem().setText(new_name)
-						url=self.Headquarter.getLibraryFile(date,new_name)["url"]
-						url=os.path.join(self.Headquarter.library_base,url).replace("\\","/")
-						self.currentItem().setToolTip(url)
+						DTFrame.DTMessageBox(self.window(),"Error","Copy Failed",DTIcon.Warning())
+				except Exception as e:
+					DTFrame.DTMessageBox(self.window(),"Error","Error occured: %s\n\nTry running Check Library."%e,DTIcon.Warning())
 
 		pos=event.pos()
 		if event.button()==Qt.RightButton:
@@ -205,13 +234,31 @@ class FileList(QListWidget):
 			if len(self.selectionModel().selectedRows())>0:
 				menu=QMenu()
 				action1=QAction("Refresh Icon")
-				action1.triggered.connect(slot)
+				action1.triggered.connect(slotRefresh)
 				menu.addAction(action1)
 
-				if len(self.selectionModel().selectedRows())==1 and "Library" not in self.objectName():
+				name=self.item(self.currentRow()).text()
+				ext=os.path.splitext(name)[1][1:]
+				if len(self.selectionModel().selectedRows())==1:
 					action2=QAction("Rename")
-					action2.triggered.connect(slot2)
+					action2.triggered.connect(slotRename)
 					menu.addAction(action2)
+					
+					from filetype import image_extension
+					if ext.lower() in image_extension:
+						action3=QAction("View in ImageViewer")
+						action3.triggered.connect(slotImage)
+						menu.addAction(action3)
+					
+					if "|" not in name:
+						action4=QAction("Open File Location")
+						action4.triggered.connect(slotLocation)
+						menu.addAction(action4)
+
+				if "|" not in name:
+					action5=QAction("Copy to...")
+					action5.triggered.connect(slotCopy)
+					menu.addAction(action5)
 				
 				pos=self.mapToGlobal(pos)
 				menu.exec_(pos)

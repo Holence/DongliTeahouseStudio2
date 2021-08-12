@@ -14,9 +14,12 @@ class LibrarySession(DTFrame.DTMainWindow):
 			if self.Headquarter.WindowFocusing()!=self:
 				self.Headquarter.setWindowFocusing(self)
 				# print("Now focused in",self.Headquarter.WindowFocusing())
-				self.library_module.refresh()
+				self.refresh()
 		return False # 这里是让继续延续event的处理，不要被filter掉了
 	
+	def refresh(self):
+		self.library_module.refresh()
+
 	def __init__(self, app: DTAPP, Headquarter: LobbySession):
 		super().__init__(app)
 		self.Headquarter=Headquarter

@@ -40,19 +40,24 @@ class DesktopButton(QPushButton):
 
 				redirect_dict={
 					"bilibili":"https://www.bilibili.com/favicon.ico",
-					"douban":"https://img3.doubanio.com/favicon.ico"
+					"douban":"https://img3.doubanio.com/favicon.ico",
+					"mail.google":"https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico",
+					"gmail":"https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico"
 				}
 				for key,value in redirect_dict.items():
 					if key in self.url:
 						data=GetWebPagePic(value)
+						break
 				else:
 					data=GetWebFavIcon(self.url)
 				# 载入成功
+				
 				if data!=None:
 					data=base64.b64encode(data)
 					self.Headquarter.cache[cache_name]=data #cache中存储
 					pixmap=QPixmap()
 					pixmap.loadFromData(base64.b64decode(data))
+					pixmap=pixmap.scaled(48,48,Qt.KeepAspectRatio)
 					icon=QIcon(pixmap)
 				# 载入失败
 				else:
@@ -67,6 +72,7 @@ class DesktopButton(QPushButton):
 			else:
 				pixmap=QPixmap()
 				pixmap.loadFromData(base64.b64decode(data))
+				pixmap=pixmap.scaled(48,48,Qt.KeepAspectRatio)
 				icon=QIcon(pixmap)
 		
 		self.setIcon(icon)
@@ -157,6 +163,8 @@ class Desktop(QWidget):
 	def addButtons(self,url_list):
 		def slot(url):
 			self.url_list.remove(url)
+			if self.Headquarter.cache.get(url)!=None:
+				del self.Headquarter.cache[url]
 			self.saveData()
 			self.refresh()
 

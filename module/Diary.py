@@ -28,6 +28,8 @@ class Diary(QWidget,Ui_Diary):
 		self.fileTab.setHeadquarter(self.Headquarter)
 		self.fileTab.fileTable.setObjectName("DiaryFileTable%s"%len(self.Headquarter.diary_heap)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
 		self.fileTab.fileList.setObjectName("DiaryFileList%s"%len(self.Headquarter.diary_heap)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
+
+		self.CalendarPaintMonth()
 	
 	def initializeSignal(self):
 		self.actionSwitch_Eidt_View.triggered.connect(self.switchEditAndView)
@@ -46,6 +48,8 @@ class Diary(QWidget,Ui_Diary):
 		
 		# 点击日期
 		self.calendar.clicked.connect(self.showDay)
+
+		self.calendar.currentPageChanged.connect(self.CalendarPaintMonth)
 		
 		# 点击（更换选中的）一行
 		self.textList.currentRowChanged.connect(self.showLine)
@@ -65,6 +69,20 @@ class Diary(QWidget,Ui_Diary):
 
 		self.actionFind_Text.triggered.connect(self.findText)
 	
+	def CalendarPaintMonth(self):
+		format = QTextCharFormat()
+		format.setForeground(QColor("#FFA0A0"))
+		year=self.calendar.yearShown()
+		month=self.calendar.monthShown()
+		begin=QDate(year,month,1)
+		end=begin.daysInMonth()
+		end=QDate(year,month,end)
+		while begin<=end:
+			res=self.Headquarter.getDiaryDay(begin)
+			if res!=None:
+				self.calendar.setDateTextFormat(begin,format)
+			begin=begin.addDays(1)
+
 	def refresh(self):
 		index=self.textList.currentRow()
 		self.showDay()
@@ -247,6 +265,7 @@ class Diary(QWidget,Ui_Diary):
 		day_data=self.Headquarter.getDiaryDay(self.current_date)
 		if day_data==None:
 			day_data=self.Headquarter.addDiaryDay(self.current_date)
+			self.CalendarPaintMonth()
 
 		day_data.insert(index+1,{
 			"text": "",

@@ -91,7 +91,7 @@ class FileTable(DTWidget.DTHorizontalTabel):
 		self.fileDropped.emit(url_list,file_list)
 	
 	def mousePressEvent(self, event: QMouseEvent):
-		def slot():
+		def slotRefresh():
 
 			for model_index in self.selectionModel().selectedRows():
 				row=model_index.row()
@@ -107,11 +107,10 @@ class FileTable(DTWidget.DTHorizontalTabel):
 				loading_thread.finished.connect(loading_thread.deleteLater)
 				loading_thread.start()
 		
-		def slot2():
+		def slotRename():
 			row=self.currentRow()
 			y,m,d=map(int,self.item(row,1).text().split("."))
 			date=QDate(y,m,d)
-			type=int(self.item(row,0).text())
 			old_name=self.item(row,3).text()
 
 			dlg=DTFrame.DTDialog(self.window(),"Rename")
@@ -139,27 +138,80 @@ class FileTable(DTWidget.DTHorizontalTabel):
 				new_name=line_edit2.text()
 				res=self.Headquarter.renameLibraryFile(date,old_name,new_name)
 				if res!=False:
-					self.item(row,3).setText(new_name)
-					if type!=2:
-						url=self.Headquarter.getLibraryFile(date,new_name)["url"]
-						url=os.path.join(self.Headquarter.library_base,url).replace("\\","/")
-						self.item(row,4).setText(url)
+					self.window().refresh()
+		
+		def slotImage():
+			url=self.item(self.currentRow(),4).text()
+			if os.path.exists(url):
+				pic_list=[self.item(row,4).text() for row in range(self.rowCount()) if self.item(row,2).text().lower() in image_extension]
+				index=pic_list.index(url)
+				from session import ImageViewerSession
+				self.imageviewer=ImageViewerSession(self.Headquarter.app,pic_list,index)
+				self.imageviewer.initialize()
+				self.imageviewer.show()
+			else:
+				DTFrame.DTMessageBox(self.window(),"Error","%s does not exist! Try running Check Library."%url,DTIcon.Error())
 
+		def slotLocation():
+			url=self.item(self.currentRow(),4).text().replace("/","\\")#呵window得用反斜线
+			try:
+				os.popen("explorer /select,\"%s\""%url)
+			except Exception as e:
+				DTFrame.DTMessageBox(self.window(),"Warning","%s does not exist! Try running Check Library.\n\n%s"%(url,e),DTIcon.Warning())
+
+		def slotCopy():
+			dlg=QFileDialog(self)
+			dst=dlg.getExistingDirectory().replace("/","\\")
+			if dst!="":
+				copy_list=[]
+				for model_index in self.selectionModel().selectedRows():
+					row=model_index.row()
+					type=int(self.item(row,0).text())
+					url=self.item(row,4).text().replace("/","\\")
+					if type!=2:
+						copy_list.append(url)
+				try:
+					res=Win32_Shellcopy(copy_list,dst)
+					if res==True:
+						os.startfile(dst)
+					else:
+						DTFrame.DTMessageBox(self.window(),"Error","Copy Failed",DTIcon.Warning())
+				except Exception as e:
+					DTFrame.DTMessageBox(self.window(),"Error","Error occured: %s\n\nTry running Check Library."%e,DTIcon.Warning())
+		
 		pos=event.pos()
 		if event.button()==Qt.RightButton:
 			
 			if len(self.selectionModel().selectedRows())>0:
 				menu=QMenu()
 				action1=QAction("Refresh Icon")
-				action1.triggered.connect(slot)
+				action1.triggered.connect(slotRefresh)
 				menu.addAction(action1)
 
-				if len(self.selectionModel().selectedRows())==1 and "Library" not in self.objectName():
+				ext=self.item(self.currentRow(),2).text()
+				if len(self.selectionModel().selectedRows())==1:
 					action2=QAction("Rename")
-					action2.triggered.connect(slot2)
+					action2.triggered.connect(slotRename)
 					menu.addAction(action2)
+
+					from filetype import image_extension
+					
+					if ext.lower() in image_extension:
+						action3=QAction("View in ImageViewer")
+						action3.triggered.connect(slotImage)
+						menu.addAction(action3)
+
+					if ext!="link":
+						action4=QAction("Open File Location")
+						action4.triggered.connect(slotLocation)
+						menu.addAction(action4)
+
+				if ext!="link":
+					action5=QAction("Copy to...")
+					action5.triggered.connect(slotCopy)
+					menu.addAction(action5)
 				
-				pos=self.mapToGlobal(pos)
+				pos=self.mapToGlobal(pos)+QPoint(0,self.horizontalHeader().height())
 				menu.exec_(pos)
 			
 		else:

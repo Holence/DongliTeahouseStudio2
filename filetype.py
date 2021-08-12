@@ -489,6 +489,7 @@ image_extension=[
 	"cod",
 	"dib",
 	"emf",
+	"gif",
 	"heic",
 	"heics",
 	"heif",

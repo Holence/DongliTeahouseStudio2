@@ -26,7 +26,9 @@ class LoadThumbnailThread(QThread):
 
 		redirect_dict={
 			"bilibili":"https://www.bilibili.com/favicon.ico",
-			"douban":"https://img3.doubanio.com/favicon.ico"
+			"douban":"https://img3.doubanio.com/favicon.ico",
+			"mail.google":"https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico",
+			"gmail":"https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico"
 		}
 
 		if self.file["type"]==2:
@@ -90,7 +92,7 @@ class LoadThumbnailThread(QThread):
 					icon=QFileIconProvider().icon(file_info)
 				else:
 					if os.path.exists(url):
-						if os.path.getsize(url)/1024/1024>50:
+						if os.path.getsize(url)/1024/1024>50 or ext=="gif":
 							# 图片大于50mb就算了
 							file_info=QFileInfo(url)
 							icon=QFileIconProvider().icon(file_info)
@@ -199,25 +201,14 @@ class FileTab(Ui_FileTab,QWidget):
 
 	def eventFilter(self, watched: QObject, event:QKeyEvent) -> bool:
 		if event.type()==QEvent.KeyPress:
-			if event.key()==Qt.Key_Alt:
-				self.__altPressed=True
-			if event.key()==Qt.Key_Control:
-				self.__ctrlPressed=True
 			if event.key()==Qt.Key_Return:
 				self.openFile()
-		if event.type()==QEvent.KeyRelease:
-			if event.key()==Qt.Key_Alt:
-				self.__altPressed=False
-			if event.key()==Qt.Key_Control:
-				self.__ctrlPressed=False
 		return False # 这里是让继续延续event的处理，不要被filter掉了
 	
 	def __init__(self,parent):
 		super().__init__(parent)
 		self.setupUi(self)
 		self.file_list=[]
-		self.__altPressed=False
-		self.__ctrlPressed=False
 
 		def slot1(url_list,file_list):
 			self.fileDropped.emit(url_list,file_list)
@@ -234,7 +225,7 @@ class FileTab(Ui_FileTab,QWidget):
 		def slot3(o):
 			count=len(o.selectionModel().selectedRows())
 			if count>0:
-				self.label_info.setText("已选中%s个项目"%count)
+				self.label_info.setText("%s item selected"%count)
 			else:
 				self.label_info.clear()
 
@@ -349,7 +340,7 @@ class FileTab(Ui_FileTab,QWidget):
 				self.fileTable.setRowHeight(row,32)
 				row+=1
 			
-			self.label_count.setText("%s个项目  |"%row)
+			self.label_count.setText("%s item  |"%row)
 			
 			self.fileTable.lock.unlock()
 			self.fileTable.RestoreTableStatus()
@@ -395,7 +386,7 @@ class FileTab(Ui_FileTab,QWidget):
 				self.fileList.addItem(item)
 				row+=1
 			
-			self.label_count.setText("%s个项目  |"%row)
+			self.label_count.setText("%s item  |"%row)
 			
 			self.fileList.lock.unlock()
 		
@@ -416,59 +407,20 @@ class FileTab(Ui_FileTab,QWidget):
 
 
 	def openFile(self):
-		
-		def PicListFromTable():
-			return [self.fileTable.item(row,4).text() for row in range(self.fileTable.rowCount()) if self.fileTable.item(row,2).text().lower() in image_extension]
-		
-		def PicListFromList():
-			return [self.fileList.item(row).toolTip() for row in range(self.fileList.count()) if os.path.splitext(self.fileList.item(row).text())[1][1:].lower() in image_extension]
 
 		if self.fileTable.currentRow()==-1:
 			return
 
 		if self.stackedWidget.currentIndex()==0:
 			url=self.fileTable.item(self.fileTable.currentRow(),4).text()
-			# type=self.fileTable.item(self.fileTable.currentRow(),0).text()
-			ext=self.fileTable.item(self.fileTable.currentRow(),2).text()
-			getPicList=PicListFromTable
 		else:
-			name=self.fileList.item(self.fileList.currentRow()).text()
 			url=self.fileList.item(self.fileList.currentRow()).toolTip()
-			ext=os.path.splitext(name)[1][1:]
-			getPicList=PicListFromList
 
 		if url[:4]!="http":
-			# alt打开根目录
-			
-			if self.__altPressed==True:
-				url=os.path.dirname(url)
-				self.__altPressed=False
-				try:
-					os.startfile(url)
-				except Exception as e:
-					DTFrame.DTMessageBox(self.window(),"Warning","Could not open file! Try running Check Library.\n\n%s"%e,DTIcon.Warning())
-			
-			# 打开图片，自动附加上fileTable中其他的图片
-			elif ext.lower() in image_extension and self.__ctrlPressed==True:
-				if os.path.exists(url):
-					if os.path.getsize(url)/1024/1024>50:
-						# 图片大于50mb就算了
-						os.popen("honeyview %s"%url)
-					else:
-						pic_list=getPicList()
-						index=pic_list.index(url)
-
-						from session import ImageViewerSession
-						self.imageviewer=ImageViewerSession(self.Headquarter.app,pic_list,index)
-						self.imageviewer.initialize()
-						self.imageviewer.show()
-				else:
-					DTFrame.DTMessageBox(self.window(),"Warning","Could not open file! Try running Check Library.",DTIcon.Warning())
-			else:
-				try:
-					os.startfile(url)
-				except Exception as e:
-					DTFrame.DTMessageBox(self.window(),"Warning","Could not open file! Try running Check Library.\n\n%s"%e,DTIcon.Warning())
+			try:
+				os.startfile(url)
+			except Exception as e:
+				DTFrame.DTMessageBox(self.window(),"Warning","Could not open file! Try running Check Library.\n\n%s"%e,DTIcon.Warning())
 		else:
 			os.system("start explorer \"%s\""%url)
 	
