@@ -22,7 +22,7 @@ class LoadThumbnailThread(QThread):
 		name=self.file["name"]
 		url=self.file["url"]
 		ext=url.split(".")[-1].lower()
-		cache_name=QDate_to_Str(QDate(y,m,d),"0")+name
+		cache_name=QDate(y,m,d).toString("yyyyMMdd")+name
 
 		redirect_dict={
 			"bilibili":"https://www.bilibili.com/favicon.ico",
@@ -37,14 +37,14 @@ class LoadThumbnailThread(QThread):
 					if data==None or self.force==True:
 						data=GetWebPagePic(value)
 						if data!=None:
+							data=base64.b64encode(data)
 
 							self.Headquarter.qlock.lock()
 							self.Headquarter.cache[key]=data
 							self.Headquarter.qlock.unlock()
 							
 							pixmap=QPixmap()
-							ba = QByteArray(data)
-							pixmap.loadFromData(ba, "ico")
+							pixmap.loadFromData(base64.b64decode(data))
 							pixmap=pixmap.scaled(ICONWIDTH,ICONWIDTH,Qt.KeepAspectRatio,Qt.FastTransformation)
 							icon=QIcon(pixmap)
 						else:
@@ -56,8 +56,7 @@ class LoadThumbnailThread(QThread):
 						icon=QIcon(":/icon/white/white_globe.svg")
 					else:
 						pixmap=QPixmap()
-						ba = QByteArray(data)
-						pixmap.loadFromData(ba, ext)
+						pixmap.loadFromData(base64.b64decode(data))
 						pixmap=pixmap.scaled(ICONWIDTH,ICONWIDTH,Qt.KeepAspectRatio,Qt.FastTransformation)
 						icon=QIcon(pixmap)
 					
@@ -76,7 +75,6 @@ class LoadThumbnailThread(QThread):
 							pass
 					self.parent().lock.unlock()
 					return
-
 
 		data=self.Headquarter.cache.get(cache_name)
 		
@@ -121,16 +119,14 @@ class LoadThumbnailThread(QThread):
 			elif self.file["type"]==2:
 				data=GetWebFavIcon(url)
 				if data!=None:
+					data=base64.b64encode(data)
 
 					self.Headquarter.qlock.lock()
 					self.Headquarter.cache[cache_name]=data
 					self.Headquarter.qlock.unlock()
 					
 					pixmap=QPixmap()
-					ba = QByteArray(data)
-					if not pixmap.loadFromData(ba, "ico"):
-						if not pixmap.loadFromData(ba, "png"): # 有的favicon竟然是png……
-								pixmap.loadFromData(ba, "svg") # 有的favicon竟然是svg……
+					pixmap.loadFromData(base64.b64decode(data))
 					pixmap=pixmap.scaled(ICONWIDTH,ICONWIDTH,Qt.KeepAspectRatio,Qt.FastTransformation)
 					icon=QIcon(pixmap)
 				else:
@@ -173,10 +169,7 @@ class LoadThumbnailThread(QThread):
 				else:
 					# convert bytes to QPixmap
 					pixmap=QPixmap()
-					ba = QByteArray(data)
-					if not pixmap.loadFromData(ba, "ico"):
-						if not pixmap.loadFromData(ba, "png"): # 有的favicon竟然是png……
-								pixmap.loadFromData(ba, "svg") # 有的favicon竟然是svg……
+					pixmap.loadFromData(base64.b64decode(data))
 					pixmap=pixmap.scaled(ICONWIDTH,ICONWIDTH,Qt.KeepAspectRatio,Qt.FastTransformation)
 					icon=QIcon(pixmap)
 			
@@ -297,12 +290,12 @@ class FileTab(Ui_FileTab,QWidget):
 			return None
 		
 		if self.stackedWidget.currentIndex()==0:
-			date=Str_To_QDate(self.fileTable.item(row,1).text(),".")
+			date=QDate().fromString(self.fileTable.item(row,1).text(),"yyyy.M.d")
 			name=self.fileTable.item(row,3).text()
 		else:
 			if self.fileList.item(row).toolTip()[:4]=="http":
 				name=self.fileList.item(row).text()
-				date=Str_To_QDate(name[name.rfind("|")+1:][1:-1],".")
+				date=QDate().fromString(name[name.rfind("|")+1:][1:-1],"yyyy.M.d")
 				name=name[:name.rfind("|")]
 			else:
 				y,m,d=self.fileList.item(row).toolTip().replace(self.Headquarter.library_base+"/","").split("/")[:3]
@@ -408,6 +401,7 @@ class FileTab(Ui_FileTab,QWidget):
 		
 		self.label_info.clear()
 		self.file_list=file_list
+		
 		if self.stackedWidget.currentIndex()==0:
 			FileTableSetFileList(file_list)
 		else:

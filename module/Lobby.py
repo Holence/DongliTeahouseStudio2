@@ -20,6 +20,7 @@ class Lobby(QWidget,Ui_Lobby):
 		self.actionSwitch_Secure_Mode.triggered.connect(self.switchSecureMode)
 		self.actionCheck_Data_Completeness.triggered.connect(self.checkDataCompleteness)
 		self.actionSave_Data.triggered.connect(lambda:self.Headquarter.saveData(force=True))
+		self.actionImport_Bookmarks.triggered.connect(self.ImportBookmarks)
 
 		self.SecureMode=False
 		
@@ -67,7 +68,7 @@ else:
 """)
 	
 	def ExportToJson(self):
-		Json_Save(self.Headquarter.data,"Export_Data_%s.json"%WhatDayIsToday("0"))
+		Json_Save(self.Headquarter.data,"Export_Data_%s.json"%WhatDayIsToday(1).toString("yyyyMMdd"))
 	
 	def checkLibrary(self):
 		
@@ -79,7 +80,7 @@ else:
 			DTFrame.DTMessageBox(self,"Error","Cannot access Library, please check the direction existence!")
 			return
 
-		from module.LibraryCheck import LibraryCheck
+		from module import LibraryCheck
 		dlg=DTFrame.DTDialog(self,"Library Check")
 		dlg.TitleBar.title_icon.setIcon(QIcon())
 		dlg.TitleBar.title_icon.setText("💩")
@@ -381,3 +382,16 @@ else:
 			self.DataChecker.setMinimumSize(300,500)
 			self.DataChecker.setCentralWidget(self.DataChecker.errorText)
 			self.DataChecker.show()
+	
+	def ImportBookmarks(self):
+		def slot():
+			del self.bookmark_parser_window
+		
+		if hasattr(self,"bookmark_parser_window"):
+			self.bookmark_parser_window.setFocus()
+			return
+		
+		from session import BookmarkParserSession
+		self.bookmark_parser_window=BookmarkParserSession(self.Headquarter.app,self.Headquarter)
+		self.bookmark_parser_window.closed.connect(slot)
+		self.bookmark_parser_window.show()

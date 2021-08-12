@@ -104,6 +104,7 @@ class LobbySession(DTSession.DTMainSession):
 		self.addActionToMainMenu(self.lobby.actionCheck_Data_Completeness)
 		self.addSeparatorToMainMenu()
 		self.addActionToMainMenu(self.lobby.actionExport_to_Json)
+		self.addActionToMainMenu(self.lobby.actionImport_Bookmarks)
 		self.addActionToMainMenu(self.lobby.actionSave_Data)
 		super().initializeMenu()
 
@@ -628,11 +629,34 @@ class LobbySession(DTSession.DTMainSession):
 		"如果是file类型，url为原始地址；如果是link类型，url为网站地址"
 		y, m, d= map(str, QDate_to_Tuple(date))
 		
-		if url[:8]=="file:///":
+		# BookmarkParser来的标准型filedict，就不用去获取网页title了，ymd也不是当日，而是收藏夹中的日期
+		if type(url)==dict:
+			file=url
+			y=str(file["y"])
+			m=str(file["m"])
+			d=str(file["d"])
+			TYPE=2
+			name=file["name"]
+			url=file["url"]
+			try:
+				self.data[2][y][m][d][name]
+				already_have=True
+			except:
+				already_have=False
+
+			if already_have:
+				warning="Already have web page or file named %s in %s.%s.%s,\n\nwhich url is %s\n\nYou want to add still?"%(name,y,m,d,self.data[2][y][m][d].get(name)["url"])
+				dlg=DTFrame.DTConfirmBox(self,"Warning",warning,DTIcon.Warning())
+				if dlg.exec_():
+					name=name+str(time.time_ns())
+				else:
+					return None
+
+		elif url[:8]=="file:///":
 			if os.path.isdir(url[8:]):
-				type=0 # folder=0
+				TYPE=0 # folder=0
 			else:
-				type=1 # file=1
+				TYPE=1 # file=1
 			old_dir=url[8:]
 			name=os.path.basename(old_dir)
 
@@ -672,7 +696,7 @@ class LobbySession(DTSession.DTMainSession):
 				DTFrame.DTMessageBox(self,"Error",str(e),DTIcon.Warning())
 				return None
 		else:
-			type=2 # link=2
+			TYPE=2 # link=2
 			res=GetWebPageResponse(url)
 			if res!=None:
 				
@@ -680,10 +704,10 @@ class LobbySession(DTSession.DTMainSession):
 				# Yandex浏览器的图片拖出来，附带的url不是临时文件地址，这里就手动下载好了
 				if "image" in res.headers["Content-Type"]:
 					try:
-						type=res.headers["Content-Type"].split("/")[1]
+						TYPE=res.headers["Content-Type"].split("/")[1]
 						img=res.content
 						# 在根目录生成临时文件
-						temp_file_url=os.path.join(os.getcwd(),"%s.%s"%(time.time_ns(),type))
+						temp_file_url=os.path.join(os.getcwd(),"%s.%s"%(time.time_ns(),TYPE))
 						with open(temp_file_url,"wb") as f:
 							f.write(img)
 						return self.addLibraryFile(date,"file:///"+temp_file_url,concept)
@@ -730,7 +754,7 @@ class LobbySession(DTSession.DTMainSession):
 			self.data[2][y][m][d]={}
 
 		self.data[2][y][m][d][name]={
-			"type": type,
+			"type": TYPE,
 			"concept": concept,
 			"url": url
 		}
@@ -739,15 +763,20 @@ class LobbySession(DTSession.DTMainSession):
 	
 	def renameLibraryFile(self,date:QDate,old_name,new_name,rename_operation=True):
 		y, m, d= map(str, QDate_to_Tuple(date))
-
+		if old_name==new_name:
+			return False
+		if self.data[2][y][m][d].get(new_name)!=None:
+			DTFrame.DTMessageBox(self,"Warning","Alreay have file in %s.%s.%s named %s"%(y,m,d,new_name))
+			return False
 
 		file=self.data[2][y][m][d][old_name]
+		
 		old_url=file["url"]
 		if file["type"]!=2:
 			new_url=file["url"].replace(old_name,new_name)
 		else:
 			new_url=old_url
-		
+
 		if file["type"]!=2 and rename_operation==True:
 			try:
 				os.rename(os.path.join(self.library_base,old_url),os.path.join(self.library_base,new_url))
@@ -755,8 +784,8 @@ class LobbySession(DTSession.DTMainSession):
 				DTFrame.DTMessageBox(self,"Error",str(e),DTIcon.Error())
 				return False
 		
-		old_cache_name=QDate_to_Str(QDate(int(y),int(m),int(d)),"0")+old_name
-		new_cache_name=QDate_to_Str(QDate(int(y),int(m),int(d)),"0")+new_name
+		old_cache_name=date.toString("yyyyMMdd")+old_name
+		new_cache_name=date.toString("yyyyMMdd")+new_name
 		if self.cache.get(old_cache_name)!=None:
 			cache=self.cache[old_cache_name]
 			del self.cache[old_cache_name]
@@ -816,7 +845,7 @@ class LobbySession(DTSession.DTMainSession):
 					else:
 						success_deleted_file.append(file)
 						del self.data[2][year][month][day][name]
-						cache_name=QDate_to_Str(QDate(int(year),int(month),int(day)),"0")+name
+						cache_name=QDate(int(year),int(month),int(day)).toString("yyyyMMdd")+name
 						if self.cache.get(cache_name)!=None:
 							del self.cache[cache_name]
 
@@ -826,7 +855,7 @@ class LobbySession(DTSession.DTMainSession):
 					continue
 			else:
 				del self.data[2][year][month][day][name]
-				cache_name=QDate_to_Str(QDate(int(year),int(month),int(day)),"0")+name
+				cache_name=QDate(int(year),int(month),int(day)).toString("yyyyMMdd")+name
 				if self.cache.get(cache_name)!=None:
 					del self.cache[cache_name]
 				success_deleted_file.append(file)

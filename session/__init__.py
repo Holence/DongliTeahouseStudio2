@@ -6,3 +6,4 @@ from session.LibrarySession import LibrarySession
 from session.SettingSession import SettingSession
 from session.ImageViewerSession import ImageViewerSession
 from session.DiarySearchSession import DiarySearchSession
+from session.BookMarkParserSession import BookmarkParserSession

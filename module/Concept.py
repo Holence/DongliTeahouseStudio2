@@ -21,6 +21,9 @@ class Concept(QWidget,Ui_Concept):
 		self.splitter_whole.setStretchFactor(1,2)
 		self.splitter_whole.setStretchFactor(2,1)
 
+		self.plainTextEdit_detail.setMinimumHeight(50)
+		self.plainTextEdit_detail.setStyleSheet("font-size:14pt")
+
 		# 搜索处的concept table只能drag out不能drop in
 		self.conceptTable.setDragDropMode(QAbstractItemView.DragOnly)
 		self.conceptTable.setHeadquarter(self.Headquarter)
@@ -218,7 +221,7 @@ class Concept(QWidget,Ui_Concept):
 			if file_list==[]:
 				date=WhatDayIsToday(1)
 				for url in url_list:
-
+					
 					# Library_Data中file添加file
 					res=self.Headquarter.addLibraryFile(date,url,[self.current_id])
 					if res!=None:
@@ -341,7 +344,7 @@ class Concept(QWidget,Ui_Concept):
 					url=self.fileTab.fileList.item(row).toolTip().replace(self.Headquarter.library_base+"/","")
 					if url[:4]=="http":
 						name=self.fileTab.fileList.item(row).text()
-						date=Str_To_QDate(name[name.rfind("|")+1:][1:-1],".")
+						date=QDate().fromString(name[name.rfind("|")+1:][1:-1],"yyyy.M.d")
 						name=name[:name.rfind("|")]
 					else:
 						y,m,d=url.split("/")[:3]

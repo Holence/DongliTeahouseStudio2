@@ -49,12 +49,10 @@ class DesktopButton(QPushButton):
 					data=GetWebFavIcon(self.url)
 				# 载入成功
 				if data!=None:
+					data=base64.b64encode(data)
 					self.Headquarter.cache[cache_name]=data #cache中存储
 					pixmap=QPixmap()
-					ba = QByteArray(data)
-					if not pixmap.loadFromData(ba, "ico"):
-						if not pixmap.loadFromData(ba, "png"): # 有的favicon竟然是png……
-							pixmap.loadFromData(ba, "svg") # 有的favicon竟然是svg……
+					pixmap.loadFromData(base64.b64decode(data))
 					icon=QIcon(pixmap)
 				# 载入失败
 				else:
@@ -68,10 +66,7 @@ class DesktopButton(QPushButton):
 			# cache中有
 			else:
 				pixmap=QPixmap()
-				ba = QByteArray(data)
-				if not pixmap.loadFromData(ba, "ico"):
-					if not pixmap.loadFromData(ba, "png"): # 有的favicon竟然是png……
-							pixmap.loadFromData(ba, "svg") # 有的favicon竟然是svg……
+				pixmap.loadFromData(base64.b64decode(data))
 				icon=QIcon(pixmap)
 		
 		self.setIcon(icon)

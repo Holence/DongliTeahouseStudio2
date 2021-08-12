@@ -63,7 +63,7 @@ class FileList(QListWidget):
 			url=self.item(row).toolTip().replace(self.Headquarter.library_base+"/","")
 			if url[:4]=="http":
 				name=self.item(row).text()
-				date=Str_To_QDate(name[name.rfind("|")+1:][1:-1],".")
+				date=QDate().fromString(name[name.rfind("|")+1:][1:-1],"yyyy.M.d")
 				name=name[:name.rfind("|")]
 			else:
 				y,m,d=url.split("/")[:3]
@@ -91,9 +91,12 @@ class FileList(QListWidget):
 		if event.mimeData().objectName()==self.objectName():
 			# 拖到自己
 			event.ignore()
-		elif event.mimeData().objectName()!="" and (self.objectName()=="LibraryFileTable" or self.objectName()=="LibraryFileList"):
+		elif event.mimeData().objectName()!="" and self.objectName()=="LibraryFileList":
 			# 内部不允许拖到LibraryFileTable\LibraryFileList
-			event.ignore()
+			if "Bookmark" in event.mimeData().objectName():
+				event.acceptProposedAction()
+			else:
+				event.ignore()
 		elif event.mimeData().hasUrls():
 			event.acceptProposedAction()
 		elif event.mimeData().hasText():
@@ -112,10 +115,17 @@ class FileList(QListWidget):
 		elif event.mimeData().hasText():
 			url_list=[url.strip() for url in event.mimeData().text().split()]
 		
-		try:
+		if "Bookmark" not in event.mimeData().objectName():
+			try:
+				file_list=json.loads((event.mimeData().data("FileList").data().decode("utf-8")))
+			except:
+				file_list=[]
+		else:
+			# BookmarkParser中拖出来的，先把标准型filedict放在url_list，在再drop的时候把filedict付给url_list，再把filedict置空（得算作外部的来对待），最后在headquarter的addLibraryFile的时候侦测类型
 			file_list=json.loads((event.mimeData().data("FileList").data().decode("utf-8")))
-		except:
+			url_list=copy.deepcopy(file_list)
 			file_list=[]
+		
 		self.fileDropped.emit(url_list,file_list)
 	
 	def mousePressEvent(self, event: QMouseEvent):
@@ -127,7 +137,7 @@ class FileList(QListWidget):
 				url=self.item(row).toolTip().replace(self.Headquarter.library_base+"/","")
 				if url[:4]=="http":
 					name=self.item(row).text()
-					date=Str_To_QDate(name[name.rfind("|")+1:][1:-1],".")
+					date=QDate().fromString(name[name.rfind("|")+1:][1:-1],"yyyy.M.d")
 					name=name[:name.rfind("|")]
 				else:
 					y,m,d=url.split("/")[:3]
@@ -146,7 +156,7 @@ class FileList(QListWidget):
 			url=self.currentItem().toolTip().replace(self.Headquarter.library_base+"/","")
 			if url[:4]=="http":
 				name=self.currentItem().text()
-				date=Str_To_QDate(name[name.rfind("|")+1:][1:-1],".")
+				date=QDate().fromString(name[name.rfind("|")+1:][1:-1],"yyyy.M.d")
 				old_name=name[:name.rfind("|")]
 				type=2
 			else:
@@ -182,7 +192,7 @@ class FileList(QListWidget):
 				if res!=False:
 					if type==2:
 						# link的特殊格式
-						self.currentItem().setText(new_name+"|[%s]"%QDate_to_Str(date,"."))
+						self.currentItem().setText(new_name+"|[%s]"%date.toString("yyyy.M.d"))
 					else:
 						self.currentItem().setText(new_name)
 						url=self.Headquarter.getLibraryFile(date,new_name)["url"]

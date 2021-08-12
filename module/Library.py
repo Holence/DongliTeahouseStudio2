@@ -136,8 +136,9 @@ class Library(QWidget,Ui_Library):
 		if row!=-1:
 			date,oldname=self.fileTab.currentFile()
 			newname=self.lineEdit_name.text()
-			self.Headquarter.renameLibraryFile(self.dateEdit.date(),oldname,newname)
-			self.refresh()
+			if newname!=oldname:
+				self.Headquarter.renameLibraryFile(self.dateEdit.date(),oldname,newname)
+				self.refresh()
 
 	def addFile(self,url_list,_):
 		y,m,d=WhatDayIsToday(0)
@@ -220,7 +221,7 @@ class Library(QWidget,Ui_Library):
 				url=self.fileTab.fileList.item(row).toolTip().replace(self.Headquarter.library_base+"/","")
 				if url[:4]=="http":
 					name=self.fileTab.fileList.item(row).text()
-					date=Str_To_QDate(name[name.rfind("|")+1:][1:-1],".")
+					date=QDate().fromString(name[name.rfind("|")+1:][1:-1],"yyyy.M.d")
 					name=name[:name.rfind("|")]
 				else:
 					y,m,d=url.split("/")[:3]

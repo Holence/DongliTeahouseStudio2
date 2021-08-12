@@ -81,7 +81,7 @@ class Diary(QWidget,Ui_Diary):
 			self.current_date=date
 			self.calendar.setSelectedDate(date)
 		
-		self.PAPA.setWindowTitle("Diary %s"%QDate_to_Str(date,"."))
+		self.PAPA.setWindowTitle("Diary %s"%QLocale().toString(date,"yyyy.M.d ddd"))
 		
 		day_data=self.Headquarter.getDiaryDay(date)
 		if day_data!=None:
@@ -95,6 +95,7 @@ class Diary(QWidget,Ui_Diary):
 				file_list=List_Union_Full(file_list,line["file"])
 			
 			self.textList.setTextList("Diary",date)
+			self.textList.scrollToTop()
 			self.conceptTable.setConceptIDList(concept_id_list)
 			self.fileTab.setFileList(file_list)
 			self.textViewer.setMarkdown(text)

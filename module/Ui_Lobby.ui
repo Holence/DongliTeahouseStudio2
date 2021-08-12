@@ -232,6 +232,15 @@
     <string>Ctrl+S</string>
    </property>
   </action>
+  <action name="actionImport_Bookmarks">
+   <property name="icon">
+    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
+     <normaloff>:/icon/white/white_bookmark.svg</normaloff>:/icon/white/white_bookmark.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Import Bookmarks</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
