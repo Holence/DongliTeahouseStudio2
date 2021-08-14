@@ -71,8 +71,8 @@ class DiarySession(DTFrame.DTMainWindow):
 	
 	def initializeMenu(self):
 
-		self.menu_navigate=QMenu("Navigate",self)
-		self.menu_navigate.setIcon(QIcon(":/icon/white/white_map.svg"))
+		self.menu_navigate=QMenu(QCoreApplication.translate("Diary", "Navigate"),self)
+		self.menu_navigate.setIcon(IconFromCurrentTheme("map.svg"))
 		self.menu_navigate.addAction(self.diary_module.actionPrevious_Week)
 		self.menu_navigate.addAction(self.diary_module.actionPrevious_Day)
 		self.menu_navigate.addAction(self.diary_module.actionNext_Day)
@@ -83,8 +83,8 @@ class DiarySession(DTFrame.DTMainWindow):
 		self.menu_navigate.addAction(self.diary_module.actionLast_Line)
 		self.addMenuToMainMenu(self.menu_navigate)
 		
-		self.menu_edit=QMenu("Edit",self)
-		self.menu_edit.setIcon(QIcon(":/icon/white/white_pen-tool.svg"))
+		self.menu_edit=QMenu(QCoreApplication.translate("Lobby", "Edit"),self)
+		self.menu_edit.setIcon(IconFromCurrentTheme("pen-tool.svg"))
 		self.menu_edit.addAction(self.diary_module.actionAdd_Line)
 		self.menu_edit.addAction(self.diary_module.actionAdd_Concept)
 		# self.menu_edit.addAction(self.diary_module.actionDelete)

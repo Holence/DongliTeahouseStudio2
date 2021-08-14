@@ -12,12 +12,12 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
+from widget import FileTab
 from widget import ConceptTable
 from DTPySide.DTWidget import DTPlainTextEdit
 from widget import TextList
-from widget import ConceptTree
 from widget import ConceptSearch
-from widget import FileTab
+from widget import ConceptTree
 
 import DTPySide.DT_rc
 
@@ -25,33 +25,19 @@ class Ui_Concept(object):
     def setupUi(self, Concept):
         if not Concept.objectName():
             Concept.setObjectName(u"Concept")
-        Concept.resize(884, 585)
+        Concept.resize(1034, 718)
         self.actionAdd_Concept = QAction(Concept)
         self.actionAdd_Concept.setObjectName(u"actionAdd_Concept")
-        icon = QIcon()
-        icon.addFile(u":/icon/white/white_plus.svg", QSize(), QIcon.Normal, QIcon.Off)
-        self.actionAdd_Concept.setIcon(icon)
         self.actionDelete = QAction(Concept)
         self.actionDelete.setObjectName(u"actionDelete")
-        icon1 = QIcon()
-        icon1.addFile(u":/icon/white/white_trash-2.svg", QSize(), QIcon.Normal, QIcon.Off)
-        self.actionDelete.setIcon(icon1)
         self.actionAdd_Parent = QAction(Concept)
         self.actionAdd_Parent.setObjectName(u"actionAdd_Parent")
-        icon2 = QIcon()
-        icon2.addFile(u":/icon/white/white_user-plus.svg", QSize(), QIcon.Normal, QIcon.Off)
-        self.actionAdd_Parent.setIcon(icon2)
         self.actionAdd_Child = QAction(Concept)
         self.actionAdd_Child.setObjectName(u"actionAdd_Child")
-        self.actionAdd_Child.setIcon(icon2)
         self.actionAdd_Relative = QAction(Concept)
         self.actionAdd_Relative.setObjectName(u"actionAdd_Relative")
-        self.actionAdd_Relative.setIcon(icon2)
         self.actionSearch_Concept = QAction(Concept)
         self.actionSearch_Concept.setObjectName(u"actionSearch_Concept")
-        icon3 = QIcon()
-        icon3.addFile(u":/icon/white/white_search.svg", QSize(), QIcon.Normal, QIcon.Off)
-        self.actionSearch_Concept.setIcon(icon3)
         self.horizontalLayout_3 = QHBoxLayout(Concept)
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.splitter_whole = QSplitter(Concept)
@@ -95,7 +81,7 @@ class Ui_Concept(object):
 
         self.lineEdit_name = QLineEdit(self.layoutWidget0)
         self.lineEdit_name.setObjectName(u"lineEdit_name")
-        self.lineEdit_name.setMinimumSize(QSize(350, 0))
+        self.lineEdit_name.setMinimumSize(QSize(550, 0))
 
         self.verticalLayout_info.addWidget(self.lineEdit_name)
 
@@ -111,7 +97,7 @@ class Ui_Concept(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.plainTextEdit_detail.sizePolicy().hasHeightForWidth())
         self.plainTextEdit_detail.setSizePolicy(sizePolicy)
-        self.plainTextEdit_detail.setMinimumSize(QSize(350, 0))
+        self.plainTextEdit_detail.setMinimumSize(QSize(550, 100))
 
         self.verticalLayout_info.addWidget(self.plainTextEdit_detail)
 

@@ -15,6 +15,7 @@ class TextList(QListWidget):
 
 	textDropped=Signal(list)
 	textClicked=Signal(dict)
+	textDelete=Signal()
 
 	def startDrag(self, actions:Qt.DropActions):
 		######################################################################
@@ -41,7 +42,7 @@ class TextList(QListWidget):
 		mime.setData("TextList",bytes(json.dumps(text_list),encoding="utf-8"))
 		
 		drag = QDrag(self)
-		drag.setPixmap(QIcon(":/icon/white/white_align-left.svg").pixmap(32,32))
+		drag.setPixmap(IconFromCurrentTheme("align-left.svg").pixmap(32,32))
 		drag.setMimeData(mime)
 		drag.exec_(actions)
 	
@@ -74,6 +75,29 @@ class TextList(QListWidget):
 			text_list=json.loads((event.mimeData().data("TextList").data().decode("utf-8")))
 			self.textDropped.emit(text_list)
 	
+	def mousePressEvent(self, event: QMouseEvent):
+		if event.button()==Qt.RightButton and "DiarySearch" not in self.objectName():
+			if len(self.selectionModel().selectedRows())==0:
+				super().mousePressEvent(event)
+			
+			if len(self.selectionModel().selectedRows())>0:
+				pos=event.pos()
+				menu=QMenu()
+				menu.setStyleSheet("font-size:12pt")
+
+				def slotDelete():
+					self.textDelete.emit()
+				
+				actionDelete=QAction(QCoreApplication.translate("Diary", "Delete"))
+				actionDelete.setIcon(IconFromCurrentTheme("trash-2.svg"))
+				actionDelete.triggered.connect(slotDelete)
+				menu.addAction(actionDelete)
+				pos=self.mapToGlobal(pos)
+				menu.exec_(pos)
+		else:
+			super().mousePressEvent(event)
+
+
 	def __init__(self, parent):
 		super().__init__(parent=parent)
 		self.setStyleSheet("QListWidget{ font-size: 18pt; } QListWidget::item{ border: transparent; border-radius: 10px;}")
@@ -111,7 +135,7 @@ class TextList(QListWidget):
 				have_concept=int(line["concept"]!=[])
 				have_file=int(line["file"]!=[])
 				item=QListWidgetItem(line["text"])
-				item.setIcon(QIcon("./icon/line_%s%s.png"%(have_concept,have_file)))
+				item.setIcon(QIcon("./icon/%s/line_%s%s.png"%(QIcon.themeName(),have_concept,have_file)))
 				self.addItem(item)
 				
 				self.text_list.append({

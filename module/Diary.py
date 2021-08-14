@@ -29,6 +29,22 @@ class Diary(QWidget,Ui_Diary):
 		self.fileTab.fileTable.setObjectName("DiaryFileTable%s"%len(self.Headquarter.diary_heap)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
 		self.fileTab.fileList.setObjectName("DiaryFileList%s"%len(self.Headquarter.diary_heap)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
 
+		self.actionSwitch_Eidt_View.setIcon(IconFromCurrentTheme("slack.svg"))
+		
+		self.actionPrevious_Week.setIcon(IconFromCurrentTheme("chevron-up.svg"))
+		self.actionPrevious_Day.setIcon(IconFromCurrentTheme("chevron-up.svg"))
+		self.actionPrevious_Line.setIcon(IconFromCurrentTheme("chevron-up.svg"))
+		self.actionFirst_Line.setIcon(IconFromCurrentTheme("chevron-up.svg"))
+
+		self.actionNext_Day.setIcon(IconFromCurrentTheme("chevron-down.svg"))
+		self.actionNext_Week.setIcon(IconFromCurrentTheme("chevron-down.svg"))
+		self.actionNext_Line.setIcon(IconFromCurrentTheme("chevron-down.svg"))
+		self.actionLast_Line.setIcon(IconFromCurrentTheme("chevron-down.svg"))
+
+		self.actionAdd_Line.setIcon(IconFromCurrentTheme("plus.svg"))
+		self.actionAdd_Concept.setIcon(IconFromCurrentTheme("hash.svg"))
+		self.actionFind_Text.setIcon(IconFromCurrentTheme("search.svg"))
+
 		self.CalendarPaintMonth()
 	
 	def initializeSignal(self):
@@ -45,6 +61,10 @@ class Diary(QWidget,Ui_Diary):
 		self.actionLast_Line.triggered.connect(self.toLastLine)
 
 		self.actionDelete.triggered.connect(self.deleteCenter)
+		self.textList.textDelete.connect(self.deleteLine)
+		self.fileTab.fileTable.fileDelete.connect(self.deleteLineFile)
+		self.fileTab.fileList.fileDelete.connect(self.deleteLineFile)
+		self.conceptTable.conceptDelete.connect(self.deleteLineConcept)
 		
 		# 点击日期
 		self.calendar.clicked.connect(self.showDay)
@@ -71,9 +91,10 @@ class Diary(QWidget,Ui_Diary):
 	
 	def CalendarPaintMonth(self):
 		format = QTextCharFormat()
-		format.setForeground(QColor("#FFA0A0"))
+		format.setForeground(QColor("#FFADAD"))
 		year=self.calendar.yearShown()
 		month=self.calendar.monthShown()
+		self.label_calendar.setText("%s.%s"%(year,month))
 		begin=QDate(year,month,1)
 		end=begin.daysInMonth()
 		end=QDate(year,month,end)
@@ -274,7 +295,7 @@ class Diary(QWidget,Ui_Diary):
 		})
 		
 		item=QListWidgetItem("")
-		item.setIcon(QIcon("./icon/line_00.png"))
+		item.setIcon(QIcon("./icon/%s/line_00.png"%QIcon.themeName()))
 		self.textList.setTextList("Diary",self.current_date)
 		self.textList.setCurrentRow(index+1) # 这里会触发self.textList.currentRowChanged而进行showLine
 		self.textList.scrollToItem(item)
@@ -306,7 +327,12 @@ class Diary(QWidget,Ui_Diary):
 						name,new_file=res
 
 						# line中添加file
-						line["file"].append(self.Headquarter.generateDiaryConceptFileDict(date,new_file["type"],name,new_file["url"]))
+						if type(url)==dict:
+							# BookmarkParser来的标准型filedict，就不用去获取网页title了，ymd也不是当日，而是收藏夹中的日期
+							file=url
+							line["file"].append(self.Headquarter.generateDiaryConceptFileDict(QDate(file["y"],file["m"],file["d"]),new_file["type"],name,new_file["url"]))
+						else:
+							line["file"].append(self.Headquarter.generateDiaryConceptFileDict(date,new_file["type"],name,new_file["url"]))
 					else:
 						# 失败
 						continue
@@ -328,14 +354,14 @@ class Diary(QWidget,Ui_Diary):
 		index=self.textList.currentRow()
 		if index!=-1:
 			day_data=self.Headquarter.getDiaryDay(self.current_date)
-			warning_text="You want to delete text:\n\n"
+			warning_text=""
 			delete_index=[]
 			for model_index in self.textList.selectionModel().selectedRows():
 				index=model_index.row()
 				warning_text+=day_data[index]["text"]+"\n"
 				delete_index.append(index)
 			
-			if DTFrame.DTConfirmBox(self,"Delete Confirm",warning_text,DTIcon.Question()).exec_():
+			if DTFrame.DTConfirmBox(self,"Delete Confirm","You want to delete text:",DTIcon.Question(),warning_text).exec_():
 				# 这里不能用day_data=self.Headquarter.getDiaryDay()，然后day_data=[...]
 				# 因为diary_data[y][m][d]中，d是字典的键，day_data是作为d索引的值（即使day_data是列表，是不可变对象）
 				# 被取出来的不是指针，而是d索引的值
@@ -355,7 +381,7 @@ class Diary(QWidget,Ui_Diary):
 			line=self.Headquarter.getDiaryDayLine(self.current_date,index)
 			
 			delete_id_list=[]
-			warning_text="You want to delete line linked concept:\n\n"
+			warning_text=""
 			for model_index in self.conceptTable.selectionModel().selectedRows():
 				row=model_index.row()
 				id=int(self.conceptTable.item(row,0).text())
@@ -364,7 +390,7 @@ class Diary(QWidget,Ui_Diary):
 				warning_text+="%s: %s\n"%(id,self.Headquarter.getConcept(id)["name"])
 	
 			if delete_id_list!=[]:
-				if DTFrame.DTConfirmBox(self,"Delete Confirm",warning_text,DTIcon.Question()).exec_():
+				if DTFrame.DTConfirmBox(self,"Delete Confirm","You want to delete line linked concept:",DTIcon.Question(),warning_text).exec_():
 					line["concept"]=List_Difference(line["concept"],delete_id_list)
 					self.refresh()
 	
@@ -375,14 +401,14 @@ class Diary(QWidget,Ui_Diary):
 			line=self.Headquarter.getDiaryDayLine(self.current_date,index)
 			
 			delete_filename_list=[]
-			warning_text="You want to delete line linked file:\n\n"
+			warning_text=""
 			if self.fileTab.stackedWidget.currentIndex()==0:
 				for model_index in self.fileTab.fileTable.selectionModel().selectedRows():
 					row=model_index.row()
 					filename=self.fileTab.fileTable.item(row,3).text()
 				
 					delete_filename_list.append(filename)
-					warning_text+="%s\n"%(filename)
+					warning_text+="%s\n\n"%(filename)
 			else:
 				for model_index in self.fileTab.fileList.selectionModel().selectedRows():
 					row=model_index.row()
@@ -395,13 +421,15 @@ class Diary(QWidget,Ui_Diary):
 						name=self.fileTab.fileList.item(row).text()
 
 					delete_filename_list.append(name)
-					warning_text+="%s\n"%(name)
+					warning_text+="%s\n\n"%(name)
 	
 			if delete_filename_list!=[]:
-				if DTFrame.DTConfirmBox(self,"Delete Confirm",warning_text,DTIcon.Question()).exec_():
+				if DTFrame.DTConfirmBox(self,"Delete Confirm","You want to delete line linked file:",DTIcon.Question(),warning_text).exec_():
 					line["file"]=[file for file in line["file"] if file["name"] not in delete_filename_list]
 					self.refresh()
-	
+		else:
+			DTFrame.DTMessageBox(self,"Warning","Please select line first, then select the file to delete.",DTIcon.Warning())
+		
 	def findText(self):
 		def slot():
 			del self.dairy_search_window
@@ -414,3 +442,4 @@ class Diary(QWidget,Ui_Diary):
 		self.dairy_search_window=DiarySearchSession(self.Headquarter.app,self.Headquarter,self)
 		self.dairy_search_window.closed.connect(slot)
 		self.dairy_search_window.show()
+		self.dairy_search_window.setGeometry(self.window().x()+50,self.window().y()+50,self.dairy_search_window.minimumWidth(),self.dairy_search_window.minimumHeight())

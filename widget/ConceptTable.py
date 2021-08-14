@@ -8,6 +8,7 @@ class ConceptTable(DTWidget.DTHorizontalTabel):
 	conceptDoubleClicked=Signal(int)
 	conceptDropped=Signal(list)
 	conceptReturnPressed=Signal(int)
+	conceptDelete=Signal()
 
 	def keyPressEvent(self, event: QKeyEvent):
 		if event.key()==Qt.Key_Return:
@@ -42,7 +43,7 @@ class ConceptTable(DTWidget.DTHorizontalTabel):
 		mime.setText(id_list)
 		
 		drag = QDrag(self)
-		drag.setPixmap(QIcon(":/icon/white/white_hash.svg").pixmap(32,32))
+		drag.setPixmap(IconFromCurrentTheme("hash.svg").pixmap(32,32))
 		drag.setMimeData(mime)
 		drag.exec_(actions)
 	
@@ -59,10 +60,32 @@ class ConceptTable(DTWidget.DTHorizontalTabel):
 		id_list=list(map(int,event.mimeData().text().split()))
 		self.conceptDropped.emit(id_list)
 
+	def mousePressEvent(self, event: QMouseEvent):
+		if event.button()==Qt.RightButton:
+			if len(self.selectionModel().selectedRows())==0:
+				super().mousePressEvent(event)
+			
+			if len(self.selectionModel().selectedRows())>0:
+				pos=event.pos()
+				menu=QMenu()
+				menu.setStyleSheet("font-size:12pt")
+
+				def slotDelete():
+					self.conceptDelete.emit()
+				
+				actionDelete=QAction(QCoreApplication.translate("Concept", "Delete"))
+				actionDelete.setIcon(IconFromCurrentTheme("trash-2.svg"))
+				actionDelete.triggered.connect(slotDelete)
+				menu.addAction(actionDelete)
+				pos=self.mapToGlobal(pos)+QPoint(0,self.horizontalHeader().height())
+				menu.exec_(pos)
+		else:
+			super().mousePressEvent(event)
+
 	def __init__(self, parent):
 		super().__init__(parent=parent)
 		self.setMinimumHeight(150)
-		self.setColumn(["ID","Name"])
+		self.setColumn([QCoreApplication.translate("Concept", "ID"),QCoreApplication.translate("Concept", "Name")])
 
 		self.itemClicked.connect(self.itemClickedSlot)
 		self.itemDoubleClicked.connect(self.itemDoubleClickedSlot)

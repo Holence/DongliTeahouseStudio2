@@ -19,7 +19,8 @@ class Ui_BookmarkParser(object):
     def setupUi(self, BookmarkParser):
         if not BookmarkParser.objectName():
             BookmarkParser.setObjectName(u"BookmarkParser")
-        BookmarkParser.resize(995, 664)
+        BookmarkParser.resize(1000, 600)
+        BookmarkParser.setMinimumSize(QSize(1000, 600))
         self.verticalLayout_3 = QVBoxLayout(BookmarkParser)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.pushButton_open = QPushButton(BookmarkParser)

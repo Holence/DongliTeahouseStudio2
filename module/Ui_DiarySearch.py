@@ -19,7 +19,8 @@ class Ui_DiarySearch(object):
     def setupUi(self, DiarySearch):
         if not DiarySearch.objectName():
             DiarySearch.setObjectName(u"DiarySearch")
-        DiarySearch.resize(485, 566)
+        DiarySearch.resize(600, 500)
+        DiarySearch.setMinimumSize(QSize(600, 500))
         self.verticalLayout = QVBoxLayout(DiarySearch)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.horizontalLayout = QHBoxLayout()

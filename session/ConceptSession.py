@@ -76,8 +76,8 @@ class ConceptSession(DTFrame.DTMainWindow):
 	
 	def initializeMenu(self):
 
-		self.menu_edit=QMenu("Edit",self)
-		self.menu_edit.setIcon(QIcon(":/icon/white/white_pen-tool.svg"))
+		self.menu_edit=QMenu(QCoreApplication.translate("Lobby", "Edit"),self)
+		self.menu_edit.setIcon(IconFromCurrentTheme("pen-tool.svg"))
 		self.menu_edit.addAction(self.concept_module.actionAdd_Concept)
 		self.menu_edit.addAction(self.concept_module.actionAdd_Parent)
 		self.menu_edit.addAction(self.concept_module.actionAdd_Child)

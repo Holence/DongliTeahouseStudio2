@@ -54,12 +54,6 @@ class LibrarySession(DTFrame.DTMainWindow):
 	
 	def initializeMenu(self):
 		
-		# self.menu_edit=QMenu("Edit",self)
-		# self.menu_edit.setIcon(QIcon(":/icon/white/white_pen-tool.svg"))
-		# self.menu_edit.addAction(self.library_module.actionDelete)
-		# self.addMenuToMainMenu(self.menu_edit)
-
-		# self.addSeparatorToMainMenu()
 		self.addActionToMainMenu(self.library_module.actionSearch_File)
 		
 		super().initializeMenu()

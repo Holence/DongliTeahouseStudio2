@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>727</width>
-    <height>465</height>
+    <width>900</width>
+    <height>600</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>900</width>
+    <height>600</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Library</string>
@@ -66,7 +72,7 @@
         <widget class="QDateEdit" name="dateEdit">
          <property name="minimumSize">
           <size>
-           <width>300</width>
+           <width>400</width>
            <height>0</height>
           </size>
          </property>
@@ -86,7 +92,7 @@
         <widget class="QLineEdit" name="lineEdit_name">
          <property name="minimumSize">
           <size>
-           <width>300</width>
+           <width>400</width>
            <height>0</height>
           </size>
          </property>
@@ -133,12 +139,6 @@
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>250</width>
-               <height>0</height>
-              </size>
              </property>
             </widget>
            </item>
@@ -206,10 +206,6 @@
    </item>
   </layout>
   <action name="actionDelete">
-   <property name="icon">
-    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
-     <normaloff>:/icon/white/white_trash-2.svg</normaloff>:/icon/white/white_trash-2.svg</iconset>
-   </property>
    <property name="text">
     <string>Delete</string>
    </property>
@@ -218,10 +214,6 @@
    </property>
   </action>
   <action name="actionSearch_File">
-   <property name="icon">
-    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
-     <normaloff>:/icon/white/white_search.svg</normaloff>:/icon/white/white_search.svg</iconset>
-   </property>
    <property name="text">
     <string>Search File</string>
    </property>
@@ -232,6 +224,12 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>FileTab</class>
+   <extends>QWidget</extends>
+   <header>widget</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>ConceptTable</class>
    <extends>QTableWidget</extends>
    <header>widget</header>
@@ -240,12 +238,6 @@
    <class>TextList</class>
    <extends>QListWidget</extends>
    <header>widget</header>
-  </customwidget>
-  <customwidget>
-   <class>FileTab</class>
-   <extends>QWidget</extends>
-   <header>widget</header>
-   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

@@ -4,6 +4,7 @@ from DTPySide import *
 class FileList(QListWidget):
 
 	fileDropped=Signal(list,list)
+	fileDelete=Signal()
 
 	def eventFilter(self, watched: QObject, event:QEvent) -> bool:
 		if event.type()==QEvent.KeyPress:
@@ -83,7 +84,7 @@ class FileList(QListWidget):
 		mime.setData("FileList",bytes(json.dumps(file_list),encoding="utf-8"))
 		
 		drag = QDrag(self)
-		drag.setPixmap(QIcon(":/icon/white/white_inbox.svg").pixmap(32,32))
+		drag.setPixmap(IconFromCurrentTheme("inbox.svg").pixmap(32,32))
 		drag.setMimeData(mime)
 		drag.exec_(actions)
 	
@@ -94,12 +95,14 @@ class FileList(QListWidget):
 		elif event.mimeData().objectName()!="" and self.objectName()=="LibraryFileList":
 			# 内部不允许拖到LibraryFileTable\LibraryFileList
 			if "Bookmark" in event.mimeData().objectName():
+				# Bookmark的算作外来，可以拖到LibraryFileTable\LibraryFileList
 				event.acceptProposedAction()
 			else:
 				event.ignore()
 		elif event.mimeData().hasUrls():
 			event.acceptProposedAction()
 		elif event.mimeData().hasText():
+			# Text形式的url批量导入
 			if [False for url in event.mimeData().text().split() if "http" not in url].count(False)==0:
 				event.acceptProposedAction()
 	
@@ -210,59 +213,85 @@ class FileList(QListWidget):
 				DTFrame.DTMessageBox(self.window(),"Warning","%s does not exist! Try running Check Library.\n\n%s"%(url,e),DTIcon.Warning())
 		
 		def slotCopy():
+			copy_list=[]
+			for model_index in self.selectionModel().selectedRows():
+				row=model_index.row()
+				url=self.item(row).toolTip().replace("/","\\")
+				if url[:4]!="http":
+					copy_list.append(url)
+			
+			if copy_list==[]:
+				DTFrame.DTMessageBox(self.window(),"Warning","There is nothing can be copied.",DTIcon.Warning())
+				return
+				
 			dlg=QFileDialog(self)
 			dst=dlg.getExistingDirectory().replace("/","\\")
 			if dst!="":
-				copy_list=[]
-				for model_index in self.selectionModel().selectedRows():
-					row=model_index.row()
-					url=self.item(row).toolTip().replace("/","\\")
-					if url[:4]!="http":
-						copy_list.append(url)
 				try:
 					res=Win32_Shellcopy(copy_list,dst)
 					if res==True:
 						os.startfile(dst)
 					else:
-						DTFrame.DTMessageBox(self.window(),"Error","Copy Failed",DTIcon.Warning())
+						DTFrame.DTMessageBox(self.window(),"Error","Copy Failed",DTIcon.Error())
 				except Exception as e:
-					DTFrame.DTMessageBox(self.window(),"Error","Error occured: %s\n\nTry running Check Library."%e,DTIcon.Warning())
-
+					DTFrame.DTMessageBox(self.window(),"Error","Error occured: %s\n\nTry running Check Library."%e,DTIcon.Error())
+		
+		def slotDelete():
+			self.fileDelete.emit()
+		
+		if "Bookmark" in self.objectName():
+			super().mousePressEvent(event)
+			return
+		
 		pos=event.pos()
 		if event.button()==Qt.RightButton:
 			
+			if len(self.selectionModel().selectedRows())==0:
+				super().mousePressEvent(event)
+			
 			if len(self.selectionModel().selectedRows())>0:
 				menu=QMenu()
-				action1=QAction("Refresh Icon")
-				action1.triggered.connect(slotRefresh)
-				menu.addAction(action1)
+				menu.setStyleSheet("font-size:12pt")
 
 				name=self.item(self.currentRow()).text()
 				ext=os.path.splitext(name)[1][1:]
 				if len(self.selectionModel().selectedRows())==1:
-					action2=QAction("Rename")
-					action2.triggered.connect(slotRename)
-					menu.addAction(action2)
+					actionRename=QAction(QCoreApplication.translate("Library", "Rename"))
+					actionRename.triggered.connect(slotRename)
+					actionRename.setIcon(IconFromCurrentTheme("edit-3.svg"))
+					menu.addAction(actionRename)
 					
 					from filetype import image_extension
 					if ext.lower() in image_extension:
-						action3=QAction("View in ImageViewer")
-						action3.triggered.connect(slotImage)
-						menu.addAction(action3)
+						actionViewImage=QAction(QCoreApplication.translate("Library", "View in ImageViewer"))
+						actionViewImage.triggered.connect(slotImage)
+						actionViewImage.setIcon(IconFromCurrentTheme("image.svg"))
+						menu.addAction(actionViewImage)
 					
 					if "|" not in name:
-						action4=QAction("Open File Location")
-						action4.triggered.connect(slotLocation)
-						menu.addAction(action4)
+						actionOpenLocation=QAction(QCoreApplication.translate("Library", "Open File Location"))
+						actionOpenLocation.triggered.connect(slotLocation)
+						actionOpenLocation.setIcon(IconFromCurrentTheme("folder.svg"))
+						menu.addAction(actionOpenLocation)
 
-				if "|" not in name:
-					action5=QAction("Copy to...")
-					action5.triggered.connect(slotCopy)
-					menu.addAction(action5)
+				# if "|" not in name:
+				actionCopy=QAction(QCoreApplication.translate("Library", "Copy to..."))
+				actionCopy.triggered.connect(slotCopy)
+				actionCopy.setIcon(IconFromCurrentTheme("copy.svg"))
+				menu.addAction(actionCopy)
+				
+				actionRefreshIcon=QAction(QCoreApplication.translate("Library", "Refresh Icon"))
+				actionRefreshIcon.triggered.connect(slotRefresh)
+				actionRefreshIcon.setIcon(IconFromCurrentTheme("refresh-cw.svg"))
+				menu.addAction(actionRefreshIcon)
+
+				actionDelete=QAction(QCoreApplication.translate("Library", "Delete"))
+				actionDelete.triggered.connect(slotDelete)
+				actionDelete.setIcon(IconFromCurrentTheme("trash-2.svg"))
+				menu.addAction(actionDelete)
 				
 				pos=self.mapToGlobal(pos)
 				menu.exec_(pos)
-			
 		else:
 			super().mousePressEvent(event)
 	

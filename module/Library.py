@@ -25,8 +25,14 @@ class Library(QWidget,Ui_Library):
 		self.conceptTable.setHeadquarter(self.Headquarter)
 		self.conceptTable.setObjectName("LibraryConceptTable%s"%len(self.Headquarter.library_heap)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
 
+		self.actionSearch_File.setIcon(IconFromCurrentTheme("search.svg"))
+
 	def initializeSignal(self):
 		self.actionDelete.triggered.connect(self.deleteCenter)
+		self.fileTab.fileTable.fileDelete.connect(self.deleteFile)
+		self.fileTab.fileList.fileDelete.connect(self.deleteFile)
+		self.conceptTable.conceptDelete.connect(self.deleteFileConcept)
+		self.textList.textDelete.connect(self.deleteFileText)
 		
 		self.actionSearch_File.triggered.connect(self.lineEdit_search.setFocus)
 		
@@ -198,7 +204,7 @@ class Library(QWidget,Ui_Library):
 	
 	def deleteFile(self):
 		delete_file_list=[]
-		warning_text="You want to delete file:\n\n"
+		warning_text=""
 		if self.fileTab.stackedWidget.currentIndex()==0:
 			for model_index in self.fileTab.fileTable.selectionModel().selectedRows():
 				row=model_index.row()
@@ -235,13 +241,13 @@ class Library(QWidget,Ui_Library):
 					warning_text+="%s\n"%url
 		
 		if delete_file_list!=[]:
-			if DTFrame.DTConfirmBox(self,"Delete Confirm",warning_text,DTIcon.Question()).exec_():
+			if DTFrame.DTConfirmBox(self,"Delete Confirm","You want to delete file:",DTIcon.Question(),warning_text).exec_():
 				self.Headquarter.deleteLibraryFile(delete_file_list)
 				self.refresh()
 
 	def deleteFileConcept(self):
 
-		warning_text="You want to delete linked file in concept:\n\n"
+		warning_text=""
 		delete_id_list=[]
 		for model_index in self.conceptTable.selectionModel().selectedRows():
 			row=model_index.row()
@@ -250,7 +256,7 @@ class Library(QWidget,Ui_Library):
 			warning_text+="%s: %s\n"%(id,self.Headquarter.getConcept(id)["name"])
 		
 		if delete_id_list!=[]:
-			if DTFrame.DTConfirmBox(self,"Delete Confirm",warning_text,DTIcon.Question()).exec_():
+			if DTFrame.DTConfirmBox(self,"Delete Confirm","You want to delete linked file in concept:",DTIcon.Question(),warning_text).exec_():
 				date=self.dateEdit.date()
 				name=self.lineEdit_name.text()
 				current_file=self.Headquarter.getLibraryFile(self.dateEdit.date(),name)
@@ -267,7 +273,7 @@ class Library(QWidget,Ui_Library):
 				self.showFile()
 	
 	def deleteFileText(self):
-		warning_text="You want to delete linked file in text:\n\n"
+		warning_text=""
 		delete_text_list=[]
 		for model_index in self.textList.selectionModel().selectedRows():
 			index=model_index.row()
@@ -276,7 +282,7 @@ class Library(QWidget,Ui_Library):
 			warning_text+=self.textList.item(index).text()+"\n\n"
 		
 		if delete_text_list!=[]:
-			if DTFrame.DTConfirmBox(self,"Delete Confirm",warning_text,DTIcon.Question()).exec_():
+			if DTFrame.DTConfirmBox(self,"Delete Confirm","You want to delete linked file in text:",DTIcon.Question(),warning_text).exec_():
 				date=self.dateEdit.date()
 				name=self.lineEdit_name.text()
 				current_file=self.Headquarter.getLibraryFile(self.dateEdit.date(),name)

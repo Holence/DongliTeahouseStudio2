@@ -29,6 +29,7 @@ class LobbySession(DTSession.DTMainSession):
 		self.__WindowFocusing=which
 	
 	def loadData(self):
+		
 		if os.path.exists("data.dlcw"):
 			self.data=Fernet_Decrypt_Load(self.password(),"data.dlcw")
 			if self.data==False:
@@ -95,16 +96,28 @@ class LobbySession(DTSession.DTMainSession):
 		super().initializeSignal()
 		self.installEventFilter(self)
 		self.refreshModuleSingal()
-		self.addAction(self.lobby.actionCheck_Data_Completeness)
 		self.addAction(self.lobby.actionSave_Data)
+
+		# 全局快捷键
+		self.actionBoss_Key.setShortcutContext(Qt.ApplicationShortcut)
 	
 	def initializeMenu(self):
 		self.addActionToMainMenu(self.lobby.actionSwitch_Secure_Mode)
-		self.addActionToMainMenu(self.lobby.actionCheck_Library)
-		self.addActionToMainMenu(self.lobby.actionCheck_Data_Completeness)
-		self.addSeparatorToMainMenu()
-		self.addActionToMainMenu(self.lobby.actionExport_to_Json)
-		self.addActionToMainMenu(self.lobby.actionImport_Bookmarks)
+
+		menuDataSecurity=QMenu(QCoreApplication.translate("Lobby","Data Security"),self)
+		menuDataSecurity.setIcon(IconFromCurrentTheme("shield.svg"))
+		menuDataSecurity.addAction(self.lobby.actionCheck_Library)
+		menuDataSecurity.addAction(self.lobby.actionCheck_Data_Completeness)
+		self.addMenuToMainMenu(menuDataSecurity)
+
+		menuDataTransfer=QMenu(QCoreApplication.translate("Lobby","Data Transfer"),self)
+		menuDataTransfer.setIcon(IconFromCurrentTheme("send.svg"))
+		menuDataTransfer.addAction(self.lobby.actionExport_Diary_to_Json)
+		menuDataTransfer.addAction(self.lobby.actionExport_Concept_to_Json)
+		menuDataTransfer.addAction(self.lobby.actionExport_Library_to_Json)
+		menuDataTransfer.addAction(self.lobby.actionImport_Bookmarks)
+		self.addMenuToMainMenu(menuDataTransfer)
+		
 		self.addActionToMainMenu(self.lobby.actionSave_Data)
 		super().initializeMenu()
 
@@ -258,25 +271,25 @@ class LobbySession(DTSession.DTMainSession):
 			if end==None:
 				end=QDate(begin)
 
-			while begin<=end:
-				year,month,day=QDate_to_Tuple(begin)
-				try:
-					index=0
-					for line in self.data[0][str(year)][str(month)][str(day)]:
-						line_list.append({
-							"y":int(year),
-							"m":int(month),
-							"d":int(day),
-							"text":line["text"],
-							"concept":line["concept"],
-							"concept_az":[self.data[1][id]["az"] for id in line["concept"]],
-							"index":index,
-							"rank":0
-						})
-						index+=1
-				except:
-					pass
-				begin=begin.addDays(1)
+			# 因为Diary Data的dict是排好序的，就可以最直接遍历了
+			for year in self.data[0]:
+				for month in self.data[0][year]:
+					for day in self.data[0][year][month]:
+						current_date=QDate(int(year),int(month),int(day))
+						if begin<=current_date<=end:
+							index=0
+							for line in self.data[0][str(year)][str(month)][str(day)]:
+								line_list.append({
+									"y":int(year),
+									"m":int(month),
+									"d":int(day),
+									"text":line["text"],
+									"concept":line["concept"],
+									"concept_az":[self.data[1][id]["az"] for id in line["concept"]],
+									"index":index,
+									"rank":0
+								})
+								index+=1
 		
 		def namelist_in_text(text):
 			# 判断文本是否包含搜索列表中的所有元素，如果全部包含则返回非零值（True），否则返回0（False）
@@ -570,24 +583,23 @@ class LobbySession(DTSession.DTMainSession):
 			if end==None:
 				end=QDate(begin)
 
-			while begin<=end:
-				y,m,d=QDate_to_Tuple(begin)
-				try:
-					for file_name,file in self.data[2][str(y)][str(m)][str(d)].items():
-						file_list.append({
-							"y":y,
-							"m":m,
-							"d":d,
-							"type":file["type"],
-							"name":file_name,
-							"url":file["url"],
-							"concept":file["concept"],
-							"concept_az":[self.data[1][id]["az"] for id in file["concept"]]
-						})
-				except:
-					pass
-				
-				begin=begin.addDays(1)
+			# 因为Library Data的dict是排好序的，就可以最直接遍历了
+			for y in self.data[2]:
+				for m in self.data[2][y]:
+					for d in self.data[2][y][m]:
+						current_date=QDate(int(y),int(m),int(d))
+						if begin<=current_date<=end:
+							for file_name,file in self.data[2][str(y)][str(m)][str(d)].items():
+								file_list.append({
+									"y":int(y),
+									"m":int(m),
+									"d":int(d),
+									"type":file["type"],
+									"name":file_name,
+									"url":file["url"],
+									"concept":file["concept"],
+									"concept_az":[self.data[1][id]["az"] for id in file["concept"]]
+								})
 		
 		def namelist_in_filename(file_name):
 			# 判断文件名是否包含搜索name列表中的所有元素，如果全部包含则返回非零值（True），否则返回0（False）
@@ -746,9 +758,11 @@ class LobbySession(DTSession.DTMainSession):
 
 		if self.data[2].get(y)==None:
 			self.data[2][y]={}
+			self.data[2]=dict(sorted(self.data[2].items(),key=lambda x:int(x[0])))
 		
 		if self.data[2][y].get(m)==None:
 			self.data[2][y][m]={}
+			self.data[2][y]=dict(sorted(self.data[2][y].items(),key=lambda x:int(x[0])))
 		
 		if self.data[2][y][m].get(d)==None:
 			self.data[2][y][m][d]={}
@@ -759,6 +773,8 @@ class LobbySession(DTSession.DTMainSession):
 			"url": url
 		}
 		
+		self.data[2][y][m]=dict(sorted(self.data[2][y][m].items(),key=lambda x:int(x[0])))
+
 		return name,self.data[2][y][m][d][name]
 	
 	def renameLibraryFile(self,date:QDate,old_name,new_name,rename_operation=True):
@@ -894,6 +910,68 @@ class LobbySession(DTSession.DTMainSession):
 		(2021.7.4) [ConceptA] name
 		(2021.7.4-2021.7.21) [ConceptA] [Concept B] name
 		"""
+		
+		def parseDateOne(i):
+
+			# (2021)==(2021.1.1-2021.12.31)
+			if i.count(".")==0 and i.isdigit():
+				begin=QDate(int(i),1,1)
+				end=QDate(int(i),12,31)
+				if begin.isValid():
+					return (begin,end)
+			
+			# (2021.7)==(2021.7.1-2021.7.31)
+			elif i.count(".")==1:
+				try:
+					y,m=map(int,i.split("."))
+					begin=QDate(y,m,1)
+					if begin.isValid():
+						end=begin.daysInMonth()
+						end=QDate(y,m,end)
+						return (begin,end)
+				except:
+					return None
+			# (2021.7.20)
+			elif i.count(".")==2:
+				try:
+					y,m,d=map(int,i.split("."))
+					date=QDate(y,m,d)
+					if date.isValid():
+						return (date)
+				except:
+					return None
+			
+			return None
+		
+		def parseDateTwo(i):
+			# (2021)==(2021.1.1)
+			if i.count(".")==0 and i.isdigit():
+				date=QDate(int(i),1,1)
+				if date.isValid():
+					return date
+			
+			# (2021.7)==(2021.7.1)
+			elif i.count(".")==1:
+				try:
+					y,m=map(int,i.split("."))
+					date=QDate(y,m,1)
+					if date.isValid():
+						return date
+				except:
+					return None
+			# (2021.7.20)
+			elif i.count(".")==2:
+				try:
+					y,m,d=map(int,i.split("."))
+					date=QDate(y,m,d)
+					if date.isValid():
+						return date
+				except:
+					return None
+			
+			return None
+		
+
 		if search.strip()!="":
 			search=" "+search+" "
 			
@@ -918,39 +996,18 @@ class LobbySession(DTSession.DTMainSession):
 			search=re.sub("\(.*?\)","",search)
 			for i in date_str_list:
 				if i.count("-")==0:
-					
-					# (2021)==(2021.1.1-2021.12.31)
-					if i.count(".")==0 and i.isdigit():
-						date_range_list.append((QDate(int(i),1,1),QDate(int(i),12,31)))
-					
-					# (2021.7)==(2021.7.1-2021.7.31)
-					elif i.count(".")==1:
-						try:
-							y,m=map(int,i.split("."))
-							begin=QDate(y,m,1)
-							if begin.isValid():
-								end=begin.daysInMonth()
-								end=QDate(y,m,end)
-								date_range_list.append((begin,end))
-						except:
-							pass
-					# (2021.7.20)
-					elif i.count(".")==2:
-						try:
-							y,m,d=map(int,i.split("."))
-							date=QDate(y,m,d)
-							if date.isValid():
-								date_range_list.append(date)
-						except:
-							pass
-				# (2021.1.1-2021.12.31)
-				elif i.count("-")==1 and i.count(".")==4:
+					# (2021) \ (2021.7) \ (2021.7.1)
+					res=parseDateOne(i)
+					if res!=None:
+						date_range_list.append(res)
+				
+				elif i.count("-")==1:
+					# (2021-2021.7) \ (2021.1.1-2021.12.31) \ ...
 					try:
 						begin,end=i.split("-")
-						by,bm,bd=map(int,begin.split("."))
-						ey,em,ed=map(int,end.split("."))
-						begin,end=QDate(by,bm,bd),QDate(ey,em,ed)
-						if begin.isValid() and end.isValid():
+						begin=parseDateTwo(begin)
+						end=parseDateTwo(end)
+						if begin!=None and end!=None:
 							date_range_list.append((begin,end))
 					except:
 						pass

@@ -54,10 +54,6 @@
        <property name="text">
         <string/>
        </property>
-       <property name="icon">
-        <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
-         <normaloff>:/icon/white/white_inbox.svg</normaloff>:/icon/white/white_inbox.svg</iconset>
-       </property>
        <property name="iconSize">
         <size>
          <width>64</width>
@@ -92,10 +88,6 @@
        <property name="text">
         <string/>
        </property>
-       <property name="icon">
-        <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
-         <normaloff>:/icon/white/white_hash.svg</normaloff>:/icon/white/white_hash.svg</iconset>
-       </property>
        <property name="iconSize">
         <size>
          <width>64</width>
@@ -129,10 +121,6 @@
        </property>
        <property name="text">
         <string/>
-       </property>
-       <property name="icon">
-        <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
-         <normaloff>:/icon/white/white_feather.svg</normaloff>:/icon/white/white_feather.svg</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -178,29 +166,12 @@
     </widget>
    </item>
   </layout>
-  <action name="actionExport_to_Json">
-   <property name="icon">
-    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
-     <normaloff>:/icon/white/white_upload-cloud.svg</normaloff>:/icon/white/white_upload-cloud.svg</iconset>
-   </property>
-   <property name="text">
-    <string>Export to Json</string>
-   </property>
-  </action>
   <action name="actionCheck_Library">
-   <property name="icon">
-    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
-     <normaloff>:/icon/white/white_crosshair.svg</normaloff>:/icon/white/white_crosshair.svg</iconset>
-   </property>
    <property name="text">
     <string>Check Library</string>
    </property>
   </action>
   <action name="actionSwitch_Secure_Mode">
-   <property name="icon">
-    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
-     <normaloff>:/icon/white/white_toggle-left.svg</normaloff>:/icon/white/white_toggle-left.svg</iconset>
-   </property>
    <property name="text">
     <string>Secure Mode - Off</string>
    </property>
@@ -209,36 +180,39 @@
    </property>
   </action>
   <action name="actionCheck_Data_Completeness">
-   <property name="icon">
-    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
-     <normaloff>:/icon/white/white_shield.svg</normaloff>:/icon/white/white_shield.svg</iconset>
-   </property>
    <property name="text">
     <string>Check Data Completeness</string>
    </property>
-   <property name="shortcut">
-    <string>F4</string>
-   </property>
   </action>
   <action name="actionSave_Data">
-   <property name="icon">
-    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
-     <normaloff>:/icon/white/white_save.svg</normaloff>:/icon/white/white_save.svg</iconset>
-   </property>
    <property name="text">
     <string>Save Data</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
    </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
   </action>
   <action name="actionImport_Bookmarks">
-   <property name="icon">
-    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
-     <normaloff>:/icon/white/white_bookmark.svg</normaloff>:/icon/white/white_bookmark.svg</iconset>
-   </property>
    <property name="text">
     <string>Import Bookmarks</string>
+   </property>
+  </action>
+  <action name="actionExport_Diary_to_Json">
+   <property name="text">
+    <string>Export Diary to Json</string>
+   </property>
+  </action>
+  <action name="actionExport_Concept_to_Json">
+   <property name="text">
+    <string>Export Concept to Json</string>
+   </property>
+  </action>
+  <action name="actionExport_Library_to_Json">
+   <property name="text">
+    <string>Export Library to Json</string>
    </property>
   </action>
  </widget>

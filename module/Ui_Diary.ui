@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>943</width>
-    <height>684</height>
+    <height>618</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -89,9 +89,9 @@
       <property name="orientation">
        <enum>Qt::Vertical</enum>
       </property>
-      <widget class="QCalendarWidget" name="calendar">
+      <widget class="QWidget" name="widget" native="true">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -99,34 +99,95 @@
        <property name="minimumSize">
         <size>
          <width>320</width>
-         <height>270</height>
+         <height>300</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
          <width>16777215</width>
-         <height>270</height>
+         <height>300</height>
         </size>
        </property>
-       <property name="firstDayOfWeek">
-        <enum>Qt::Monday</enum>
-       </property>
-       <property name="gridVisible">
-        <bool>true</bool>
-       </property>
-       <property name="navigationBarVisible">
-        <bool>false</bool>
-       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="label_calendar">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCalendarWidget" name="calendar">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>320</width>
+            <height>270</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>300</height>
+           </size>
+          </property>
+          <property name="firstDayOfWeek">
+           <enum>Qt::Monday</enum>
+          </property>
+          <property name="gridVisible">
+           <bool>true</bool>
+          </property>
+          <property name="navigationBarVisible">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
-      <widget class="QWidget" name="layoutWidget">
+      <widget class="QWidget" name="layoutWidget_4">
        <layout class="QVBoxLayout" name="verticalLayout_concept">
         <property name="spacing">
          <number>4</number>
         </property>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
           <item>
-           <widget class="QLabel" name="label">
+           <widget class="QLabel" name="label_5">
             <property name="text">
              <string>Concept</string>
             </property>
@@ -138,17 +199,24 @@
          </layout>
         </item>
         <item>
-         <widget class="ConceptTable" name="conceptTable"/>
+         <widget class="ConceptTable" name="conceptTable">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="layoutWidget1">
+      <widget class="QWidget" name="layoutWidget1_2">
        <layout class="QVBoxLayout" name="verticalLayout_file">
         <property name="spacing">
          <number>4</number>
         </property>
         <item>
-         <widget class="QLabel" name="label_2">
+         <widget class="QLabel" name="label_6">
           <property name="text">
            <string>File</string>
           </property>
@@ -171,10 +239,6 @@
    </item>
   </layout>
   <action name="actionSwitch_Eidt_View">
-   <property name="icon">
-    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
-     <normaloff>:/icon/white/white_slack.svg</normaloff>:/icon/white/white_slack.svg</iconset>
-   </property>
    <property name="text">
     <string>Switch Eidt / View</string>
    </property>
@@ -186,10 +250,6 @@
    </property>
   </action>
   <action name="actionPrevious_Day">
-   <property name="icon">
-    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
-     <normaloff>:/icon/white/white_chevron-up.svg</normaloff>:/icon/white/white_chevron-up.svg</iconset>
-   </property>
    <property name="text">
     <string>Previous Day</string>
    </property>
@@ -201,10 +261,6 @@
    </property>
   </action>
   <action name="actionNext_Day">
-   <property name="icon">
-    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
-     <normaloff>:/icon/white/white_chevron-down.svg</normaloff>:/icon/white/white_chevron-down.svg</iconset>
-   </property>
    <property name="text">
     <string>Next Day</string>
    </property>
@@ -216,10 +272,6 @@
    </property>
   </action>
   <action name="actionAdd_Line">
-   <property name="icon">
-    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
-     <normaloff>:/icon/white/white_plus.svg</normaloff>:/icon/white/white_plus.svg</iconset>
-   </property>
    <property name="text">
     <string>Add Line</string>
    </property>
@@ -231,10 +283,6 @@
    </property>
   </action>
   <action name="actionDelete">
-   <property name="icon">
-    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
-     <normaloff>:/icon/white/white_trash-2.svg</normaloff>:/icon/white/white_trash-2.svg</iconset>
-   </property>
    <property name="text">
     <string>Delete</string>
    </property>
@@ -243,10 +291,6 @@
    </property>
   </action>
   <action name="actionNext_Week">
-   <property name="icon">
-    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
-     <normaloff>:/icon/white/white_chevrons-down.svg</normaloff>:/icon/white/white_chevrons-down.svg</iconset>
-   </property>
    <property name="text">
     <string>Next Week</string>
    </property>
@@ -255,10 +299,6 @@
    </property>
   </action>
   <action name="actionPrevious_Week">
-   <property name="icon">
-    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
-     <normaloff>:/icon/white/white_chevrons-up.svg</normaloff>:/icon/white/white_chevrons-up.svg</iconset>
-   </property>
    <property name="text">
     <string>Previous Week</string>
    </property>
@@ -267,10 +307,6 @@
    </property>
   </action>
   <action name="actionNext_Line">
-   <property name="icon">
-    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
-     <normaloff>:/icon/white/white_chevron-down.svg</normaloff>:/icon/white/white_chevron-down.svg</iconset>
-   </property>
    <property name="text">
     <string>Next Line</string>
    </property>
@@ -279,10 +315,6 @@
    </property>
   </action>
   <action name="actionPrevious_Line">
-   <property name="icon">
-    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
-     <normaloff>:/icon/white/white_chevron-up.svg</normaloff>:/icon/white/white_chevron-up.svg</iconset>
-   </property>
    <property name="text">
     <string>Previous Line</string>
    </property>
@@ -291,10 +323,6 @@
    </property>
   </action>
   <action name="actionFirst_Line">
-   <property name="icon">
-    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
-     <normaloff>:/icon/white/white_chevrons-up.svg</normaloff>:/icon/white/white_chevrons-up.svg</iconset>
-   </property>
    <property name="text">
     <string>First Line</string>
    </property>
@@ -303,10 +331,6 @@
    </property>
   </action>
   <action name="actionLast_Line">
-   <property name="icon">
-    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
-     <normaloff>:/icon/white/white_chevrons-down.svg</normaloff>:/icon/white/white_chevrons-down.svg</iconset>
-   </property>
    <property name="text">
     <string>Last Line</string>
    </property>
@@ -315,10 +339,6 @@
    </property>
   </action>
   <action name="actionFind_Text">
-   <property name="icon">
-    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
-     <normaloff>:/icon/white/white_search.svg</normaloff>:/icon/white/white_search.svg</iconset>
-   </property>
    <property name="text">
     <string>Find Text</string>
    </property>
@@ -327,10 +347,6 @@
    </property>
   </action>
   <action name="actionAdd_Concept">
-   <property name="icon">
-    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
-     <normaloff>:/icon/white/white_hash.svg</normaloff>:/icon/white/white_hash.svg</iconset>
-   </property>
    <property name="text">
     <string>Add Concept</string>
    </property>
@@ -340,6 +356,12 @@
   </action>
  </widget>
  <customwidgets>
+  <customwidget>
+   <class>FileTab</class>
+   <extends>QWidget</extends>
+   <header>widget</header>
+   <container>1</container>
+  </customwidget>
   <customwidget>
    <class>ConceptTable</class>
    <extends>QTableWidget</extends>
@@ -359,12 +381,6 @@
    <class>ConceptSearch</class>
    <extends>QLineEdit</extends>
    <header>widget</header>
-  </customwidget>
-  <customwidget>
-   <class>FileTab</class>
-   <extends>QWidget</extends>
-   <header>widget</header>
-   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

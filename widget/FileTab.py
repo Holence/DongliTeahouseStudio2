@@ -53,9 +53,9 @@ class LoadThumbnailThread(QThread):
 							self.Headquarter.qlock.lock()
 							self.Headquarter.cache[key]=-1
 							self.Headquarter.qlock.unlock()
-							icon=QIcon(":/icon/white/white_globe.svg")
+							icon=IconFromCurrentTheme("globe.svg")
 					elif data==-1:
-						icon=QIcon(":/icon/white/white_globe.svg")
+						icon=IconFromCurrentTheme("globe.svg")
 					else:
 						pixmap=QPixmap()
 						pixmap.loadFromData(base64.b64decode(data))
@@ -137,7 +137,7 @@ class LoadThumbnailThread(QThread):
 					self.Headquarter.cache[cache_name]=-1
 					self.Headquarter.qlock.unlock()
 					
-					icon=QIcon(":/icon/white/white_globe.svg")
+					icon=IconFromCurrentTheme("globe.svg")
 			
 			self.parent().lock.lock()
 			if "Table" in self.parent().objectName():
@@ -158,7 +158,7 @@ class LoadThumbnailThread(QThread):
 		# cache中有
 		else:
 			if data==-1: #一些防爬的就算了，标记-1，制定icon的时候给globe就行了
-				icon=QIcon(":/icon/white/white_globe.svg")
+				icon=IconFromCurrentTheme("globe.svg")
 			else:
 				if type!=2:
 					url=os.path.join(self.Headquarter.library_base,url).replace("\\","/")
@@ -252,8 +252,10 @@ class FileTab(Ui_FileTab,QWidget):
 
 		self.pushButton_table.clicked.connect(lambda:self.stackedWidget.setCurrentIndex(0))
 		self.pushButton_table.clicked.connect(lambda:self.setFileList(self.file_list))
+		self.pushButton_table.setIcon(IconFromCurrentTheme("list.svg"))
 		self.pushButton_list.clicked.connect(lambda:self.stackedWidget.setCurrentIndex(1))
 		self.pushButton_list.clicked.connect(lambda:self.setFileList(self.file_list))
+		self.pushButton_list.setIcon(IconFromCurrentTheme("image.svg"))
 
 		self.installEventFilter(self)
 	

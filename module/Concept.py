@@ -21,7 +21,6 @@ class Concept(QWidget,Ui_Concept):
 		self.splitter_whole.setStretchFactor(1,2)
 		self.splitter_whole.setStretchFactor(2,1)
 
-		self.plainTextEdit_detail.setMinimumHeight(50)
 		self.plainTextEdit_detail.setStyleSheet("font-size:14pt")
 
 		# 搜索处的concept table只能drag out不能drop in
@@ -43,11 +42,24 @@ class Concept(QWidget,Ui_Concept):
 		self.lineEdit_child.setHeadquarter(self.Headquarter)
 		self.lineEdit_relative.setHeadquarter(self.Headquarter)
 
+		self.actionAdd_Concept.setIcon(IconFromCurrentTheme("plus.svg"))
+		self.actionAdd_Parent.setIcon(IconFromCurrentTheme("user-plus.svg"))
+		self.actionAdd_Child.setIcon(IconFromCurrentTheme("user-plus.svg"))
+		self.actionAdd_Relative.setIcon(IconFromCurrentTheme("user-plus.svg"))
+		self.actionSearch_Concept.setIcon(IconFromCurrentTheme("search.svg"))
+
 
 	def initializeSignal(self):
 		# 添加concept
 		self.actionAdd_Concept.triggered.connect(self.addConcept)
 		self.actionDelete.triggered.connect(self.deleteCenter)
+		self.fileTab.fileTable.fileDelete.connect(self.deleteConceptFile)
+		self.fileTab.fileList.fileDelete.connect(self.deleteConceptFile)
+		self.textList.textDelete.connect(self.deleteConceptText)
+		self.conceptTable.conceptDelete.connect(self.deleteConcept)
+		self.parentTable.conceptDelete.connect(self.deleteParent)
+		self.childTree.conceptDelete.connect(self.deleteChild)
+		self.relativeTable.conceptDelete.connect(self.deleteRelative)
 		
 		# search
 		self.lineEdit_search.textEdited.connect(self.showSearch)
@@ -137,13 +149,13 @@ class Concept(QWidget,Ui_Concept):
 			id_list=[]
 			state=self.checkBox.checkState()
 			if state==Qt.Unchecked:
-				self.checkBox.setText("Only Root")
+				self.checkBox.setText(QCoreApplication.translate("Concept","Only Root"))
 				id_list.append(self.current_id)
 			elif state==Qt.PartiallyChecked:
-				self.checkBox.setText("Only Child")
+				self.checkBox.setText(QCoreApplication.translate("Concept","Only Child"))
 				deepin(self.current_id)
 			elif state==Qt.Checked:
-				self.checkBox.setText("Both Root and Child")
+				self.checkBox.setText(QCoreApplication.translate("Concept","Both Root and Child"))
 				id_list.append(self.current_id)
 				deepin(self.current_id)
 			
@@ -225,9 +237,14 @@ class Concept(QWidget,Ui_Concept):
 					res=self.Headquarter.addLibraryFile(date,url,[self.current_id])
 					if res!=None:
 						name,new_file=res
-
+						
 						# concept中添加file
-						concept["file"].append(self.Headquarter.generateDiaryConceptFileDict(date,new_file["type"],name,new_file["url"]))
+						if type(url)==dict:
+							# BookmarkParser来的标准型filedict，就不用去获取网页title了，ymd也不是当日，而是收藏夹中的日期
+							file=url
+							concept["file"].append(self.Headquarter.generateDiaryConceptFileDict(QDate(file["y"],file["m"],file["d"]),new_file["type"],name,new_file["url"]))
+						else:
+							concept["file"].append(self.Headquarter.generateDiaryConceptFileDict(date,new_file["type"],name,new_file["url"]))
 					else:
 						# 失败
 						continue
@@ -303,7 +320,7 @@ class Concept(QWidget,Ui_Concept):
 	def deleteConcept(self):
 		
 		delete_id_list=[]
-		warning_text="You want to delete concept:\n\n"
+		warning_text=""
 		for model_index in self.conceptTable.selectionModel().selectedRows():
 			row=model_index.row()
 			id=int(self.conceptTable.item(row,0).text())
@@ -312,7 +329,7 @@ class Concept(QWidget,Ui_Concept):
 			warning_text+="%s: %s\n"%(id,self.Headquarter.getConcept(id)["name"])
 		
 		if delete_id_list!=[]:
-			if DTFrame.DTConfirmBox(self,"Delete Confirm",warning_text,DTIcon.Question()).exec_():
+			if DTFrame.DTConfirmBox(self,"Delete Confirm","You want to delete concept:",DTIcon.Question(),warning_text).exec_():
 				self.Headquarter.deleteConcept(delete_id_list)
 				self.current_id=-1
 				self.refresh()
@@ -321,7 +338,7 @@ class Concept(QWidget,Ui_Concept):
 		# Only Root时才能选择删除
 		if self.checkBox.checkState()==Qt.Unchecked:
 			delete_file_list=[]
-			warning_text="You want to delete concept linked file:\n\n"
+			warning_text=""
 			if self.fileTab.stackedWidget.currentIndex()==0:
 				for model_index in self.fileTab.fileTable.selectionModel().selectedRows():
 					row=model_index.row()
@@ -332,10 +349,7 @@ class Concept(QWidget,Ui_Concept):
 					name=self.fileTab.fileTable.item(row,3).text()
 					url=self.fileTab.fileTable.item(row,4).text().replace(self.Headquarter.library_base+"/","")
 					delete_file_list.append(self.Headquarter.generateDiaryConceptFileDict(date,type,name,url))
-					if type!=2:
-						warning_text+="%s\n"%os.path.join(self.Headquarter.library_base,url)
-					else:
-						warning_text+="%s\n"%url
+					warning_text+="%s\n\n"%name
 			else:
 				for model_index in self.fileTab.fileList.selectionModel().selectedRows():
 					row=model_index.row()
@@ -352,13 +366,10 @@ class Concept(QWidget,Ui_Concept):
 
 					type=self.Headquarter.getLibraryFile(date,name)["type"]
 					delete_file_list.append(self.Headquarter.generateDiaryConceptFileDict(date,type,name,url))
-					if type!=2:
-						warning_text+="%s\n"%os.path.join(self.Headquarter.library_base,url)
-					else:
-						warning_text+="%s\n"%url
+					warning_text+="%s\n\n"%name
 			
 			if delete_file_list!=[]:
-				if DTFrame.DTConfirmBox(self,"Delete Confirm",warning_text,DTIcon.Question()).exec_():
+				if DTFrame.DTConfirmBox(self,"Delete Confirm","You want to delete concept linked file:",DTIcon.Question(),warning_text).exec_():
 					concept=self.Headquarter.getConcept(self.current_id)
 					
 					# concept中去除file
@@ -377,7 +388,7 @@ class Concept(QWidget,Ui_Concept):
 	def deleteConceptText(self):
 		# Only Root时才能选择删除
 		if self.checkBox.checkState()==Qt.Unchecked:
-			warning_text="You want to delete linked concept in text:\n\n"
+			warning_text=""
 			delete_text_list=[]
 			for model_index in self.textList.selectionModel().selectedRows():
 				index=model_index.row()
@@ -386,7 +397,7 @@ class Concept(QWidget,Ui_Concept):
 				warning_text+=self.textList.item(index).text()+"\n\n"
 			
 			if delete_text_list!=[]:
-				if DTFrame.DTConfirmBox(self,"Delete Confirm",warning_text,DTIcon.Question()).exec_():
+				if DTFrame.DTConfirmBox(self,"Delete Confirm","You want to delete linked concept in text:",DTIcon.Question(),warning_text).exec_():
 
 					for text in delete_text_list:
 						line=self.Headquarter.getDiaryDayLine(QDate(text["y"],text["m"],text["d"]),text["index"])
@@ -399,7 +410,7 @@ class Concept(QWidget,Ui_Concept):
 
 	def deleteParent(self):
 		delete_id_list=[]
-		warning_text="You want to delete parent:\n\n"
+		warning_text=""
 		for model_index in self.parentTable.selectionModel().selectedRows():
 			row=model_index.row()
 			id=int(self.parentTable.item(row,0).text())
@@ -408,7 +419,7 @@ class Concept(QWidget,Ui_Concept):
 			warning_text+="%s: %s\n"%(id,self.Headquarter.getConcept(id)["name"])
 		
 		if delete_id_list!=[]:
-			if DTFrame.DTConfirmBox(self,"Delete Confirm",warning_text,DTIcon.Question()).exec_():
+			if DTFrame.DTConfirmBox(self,"Delete Confirm","You want to delete parent:",DTIcon.Question(),warning_text).exec_():
 				self.Headquarter.deleteParent(self.current_id,delete_id_list)
 				self.parentTable.setConceptIDList(self.Headquarter.getConcept(self.current_id)["parent"])
 	
@@ -416,9 +427,10 @@ class Concept(QWidget,Ui_Concept):
 		delete_id_list=[]
 		not_child_list=[]
 
-		warning_text="You want to delete child:\n\n"
+		warning_text="You want to delete child:"
 		delete_id_str=""
-		not_child_str="The concepts below are not direct child of the root concept, they will not be deleted.\n\n"
+		not_child_warning="The concepts below are not direct child of the root concept, they will not be deleted."
+		not_child_str=""
 		
 		concept=self.Headquarter.getConcept(self.current_id)
 		for item in self.childTree.selectedItems():
@@ -433,24 +445,24 @@ class Concept(QWidget,Ui_Concept):
 					not_child_str+="%s: %s\n"%(id,self.Headquarter.getConcept(id)["name"])
 
 		if delete_id_list!=[] and not_child_list==[]:
-			warning_text+=delete_id_str
-			if DTFrame.DTConfirmBox(self,"Delete Confirm",warning_text,DTIcon.Question()).exec_():
+			
+			if DTFrame.DTConfirmBox(self,"Delete Confirm",warning_text,DTIcon.Question(),delete_id_str).exec_():
 				self.Headquarter.deleteChild(self.current_id,delete_id_list)
 				self.childTree.setChildTree(self.current_id)
 		elif delete_id_list!=[] and not_child_list!=[]:
-			warning_text+=delete_id_str+"\n"+not_child_str
-			if DTFrame.DTConfirmBox(self,"Delete Confirm",warning_text,DTIcon.Question()).exec_():
+			
+			if DTFrame.DTConfirmBox(self,"Delete Confirm",warning_text,DTIcon.Question(),delete_id_str+"\n"+not_child_warning+"\n\n"+not_child_str).exec_():
 				self.Headquarter.deleteChild(self.current_id,delete_id_list)
 				self.childTree.setChildTree(self.current_id)
 		elif delete_id_list==[] and not_child_list!=[]:
-			DTFrame.DTMessageBox(self,"Warning",not_child_str,DTIcon.Holo01())
+			DTFrame.DTMessageBox(self,"Warning",not_child_warning,DTIcon.Holo01(),not_child_str)
 		else:
 			pass
 
 
 	def deleteRelative(self):
 		delete_id_list=[]
-		warning_text="You want to delete relative:\n\n"
+		warning_text=""
 		for model_index in self.relativeTable.selectionModel().selectedRows():
 			row=model_index.row()
 			id=int(self.relativeTable.item(row,0).text())
@@ -459,6 +471,6 @@ class Concept(QWidget,Ui_Concept):
 			warning_text+="%s: %s\n"%(id,self.Headquarter.getConcept(id)["name"])
 		
 		if delete_id_list!=[]:
-			if DTFrame.DTConfirmBox(self,"Delete Confirm",warning_text,DTIcon.Question()).exec_():
+			if DTFrame.DTConfirmBox(self,"Delete Confirm","You want to delete relative:",DTIcon.Question(),warning_text).exec_():
 				self.Headquarter.deleteRelative(self.current_id,delete_id_list)
 				self.relativeTable.setConceptIDList(self.Headquarter.getConcept(self.current_id)["relative"])

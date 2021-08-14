@@ -17,7 +17,8 @@ class Ui_LibraryCheck(object):
     def setupUi(self, LibraryCheck):
         if not LibraryCheck.objectName():
             LibraryCheck.setObjectName(u"LibraryCheck")
-        LibraryCheck.resize(1322, 715)
+        LibraryCheck.resize(1400, 900)
+        LibraryCheck.setMinimumSize(QSize(1400, 900))
         self.horizontalLayout_14 = QHBoxLayout(LibraryCheck)
         self.horizontalLayout_14.setObjectName(u"horizontalLayout_14")
         self.verticalLayout_12 = QVBoxLayout()

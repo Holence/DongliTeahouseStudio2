@@ -62,11 +62,11 @@ class DesktopButton(QPushButton):
 				# 载入失败
 				else:
 					self.Headquarter.cache[cache_name]=-1 #cache中存储为-1
-					icon=QIcon(":/icon/white/white_globe.svg")
+					icon=IconFromCurrentTheme("globe.svg")
 			
 			# cache中为-1
 			elif data==-1:
-				icon=QIcon(":/icon/white/white_globe.svg")
+				icon=IconFromCurrentTheme("globe.svg")
 			
 			# cache中有
 			else:
@@ -82,12 +82,12 @@ class DesktopButton(QPushButton):
 			
 			menu=QMenu()
 			
-			deleteAction=QAction("Delete")
+			deleteAction=QAction(QCoreApplication.translate("Library", "Delete"))
 			deleteAction.triggered.connect(self.deleteLater)
 			deleteAction.triggered.connect(lambda:self.deleteSignal.emit(self.url))
 			menu.addAction(deleteAction)
 			
-			refreshIconAction=QAction("Refresh Icon")
+			refreshIconAction=QAction(QCoreApplication.translate("Library", "Refresh Icon"))
 			refreshIconAction.triggered.connect(lambda:self.refreshIcon(force=True))
 			menu.addAction(refreshIconAction)
 			
@@ -118,7 +118,7 @@ class Desktop(QWidget):
 		
 		self.btn_list=[] # 储存btn的指针，用于清空layout
 		
-	def saveData(self):
+	def saveDesktop(self):
 		self.Headquarter.UserSetting().setValue("Desktop",json.dumps(self.url_list))
 	
 	def setHeadquarter(self,Headquarter:LobbySession):
@@ -138,7 +138,7 @@ class Desktop(QWidget):
 		data=self.Headquarter.UserSetting().value("Desktop")
 		if data==None:
 			self.url_list=[]
-			self.saveData()
+			self.saveDesktop()
 		else:
 			self.url_list=json.loads(data)
 		
@@ -158,14 +158,14 @@ class Desktop(QWidget):
 				self.url_list.append(url)
 				self.addButtons([url])
 
-		self.saveData()
+		self.saveDesktop()
 	
 	def addButtons(self,url_list):
 		def slot(url):
 			self.url_list.remove(url)
 			if self.Headquarter.cache.get(url)!=None:
 				del self.Headquarter.cache[url]
-			self.saveData()
+			self.saveDesktop()
 			self.refresh()
 
 		for url in url_list:

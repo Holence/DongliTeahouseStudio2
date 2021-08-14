@@ -24,7 +24,12 @@ class DiarySearch(Ui_DiarySearch,QWidget):
 			self.diary.textList.setCurrentRow(index)
 		
 		self.listWidget.textClicked.connect(slot)
+		self.listWidget.setObjectName("DiarySeachTextList")
+		
+		# 不允许拖到SearchList中
 		self.listWidget.setAcceptDrops(False)
+		
+		self.lineEdit.setFocus()
 	
 	def showSearch(self):
 		search=self.lineEdit.text()

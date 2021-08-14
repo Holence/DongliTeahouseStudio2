@@ -15,6 +15,9 @@ class BookmarkParser(QWidget,Ui_BookmarkParser):
 		self.bookmarkTab.fileTable.setObjectName("BookmarkFileTable")
 		self.bookmarkTab.pushButton_list.hide()
 		self.bookmarkTab.pushButton_table.hide()
+		
+		# 不允许拖到Bookmark中
+		self.bookmarkTab.fileTable.setAcceptDrops(False)
 
 		self.folderList.itemClicked.connect(self.showFolder)
 	

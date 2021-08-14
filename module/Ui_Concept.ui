@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>884</width>
-    <height>585</height>
+    <width>1034</width>
+    <height>718</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -67,7 +67,7 @@
          <widget class="QLineEdit" name="lineEdit_name">
           <property name="minimumSize">
            <size>
-            <width>350</width>
+            <width>550</width>
             <height>0</height>
            </size>
           </property>
@@ -90,8 +90,8 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>350</width>
-            <height>0</height>
+            <width>550</width>
+            <height>100</height>
            </size>
           </property>
          </widget>
@@ -324,10 +324,6 @@
    </item>
   </layout>
   <action name="actionAdd_Concept">
-   <property name="icon">
-    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
-     <normaloff>:/icon/white/white_plus.svg</normaloff>:/icon/white/white_plus.svg</iconset>
-   </property>
    <property name="text">
     <string>Add Concept</string>
    </property>
@@ -339,10 +335,6 @@
    </property>
   </action>
   <action name="actionDelete">
-   <property name="icon">
-    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
-     <normaloff>:/icon/white/white_trash-2.svg</normaloff>:/icon/white/white_trash-2.svg</iconset>
-   </property>
    <property name="text">
     <string>Delete</string>
    </property>
@@ -351,10 +343,6 @@
    </property>
   </action>
   <action name="actionAdd_Parent">
-   <property name="icon">
-    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
-     <normaloff>:/icon/white/white_user-plus.svg</normaloff>:/icon/white/white_user-plus.svg</iconset>
-   </property>
    <property name="text">
     <string>Add Parent</string>
    </property>
@@ -363,10 +351,6 @@
    </property>
   </action>
   <action name="actionAdd_Child">
-   <property name="icon">
-    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
-     <normaloff>:/icon/white/white_user-plus.svg</normaloff>:/icon/white/white_user-plus.svg</iconset>
-   </property>
    <property name="text">
     <string>Add Child</string>
    </property>
@@ -375,10 +359,6 @@
    </property>
   </action>
   <action name="actionAdd_Relative">
-   <property name="icon">
-    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
-     <normaloff>:/icon/white/white_user-plus.svg</normaloff>:/icon/white/white_user-plus.svg</iconset>
-   </property>
    <property name="text">
     <string>Add Relative</string>
    </property>
@@ -387,10 +367,6 @@
    </property>
   </action>
   <action name="actionSearch_Concept">
-   <property name="icon">
-    <iconset resource="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc">
-     <normaloff>:/icon/white/white_search.svg</normaloff>:/icon/white/white_search.svg</iconset>
-   </property>
    <property name="text">
     <string>Search Concept</string>
    </property>
@@ -400,6 +376,12 @@
   </action>
  </widget>
  <customwidgets>
+  <customwidget>
+   <class>FileTab</class>
+   <extends>QWidget</extends>
+   <header>widget</header>
+   <container>1</container>
+  </customwidget>
   <customwidget>
    <class>ConceptTable</class>
    <extends>QTableWidget</extends>
@@ -416,20 +398,14 @@
    <header>widget</header>
   </customwidget>
   <customwidget>
-   <class>ConceptTree</class>
-   <extends>QTreeWidget</extends>
-   <header>widget</header>
-  </customwidget>
-  <customwidget>
    <class>ConceptSearch</class>
    <extends>QLineEdit</extends>
    <header>widget</header>
   </customwidget>
   <customwidget>
-   <class>FileTab</class>
-   <extends>QWidget</extends>
+   <class>ConceptTree</class>
+   <extends>QTreeWidget</extends>
    <header>widget</header>
-   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

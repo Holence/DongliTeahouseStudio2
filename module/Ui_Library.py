@@ -12,9 +12,9 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
+from widget import FileTab
 from widget import ConceptTable
 from widget import TextList
-from widget import FileTab
 
 import DTPySide.DT_rc
 
@@ -22,17 +22,12 @@ class Ui_Library(object):
     def setupUi(self, Library):
         if not Library.objectName():
             Library.setObjectName(u"Library")
-        Library.resize(727, 465)
+        Library.resize(900, 600)
+        Library.setMinimumSize(QSize(900, 600))
         self.actionDelete = QAction(Library)
         self.actionDelete.setObjectName(u"actionDelete")
-        icon = QIcon()
-        icon.addFile(u":/icon/white/white_trash-2.svg", QSize(), QIcon.Normal, QIcon.Off)
-        self.actionDelete.setIcon(icon)
         self.actionSearch_File = QAction(Library)
         self.actionSearch_File.setObjectName(u"actionSearch_File")
-        icon1 = QIcon()
-        icon1.addFile(u":/icon/white/white_search.svg", QSize(), QIcon.Normal, QIcon.Off)
-        self.actionSearch_File.setIcon(icon1)
         self.horizontalLayout_3 = QHBoxLayout(Library)
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.splitter = QSplitter(Library)
@@ -77,7 +72,7 @@ class Ui_Library(object):
 
         self.dateEdit = QDateEdit(self.layoutWidget2)
         self.dateEdit.setObjectName(u"dateEdit")
-        self.dateEdit.setMinimumSize(QSize(300, 0))
+        self.dateEdit.setMinimumSize(QSize(400, 0))
         self.dateEdit.setReadOnly(True)
 
         self.verticalLayout_2.addWidget(self.dateEdit)
@@ -89,7 +84,7 @@ class Ui_Library(object):
 
         self.lineEdit_name = QLineEdit(self.layoutWidget2)
         self.lineEdit_name.setObjectName(u"lineEdit_name")
-        self.lineEdit_name.setMinimumSize(QSize(300, 0))
+        self.lineEdit_name.setMinimumSize(QSize(400, 0))
 
         self.verticalLayout_2.addWidget(self.lineEdit_name)
 
@@ -111,7 +106,6 @@ class Ui_Library(object):
         self.conceptTable.setObjectName(u"conceptTable")
         sizePolicy1.setHeightForWidth(self.conceptTable.sizePolicy().hasHeightForWidth())
         self.conceptTable.setSizePolicy(sizePolicy1)
-        self.conceptTable.setMinimumSize(QSize(250, 0))
 
         self.horizontalLayout.addWidget(self.conceptTable)
 

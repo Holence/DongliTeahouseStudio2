@@ -81,9 +81,6 @@ class Ui_FileTab(object):
         self.pushButton_table.setSizePolicy(sizePolicy)
         self.pushButton_table.setMinimumSize(QSize(24, 24))
         self.pushButton_table.setMaximumSize(QSize(24, 24))
-        icon = QIcon()
-        icon.addFile(u":/icon/white/white_list.svg", QSize(), QIcon.Normal, QIcon.Off)
-        self.pushButton_table.setIcon(icon)
         self.pushButton_table.setIconSize(QSize(16, 16))
         self.pushButton_table.setFlat(True)
 
@@ -95,9 +92,6 @@ class Ui_FileTab(object):
         self.pushButton_list.setSizePolicy(sizePolicy)
         self.pushButton_list.setMinimumSize(QSize(24, 24))
         self.pushButton_list.setMaximumSize(QSize(24, 24))
-        icon1 = QIcon()
-        icon1.addFile(u":/icon/white/white_image.svg", QSize(), QIcon.Normal, QIcon.Off)
-        self.pushButton_list.setIcon(icon1)
         self.pushButton_list.setFlat(True)
 
         self.horizontalLayout.addWidget(self.pushButton_list)
