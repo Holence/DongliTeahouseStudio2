@@ -354,6 +354,9 @@ class FileTab(Ui_FileTab,QWidget):
 				file_list (list): 元素具有y,m,d,name,type,url属性
 			"""
 			
+			selected_index=self.fileList.selectedIndexes()
+			store=self.fileList.verticalScrollBar().value()
+
 			self.fileList.clear()
 
 			self.fileList.lock.lock()
@@ -391,6 +394,10 @@ class FileTab(Ui_FileTab,QWidget):
 			self.label_count.setText("%s item  |"%row)
 			
 			self.fileList.lock.unlock()
+			
+			for index in selected_index:
+				self.fileList.selectionModel().select(index,QItemSelectionModel.Select | QItemSelectionModel.Rows)
+			self.fileList.verticalScrollBar().setValue(store)
 		
 		self.label_info.clear()
 		self.file_list=file_list
@@ -431,3 +438,9 @@ class FileTab(Ui_FileTab,QWidget):
 			self.fileTable.Clear()
 		else:
 			self.fileList.Clear()
+	
+	def clearSelection(self):
+		if self.stackedWidget.currentIndex()==0:
+			self.fileTable.clearSelection()
+		else:
+			self.fileList.clearSelection()

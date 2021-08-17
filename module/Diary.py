@@ -72,7 +72,7 @@ class Diary(QWidget,Ui_Diary):
 		self.calendar.currentPageChanged.connect(self.CalendarPaintMonth)
 		
 		# 点击（更换选中的）一行
-		self.textList.currentRowChanged.connect(self.showLine)
+		self.textList.itemClicked.connect(self.showLine)
 		# 行排序
 		self.textList.textDropped.connect(self.sortLine)
 		
@@ -105,64 +105,65 @@ class Diary(QWidget,Ui_Diary):
 			begin=begin.addDays(1)
 
 	def refresh(self):
-		index=self.textList.currentRow()
 		self.showDay()
-		if index!=-1:
-			self.textList.setCurrentRow(index)
-			self.textList.scrollToItem(self.textList.item(index))
 
 	def showDay(self,date=None):
-		"""展示选中的日期，相当于全刷新：textViewer中显示对应日期的文字，textList中显示对应日期的列表，fileTable中显示全部的链接文件
+		"""展示选中的日期，相当于全刷新
 		"""
-		if date==None:
-			date=self.current_date
-		else:
+		if date!=None:
+			self.textEdit.clear()
 			self.current_date=date
 			self.calendar.setSelectedDate(date)
 		
-		self.PAPA.setWindowTitle("Diary %s"%QLocale().toString(date,"yyyy.M.d ddd"))
+		self.PAPA.setWindowTitle("Diary %s"%QLocale().toString(self.current_date,"yyyy.M.d ddd"))
 		
-		day_data=self.Headquarter.getDiaryDay(date)
+		day_data=self.Headquarter.getDiaryDay(self.current_date)
+		
+		
 		if day_data!=None:
-			
-			text=""
-			concept_id_list=[]
-			file_list=[]
-			for line in day_data:
-				text+=line["text"]+"\n\n\n\n"
-				concept_id_list=List_Union(concept_id_list,line["concept"])
-				file_list=List_Union_Full(file_list,line["file"])
-			
-			self.textList.setTextList("Diary",date)
-			self.textList.scrollToTop()
-			self.conceptTable.setConceptIDList(concept_id_list)
-			self.fileTab.setFileList(file_list)
-			self.textViewer.setMarkdown(text)
+			# 有该日
+			if date!=None:
+				# 指定日，则全刷
+				if self.stackedWidget.currentIndex()==0:
+					self.textList.setTextList("Diary",self.current_date)
+					self.textList.scrollToTop()
+					self.textList.clearSelection()
+				else:
+					self.refreshView()
+				
+				concept_id_list=[]
+				file_list=[]
+				for line in day_data:
+					concept_id_list=List_Union(concept_id_list,line["concept"])
+					file_list=List_Union_Full(file_list,line["file"])
+				
+				self.conceptTable.setConceptIDList(concept_id_list)
+				self.conceptTable.clearSelection()
+				self.fileTab.setFileList(file_list)
+				self.fileTab.clearSelection()
+			else:
+				# 无指定日，则只刷新该行
+				self.showLine()
+
 		else:
+			# 无该日，clear
 			self.textList.clear()
 			self.conceptTable.Clear()
 			self.fileTab.Clear()
 			self.textViewer.clear()
 
 		
-		self.textEdit.clear()
-		self.textEdit.clearFocus()
-	
 	def showLine(self):
 		"""展示选中的行
 		"""
 
-		# 这里因为触发的信号是currentRowChanged，在clear的时候会不正确，count和currentRow都不是零，所以下面的索引data会出错
-		# 这种情况因为showDay中是先进行了self.textViewer.clear()，所以就这样狗皮膏药一下了……
-		if self.textViewer.toPlainText()!="":
-			
-			index=self.textList.currentRow()
-			if index!=-1:
-				line=self.Headquarter.getDiaryDayLine(self.current_date,index)
-				if line!=None:
-					self.textEdit.setPlainText(line["text"])
-					self.conceptTable.setConceptIDList(line["concept"])
-					self.fileTab.setFileList(line["file"])
+		index=self.textList.currentRow()
+		if index!=-1:
+			line=self.Headquarter.getDiaryDayLine(self.current_date,index)
+			if line!=None:
+				self.textEdit.setPlainText(line["text"])
+				self.conceptTable.setConceptIDList(line["concept"])
+				self.fileTab.setFileList(line["file"])
 					
 
 	def sortLine(self):
@@ -186,16 +187,24 @@ class Diary(QWidget,Ui_Diary):
 			# 真是奇怪了，只有一个item的时候，拖动放入后复制了一份？！
 			self.showDay()
 
-	
+	def refreshView(self):
+		text=""
+		day_data=self.Headquarter.getDiaryDay(self.current_date)
+		for line in day_data:
+			text+=line["text"]+"\n\n\n\n"
+		store=self.textViewer.verticalScrollBar().value()
+		self.textViewer.setMarkdown(text)
+		self.textViewer.verticalScrollBar().setValue(store)
+
 	def switchEditAndView(self):
 		if self.stackedWidget.currentIndex()==0:
 			# View
 			self.stackedWidget.setCurrentIndex(1)
-			
+			self.refreshView()
 		else:
 			# Edit
 			self.stackedWidget.setCurrentIndex(0)
-			self.showLine()
+			self.showDay(self.current_date)
 	
 	def toPreviousWeek(self):
 		self.saveLine()
@@ -224,6 +233,7 @@ class Diary(QWidget,Ui_Diary):
 	def toFirstLine(self):
 		self.saveLine()
 		self.textList.setCurrentRow(0) # 这里会触发self.textList.currentRowChanged而进行showLine
+		self.showLine()
 		self.textList.scrollToTop()
 		self.textEdit.setFocus()
 		self.textEdit.moveCursor(QTextCursor.End)
@@ -232,6 +242,7 @@ class Diary(QWidget,Ui_Diary):
 		if self.textList.currentRow()>0:
 			self.saveLine()
 			self.textList.setCurrentRow(self.textList.currentRow()-1) # 这里会触发self.textList.currentRowChanged而进行showLine
+			self.showLine()
 			self.textList.scrollToItem(self.textList.item(self.textList.currentRow()))
 			self.textEdit.setFocus()
 			self.textEdit.moveCursor(QTextCursor.End)
@@ -240,6 +251,7 @@ class Diary(QWidget,Ui_Diary):
 		if self.textList.currentRow()!=self.textList.count()-1:
 			self.saveLine()
 			self.textList.setCurrentRow(self.textList.currentRow()+1) # 这里会触发self.textList.currentRowChanged而进行showLine
+			self.showLine()
 			self.textList.scrollToItem(self.textList.item(self.textList.currentRow()))
 			self.textEdit.setFocus()
 			self.textEdit.moveCursor(QTextCursor.End)
@@ -247,6 +259,7 @@ class Diary(QWidget,Ui_Diary):
 	def toLastLine(self):
 		self.saveLine()
 		self.textList.setCurrentRow(self.textList.count()-1) # 这里会触发self.textList.currentRowChanged而进行showLine
+		self.showLine()
 		self.textList.scrollToBottom()
 		self.textEdit.setFocus()
 		self.textEdit.moveCursor(QTextCursor.End)
@@ -265,7 +278,6 @@ class Diary(QWidget,Ui_Diary):
 			text=""
 			for line in self.Headquarter.getDiaryDay(self.current_date):
 				text+=line["text"]+"\n\n\n\n"
-			self.textViewer.setMarkdown(text)
 
 	def addLine(self):
 		
@@ -298,6 +310,7 @@ class Diary(QWidget,Ui_Diary):
 		item.setIcon(QIcon("./icon/%s/line_00.png"%QIcon.themeName()))
 		self.textList.setTextList("Diary",self.current_date)
 		self.textList.setCurrentRow(index+1) # 这里会触发self.textList.currentRowChanged而进行showLine
+		self.showLine()
 		self.textList.scrollToItem(item)
 		self.textEdit.setFocus()
 	

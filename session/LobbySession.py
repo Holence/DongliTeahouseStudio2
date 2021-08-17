@@ -10,8 +10,8 @@ class LobbySession(DTSession.DTMainSession):
 		# focusInEvent和mousePressEvent都试了，都不可能捕获子控件的事件，所以只有点击到TitleBar或者window的空白区域，才可能被触发
 		if (event.type()==QEvent.MouseButtonPress and event.button()==Qt.LeftButton) or event.type()==QEvent.FocusIn:
 			# print(watched)
-			if hasattr(self.lobby,"DataChecker"):
-				self.lobby.checkDataCompleteness()
+			# if hasattr(self.lobby,"DataChecker"):
+			# 	self.lobby.checkDataCompleteness()
 			if self.WindowFocusing()!=self:
 				self.setWindowFocusing(self)
 				# print("Now focused in",self.WindowFocusing())
@@ -97,6 +97,8 @@ class LobbySession(DTSession.DTMainSession):
 		self.installEventFilter(self)
 		self.refreshModuleSingal()
 		self.addAction(self.lobby.actionSave_Data)
+		self.addAction(self.lobby.actionCheck_Data_Completeness)
+
 
 		# 全局快捷键
 		self.actionBoss_Key.setShortcutContext(Qt.ApplicationShortcut)
@@ -137,9 +139,13 @@ class LobbySession(DTSession.DTMainSession):
 				if concept.isVisible()==True:
 					flag=True
 					concept.concept_module.showConcept(id)
+					concept.showNormal()
+					concept.raise_()
 			#如果全部都隐藏着，开启一个
 			if flag==False:
 				self.concept_heap[0].show()
+				self.concept_heap[0].showNormal()
+				self.concept_heap[0].raise_()
 				self.concept_heap[0].concept_module.showConcept(id)
 		
 		def slot2(line):
@@ -159,9 +165,13 @@ class LobbySession(DTSession.DTMainSession):
 					flag=True
 					diary.diary_module.showDay(QDate(y,m,d))
 					diary.diary_module.textList.setCurrentRow(index)
+					diary.showNormal()
+					diary.raise_()
 			#如果全部都隐藏着，开启一个
 			if flag==False:
 				self.diary_heap[0].show()
+				self.diary_heap[0].showNormal()
+				self.diary_heap[0].raise_()
 				self.diary_heap[0].diary_module.showDay(QDate(y,m,d))
 				self.diary_heap[0].diary_module.textList.setCurrentRow(index)
 

@@ -125,6 +125,10 @@ class TextList(QListWidget):
 		self.Headquarter=Headquarter
 	
 	def setTextList(self,Type,args):
+		selected_index=self.selectedIndexes()
+		row=self.currentRow()
+		store=self.verticalScrollBar().value()
+
 		self.clear()
 		self.text_list=[]
 
@@ -202,3 +206,8 @@ class TextList(QListWidget):
 					"d":day,
 					"index":line["index"]
 				})
+		
+		self.setCurrentRow(row)
+		for index in selected_index:
+			self.selectionModel().select(index,QItemSelectionModel.Select | QItemSelectionModel.Rows)
+		self.verticalScrollBar().setValue(store)

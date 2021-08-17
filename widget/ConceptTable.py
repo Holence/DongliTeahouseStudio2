@@ -92,7 +92,6 @@ class ConceptTable(DTWidget.DTHorizontalTabel):
 	
 	def setHeadquarter(self,Headquarter: LobbySession):
 		self.Headquarter=Headquarter
-		self.setStyleSheet("font-family: %s"%self.Headquarter.app.Font().family())
 	
 	def itemClickedSlot(self):
 		"""双击table中的元素，emit附带concept id的conceptClicked信号（用于出去跳转展示concept）

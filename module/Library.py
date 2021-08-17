@@ -37,7 +37,7 @@ class Library(QWidget,Ui_Library):
 		self.actionSearch_File.triggered.connect(self.lineEdit_search.setFocus)
 		
 		def slot():
-			self.showSearch()
+			self.showSearch(clear=True)
 			self.fileTab.setFocus()
 			self.fileTab.selectRow(0)
 		self.lineEdit_search.returnPressed.connect(slot)
@@ -50,7 +50,7 @@ class Library(QWidget,Ui_Library):
 		self.conceptTable.conceptDropped.connect(self.addFileConcept)
 		self.textList.textDropped.connect(self.addFileText)
 
-	def showSearch(self):
+	def showSearch(self,clear=False):
 		search=self.lineEdit_search.text()
 		name_list,date_range_list,concept_list,TYPE=self.Headquarter.parseSearchText(search)
 		
@@ -64,11 +64,12 @@ class Library(QWidget,Ui_Library):
 
 		self.fileTab.setFileList(self.Headquarter.getLibraryFileList(name_list,date_range_list,concept_list,TYPE))
 
-		self.lineEdit_name.clear()
-		self.dateEdit.clear()
-		self.conceptTable.Clear()
-		self.textList.clear()
-		self.textViewer.clear()
+		if clear==True:
+			self.lineEdit_name.clear()
+			self.dateEdit.clear()
+			self.conceptTable.Clear()
+			self.textList.clear()
+			self.textViewer.clear()
 
 	def refreshTab(self):
 		
@@ -91,7 +92,10 @@ class Library(QWidget,Ui_Library):
 									text+=QLocale().toString(QDate(int(year),int(month),int(day)),"yyyy.M.d ddd")+"\n\n"
 									flag=True
 								text+=line["text"]+"\n\n"
+			
+			store=self.textViewer.verticalScrollBar().value()
 			self.textViewer.setMarkdown(text)
+			self.textViewer.verticalScrollBar().setValue(store)
 		
 		date=self.dateEdit.date()
 		name=self.lineEdit_name.text()
@@ -100,9 +104,6 @@ class Library(QWidget,Ui_Library):
 		if file!=None:
 			file_dict=self.Headquarter.generateDiaryConceptFileDict(date,file["type"],name,file["url"])
 
-			self.conceptTable.Clear()
-			self.textList.clear()
-			self.textViewer.clear()
 			if self.tabWidget.currentIndex()==0:
 				ShowFileConcept()
 			elif self.tabWidget.currentIndex()==1:

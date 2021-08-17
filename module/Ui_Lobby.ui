@@ -183,6 +183,12 @@
    <property name="text">
     <string>Check Data Completeness</string>
    </property>
+   <property name="shortcut">
+    <string>F4</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
   </action>
   <action name="actionSave_Data">
    <property name="text">

@@ -128,7 +128,10 @@ class Concept(QWidget,Ui_Concept):
 									text+=QLocale().toString(QDate(int(year),int(month),int(day)),"yyyy.M.d ddd")+"\n\n"
 									flag=True
 								text+=line["text"]+"\n\n"
+			
+			store=self.textViewer.verticalScrollBar().value()
 			self.textViewer.setMarkdown(text)
+			self.textViewer.verticalScrollBar().setValue(store)
 
 		def showConceptFile():
 			file_list=[]

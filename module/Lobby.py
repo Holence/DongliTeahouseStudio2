@@ -134,9 +134,9 @@ else:
 			concept_data=self.Headquarter.getConceptData()
 			library_data=self.Headquarter.getLibraryData()
 
-			
+			error="Check Started: %s\n\n"%QLocale().toString(QDateTime().currentDateTime(),"yyyy.M.d hh:mm:ss")
 			# Diary
-			error="------------------------Diary------------------------\n\n"
+			error+="------------------------Diary------------------------\n\n"
 			for year in diary_data:
 				for month in diary_data[year]:
 					for day in diary_data[year][month]:
@@ -386,6 +386,7 @@ else:
 							except Exception as e:
 								error+="%s.%s.%s file_name:%s %s\n"%(year,month,day,file_name,e)
 			
+			error+="\n\nCheck Finished: %s"%QLocale().toString(QDateTime().currentDateTime(),"yyyy.M.d hh:mm:ss")
 			return error
 		
 		def slot():
@@ -411,7 +412,10 @@ else:
 			self.DataChecker.setGeometry(self.Headquarter.x()+50,self.Headquarter.y()+50,self.DataChecker.minimumWidth(),self.DataChecker.minimumHeight())
 			self.DataChecker.setCentralWidget(self.DataChecker.errorText)
 			self.DataChecker.show()
-	
+		
+		self.DataChecker.showNormal()
+		self.DataChecker.raise_()
+
 	def ImportBookmarks(self):
 		def slot():
 			del self.bookmark_parser_window
