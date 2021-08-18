@@ -9,7 +9,6 @@ class Diary(QWidget,Ui_Diary):
 		super().__init__()
 		self.setupUi(self)
 		self.Headquarter=Headquarter
-		self.PAPA=parent #改窗口title还得保存parent的指针……
 		self.current_date=QDate()
 		self.initializeWindow()
 		self.initializeSignal()
@@ -72,13 +71,13 @@ class Diary(QWidget,Ui_Diary):
 		self.calendar.currentPageChanged.connect(self.CalendarPaintMonth)
 		
 		# 点击（更换选中的）一行
-		self.textList.itemClicked.connect(self.showLine)
+		self.textList.itemClicked.connect(lambda:self.showLine(focus=False)) #聚焦离开了textEdit会触发saveLine，紧接着就是showDay中的showLine，focus=False让不强制聚焦
 		# 行排序
 		self.textList.textDropped.connect(self.sortLine)
 		
 		
 		# 保存当前行
-		self.textEdit.editingFinished.connect(self.saveLine)
+		self.textEdit.editingFinished.connect(lambda:self.saveLine(focus=False)) #聚焦离开了textEdit会触发saveLine，紧接着就是showDay中的showLine，focus=False让不强制聚焦
 
 		# 添加line链接concept
 		self.conceptTable.conceptDropped.connect(self.addLineConcept)
@@ -115,34 +114,40 @@ class Diary(QWidget,Ui_Diary):
 			self.current_date=date
 			self.calendar.setSelectedDate(date)
 		
-		self.PAPA.setWindowTitle("Diary %s"%QLocale().toString(self.current_date,"yyyy.M.d ddd"))
+		self.window().setWindowTitle("Diary %s"%QLocale().toString(self.current_date,"yyyy.M.d ddd"))
 		
 		day_data=self.Headquarter.getDiaryDay(self.current_date)
 		
-		
 		if day_data!=None:
 			# 有该日
-			if date!=None:
-				# 指定日，则全刷
-				if self.stackedWidget.currentIndex()==0:
-					self.textList.setTextList("Diary",self.current_date)
-					self.textList.scrollToTop()
-					self.textList.clearSelection()
-				else:
-					self.refreshView()
-				
-				concept_id_list=[]
-				file_list=[]
+			concept_id_list=[]
+			file_list=[]
+			if self.stackedWidget.currentIndex()==0:
+				self.textList.setTextList("Diary",self.current_date)
 				for line in day_data:
 					concept_id_list=List_Union(concept_id_list,line["concept"])
 					file_list=List_Union_Full(file_list,line["file"])
-				
-				self.conceptTable.setConceptIDList(concept_id_list)
-				self.conceptTable.clearSelection()
-				self.fileTab.setFileList(file_list)
-				self.fileTab.clearSelection()
 			else:
-				# 无指定日，则只刷新该行
+				text=""
+				for line in day_data:
+					text+=line["text"]+"\n\n\n\n"
+					concept_id_list=List_Union(concept_id_list,line["concept"])
+					file_list=List_Union_Full(file_list,line["file"])
+				store=self.textViewer.verticalScrollBar().value()
+				self.textViewer.setMarkdown(text)
+				self.textViewer.verticalScrollBar().setValue(store)
+			
+			self.conceptTable.setConceptIDList(concept_id_list)
+			self.conceptTable.clearSelection()
+			self.fileTab.setFileList(file_list)
+			self.fileTab.clearSelection()
+			if date!=None:
+				# 指定日，全刷
+				self.textList.scrollToTop()
+				self.textList.clearSelection()
+				self.textList.setCurrentRow(-1)
+			else:
+				# 无指定日，刷新行
 				self.showLine()
 
 		else:
@@ -153,7 +158,7 @@ class Diary(QWidget,Ui_Diary):
 			self.textViewer.clear()
 
 		
-	def showLine(self):
+	def showLine(self, focus=True):
 		"""展示选中的行
 		"""
 
@@ -164,6 +169,11 @@ class Diary(QWidget,Ui_Diary):
 				self.textEdit.setPlainText(line["text"])
 				self.conceptTable.setConceptIDList(line["concept"])
 				self.fileTab.setFileList(line["file"])
+				self.textEdit.moveCursor(QTextCursor.End)
+				
+				if focus!=False:
+					self.textList.scrollToItem(self.textList.item(index))
+					self.textEdit.setFocus()
 					
 
 	def sortLine(self):
@@ -185,86 +195,70 @@ class Diary(QWidget,Ui_Diary):
 			self.showDay()
 		else:
 			# 真是奇怪了，只有一个item的时候，拖动放入后复制了一份？！
-			self.showDay()
-
-	def refreshView(self):
-		text=""
-		day_data=self.Headquarter.getDiaryDay(self.current_date)
-		for line in day_data:
-			text+=line["text"]+"\n\n\n\n"
-		store=self.textViewer.verticalScrollBar().value()
-		self.textViewer.setMarkdown(text)
-		self.textViewer.verticalScrollBar().setValue(store)
-
+			self.showDay()			
+	
 	def switchEditAndView(self):
 		if self.stackedWidget.currentIndex()==0:
 			# View
 			self.stackedWidget.setCurrentIndex(1)
-			self.refreshView()
+			self.textEdit.clearFocus()
 		else:
 			# Edit
 			self.stackedWidget.setCurrentIndex(0)
-			self.showDay(self.current_date)
-	
+		
+		self.showDay(self.current_date)
+
 	def toPreviousWeek(self):
 		self.saveLine()
 		self.current_date=self.current_date.addDays(-7)
 		self.calendar.setSelectedDate(self.current_date)
-		self.showDay()
+		self.showDay(self.current_date)
+		self.textEdit.clearFocus()
 
 	def toPreviousDay(self):
 		self.saveLine()
 		self.current_date=self.current_date.addDays(-1)
 		self.calendar.setSelectedDate(self.current_date)
-		self.showDay()
+		self.showDay(self.current_date)
+		self.textEdit.clearFocus()
 		
 	def toNextDay(self):
 		self.saveLine()
 		self.current_date=self.current_date.addDays(1)
 		self.calendar.setSelectedDate(self.current_date)
-		self.showDay()
+		self.showDay(self.current_date)
+		self.textEdit.clearFocus()
 		
 	def toNextWeek(self):
 		self.saveLine()
 		self.current_date=self.current_date.addDays(7)
 		self.calendar.setSelectedDate(self.current_date)
-		self.showDay()
+		self.showDay(self.current_date)
+		self.textEdit.clearFocus()
 	
 	def toFirstLine(self):
 		self.saveLine()
-		self.textList.setCurrentRow(0) # 这里会触发self.textList.currentRowChanged而进行showLine
+		self.textList.setCurrentRow(0)
 		self.showLine()
-		self.textList.scrollToTop()
-		self.textEdit.setFocus()
-		self.textEdit.moveCursor(QTextCursor.End)
 		
 	def toPreviousLine(self):
 		if self.textList.currentRow()>0:
 			self.saveLine()
-			self.textList.setCurrentRow(self.textList.currentRow()-1) # 这里会触发self.textList.currentRowChanged而进行showLine
+			self.textList.setCurrentRow(self.textList.currentRow()-1)
 			self.showLine()
-			self.textList.scrollToItem(self.textList.item(self.textList.currentRow()))
-			self.textEdit.setFocus()
-			self.textEdit.moveCursor(QTextCursor.End)
 		
 	def toNextLine(self):
 		if self.textList.currentRow()!=self.textList.count()-1:
 			self.saveLine()
-			self.textList.setCurrentRow(self.textList.currentRow()+1) # 这里会触发self.textList.currentRowChanged而进行showLine
+			self.textList.setCurrentRow(self.textList.currentRow()+1)
 			self.showLine()
-			self.textList.scrollToItem(self.textList.item(self.textList.currentRow()))
-			self.textEdit.setFocus()
-			self.textEdit.moveCursor(QTextCursor.End)
 		
 	def toLastLine(self):
 		self.saveLine()
-		self.textList.setCurrentRow(self.textList.count()-1) # 这里会触发self.textList.currentRowChanged而进行showLine
+		self.textList.setCurrentRow(self.textList.count()-1)
 		self.showLine()
-		self.textList.scrollToBottom()
-		self.textEdit.setFocus()
-		self.textEdit.moveCursor(QTextCursor.End)
 
-	def saveLine(self):
+	def saveLine(self,focus=True):
 		index=self.textList.currentRow()
 		
 		if index!=-1:
@@ -273,11 +267,8 @@ class Diary(QWidget,Ui_Diary):
 			line=self.Headquarter.getDiaryDayLine(self.current_date,index)
 			line["text"]=text
 			self.textList.setTextList("Diary",self.current_date)
-			self.textList.setCurrentRow(index)
-			
-			text=""
-			for line in self.Headquarter.getDiaryDay(self.current_date):
-				text+=line["text"]+"\n\n\n\n"
+			self.textList.clearSelection()
+			self.showLine(focus)
 
 	def addLine(self):
 		
@@ -309,9 +300,9 @@ class Diary(QWidget,Ui_Diary):
 		item=QListWidgetItem("")
 		item.setIcon(QIcon("./icon/%s/line_00.png"%QIcon.themeName()))
 		self.textList.setTextList("Diary",self.current_date)
-		self.textList.setCurrentRow(index+1) # 这里会触发self.textList.currentRowChanged而进行showLine
+		self.textList.clearSelection()
+		self.textList.setCurrentRow(index+1)
 		self.showLine()
-		self.textList.scrollToItem(item)
 		self.textEdit.setFocus()
 	
 	def addLineConcept(self,id_list):
@@ -322,8 +313,7 @@ class Diary(QWidget,Ui_Diary):
 			for id in List_Difference(id_list,line["concept"]):
 				line["concept"].append(id)
 			
-			self.conceptTable.setConceptIDList(line["concept"])
-			self.textEdit.setFocus()
+			self.showDay()
 
 	def addLineFile(self,url_list,file_list):
 		index=self.textList.currentRow()
@@ -353,7 +343,7 @@ class Diary(QWidget,Ui_Diary):
 				# line中添加file
 				line["file"]=List_Union_Full(line["file"],file_list)
 
-			self.fileTab.setFileList(line["file"])
+			self.showDay()
 
 	def deleteCenter(self):
 		if self.textList.hasFocus():
@@ -384,8 +374,7 @@ class Diary(QWidget,Ui_Diary):
 				diary_data=self.Headquarter.getDiaryData()
 				y,m,d=map(str,QDate_to_Tuple(self.current_date))
 				diary_data[y][m][d]=[line for line in day_data if day_data.index(line) not in delete_index]
-				self.textList.setTextList("Diary",self.current_date)
-				self.showDay()
+				self.showDay(self.current_date)
 	
 	def deleteLineConcept(self):
 		index=self.textList.currentRow()

@@ -209,5 +209,5 @@ class TextList(QListWidget):
 		
 		self.setCurrentRow(row)
 		for index in selected_index:
-			self.selectionModel().select(index,QItemSelectionModel.Select | QItemSelectionModel.Rows)
+			self.selectionModel().select(index,QItemSelectionModel.Select)
 		self.verticalScrollBar().setValue(store)

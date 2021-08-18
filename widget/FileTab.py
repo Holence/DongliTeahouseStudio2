@@ -417,7 +417,7 @@ class FileTab(Ui_FileTab,QWidget):
 
 	def openFile(self):
 
-		if self.fileTable.currentRow()==-1:
+		if self.fileTable.currentRow()==-1 and self.fileList.currentRow()==-1:
 			return
 
 		if self.stackedWidget.currentIndex()==0:

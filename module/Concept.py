@@ -184,6 +184,7 @@ class Concept(QWidget,Ui_Concept):
 			if self.current_id!=-1:
 				concept=self.Headquarter.getConcept(id)
 				self.lineEdit_name.setText(concept["name"])
+				self.window().setWindowTitle("Concept %s"%concept["name"])
 				self.plainTextEdit_detail.setPlainText(concept["detail"])
 				
 				self.refreshTab()
@@ -194,6 +195,7 @@ class Concept(QWidget,Ui_Concept):
 				self.relativeTable.setConceptIDList(concept["relative"])
 			else:
 				self.lineEdit_name.clear()
+				self.window().setWindowTitle("Concept")
 				self.plainTextEdit_detail.clear()
 				self.fileTab.Clear()
 				self.textViewer.clear()

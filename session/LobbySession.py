@@ -165,6 +165,7 @@ class LobbySession(DTSession.DTMainSession):
 					flag=True
 					diary.diary_module.showDay(QDate(y,m,d))
 					diary.diary_module.textList.setCurrentRow(index)
+					diary.diary_module.showLine()
 					diary.showNormal()
 					diary.raise_()
 			#如果全部都隐藏着，开启一个
@@ -174,6 +175,7 @@ class LobbySession(DTSession.DTMainSession):
 				self.diary_heap[0].raise_()
 				self.diary_heap[0].diary_module.showDay(QDate(y,m,d))
 				self.diary_heap[0].diary_module.textList.setCurrentRow(index)
+				self.diary_heap[0].diary_module.showLine()
 
 		for diary in self.diary_heap:
 			diary.diary_module.conceptTable.conceptDoubleClicked.connect(slot)

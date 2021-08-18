@@ -22,6 +22,7 @@ class DiarySearch(Ui_DiarySearch,QWidget):
 			
 			self.diary.showDay(QDate(y,m,d))
 			self.diary.textList.setCurrentRow(index)
+			self.diary.showLine()
 		
 		self.listWidget.textClicked.connect(slot)
 		self.listWidget.setObjectName("DiarySeachTextList")

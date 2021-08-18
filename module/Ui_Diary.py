@@ -24,7 +24,7 @@ class Ui_Diary(object):
     def setupUi(self, Diary):
         if not Diary.objectName():
             Diary.setObjectName(u"Diary")
-        Diary.resize(943, 618)
+        Diary.resize(963, 618)
         self.actionSwitch_Eidt_View = QAction(Diary)
         self.actionSwitch_Eidt_View.setObjectName(u"actionSwitch_Eidt_View")
         self.actionPrevious_Day = QAction(Diary)
@@ -102,7 +102,7 @@ class Ui_Diary(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.widget.sizePolicy().hasHeightForWidth())
         self.widget.setSizePolicy(sizePolicy)
-        self.widget.setMinimumSize(QSize(320, 300))
+        self.widget.setMinimumSize(QSize(340, 300))
         self.widget.setMaximumSize(QSize(16777215, 300))
         self.verticalLayout_2 = QVBoxLayout(self.widget)
         self.verticalLayout_2.setSpacing(0)
@@ -121,7 +121,7 @@ class Ui_Diary(object):
         self.calendar.setObjectName(u"calendar")
         sizePolicy.setHeightForWidth(self.calendar.sizePolicy().hasHeightForWidth())
         self.calendar.setSizePolicy(sizePolicy)
-        self.calendar.setMinimumSize(QSize(320, 270))
+        self.calendar.setMinimumSize(QSize(340, 270))
         self.calendar.setMaximumSize(QSize(16777215, 300))
         self.calendar.setFirstDayOfWeek(Qt.Monday)
         self.calendar.setGridVisible(True)

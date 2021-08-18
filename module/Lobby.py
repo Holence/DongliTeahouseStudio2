@@ -146,6 +146,8 @@ else:
 							try:
 								if type(line["text"])!=str:
 									error+="%s.%s.%s line_index:%s text is not str\n"%(year,month,day,line_index)
+								if line["text"].strip()=="":
+									error+="%s.%s.%s line_index:%s text is EMPTY!\n"%(year,month,day,line_index)
 							except Exception as e:
 								error+="%s.%s.%s line_index:%s %s\n"%(year,month,day,line_index,e)
 							
@@ -225,6 +227,8 @@ else:
 					name=concept["name"]
 					if type(name)!=str:
 						error+="concept:%s name:%s is not str\n"%(index,name)
+					if name.strip()=="":
+						error+="concept:%s name:%s is EMPTY\n"%(index,name)
 				except Exception as e:
 					error+="concept:%s %s \n"%(index,e)
 				
@@ -339,6 +343,8 @@ else:
 							
 							if type(file_name)!=str:
 								error+="%s.%s.%s file_name:%s is not str\n"%(year,month,day,file_name)
+							if file_name.strip()=="":
+								error+="%s.%s.%s file_name:%s is EMPTY\n"%(year,month,day,file_name)
 							file=library_data[year][month][day][file_name]
 
 							try:
