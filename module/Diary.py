@@ -75,7 +75,6 @@ class Diary(QWidget,Ui_Diary):
 		# 行排序
 		self.textList.textDropped.connect(self.sortLine)
 		
-		
 		# 保存当前行
 		self.textEdit.editingFinished.connect(lambda:self.saveLine(focus=False)) #聚焦离开了textEdit会触发saveLine，紧接着就是showDay中的showLine，focus=False让不强制聚焦
 

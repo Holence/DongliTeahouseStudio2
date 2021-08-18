@@ -190,7 +190,7 @@
             <number>0</number>
            </property>
            <item>
-            <widget class="QTextBrowser" name="textViewer">
+            <widget class="MarkdownViewer" name="textViewer">
              <property name="openExternalLinks">
               <bool>true</bool>
              </property>
@@ -238,6 +238,11 @@
    <class>TextList</class>
    <extends>QListWidget</extends>
    <header>widget</header>
+  </customwidget>
+  <customwidget>
+   <class>MarkdownViewer</class>
+   <extends>QTextBrowser</extends>
+   <header>DTWidget</header>
   </customwidget>
  </customwidgets>
  <resources>

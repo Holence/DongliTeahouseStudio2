@@ -70,7 +70,7 @@
          <number>0</number>
         </property>
         <item>
-         <widget class="QTextBrowser" name="textViewer">
+         <widget class="MarkdownViewer" name="textViewer">
           <property name="minimumSize">
            <size>
             <width>600</width>
@@ -381,6 +381,11 @@
    <class>ConceptSearch</class>
    <extends>QLineEdit</extends>
    <header>widget</header>
+  </customwidget>
+  <customwidget>
+   <class>MarkdownViewer</class>
+   <extends>QTextBrowser</extends>
+   <header>DTWidget</header>
   </customwidget>
  </customwidgets>
  <resources>

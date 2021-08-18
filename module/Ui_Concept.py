@@ -17,6 +17,7 @@ from widget import ConceptTable
 from DTPySide.DTWidget import DTPlainTextEdit
 from widget import TextList
 from widget import ConceptSearch
+from DTPySide.DTWidget import MarkdownViewer
 from widget import ConceptTree
 
 import DTPySide.DT_rc
@@ -151,7 +152,7 @@ class Ui_Concept(object):
         self.horizontalLayout_2.setSpacing(0)
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.textViewer = QTextBrowser(self.tab_textviewer)
+        self.textViewer = MarkdownViewer(self.tab_textviewer)
         self.textViewer.setObjectName(u"textViewer")
         self.textViewer.setOpenExternalLinks(True)
 

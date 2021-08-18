@@ -15,6 +15,7 @@ from PySide2.QtWidgets import *
 from widget import FileTab
 from widget import ConceptTable
 from widget import TextList
+from DTPySide.DTWidget import MarkdownViewer
 
 import DTPySide.DT_rc
 
@@ -128,7 +129,7 @@ class Ui_Library(object):
         self.horizontalLayout_2.setSpacing(0)
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.textViewer = QTextBrowser(self.tab_textviewer)
+        self.textViewer = MarkdownViewer(self.tab_textviewer)
         self.textViewer.setObjectName(u"textViewer")
         self.textViewer.setOpenExternalLinks(True)
 
