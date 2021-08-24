@@ -26,7 +26,7 @@ class Concept(QWidget,Ui_Concept):
 		# 搜索处的concept table只能drag out不能drop in
 		self.conceptTable.setDragDropMode(QAbstractItemView.DragOnly)
 		self.conceptTable.setHeadquarter(self.Headquarter)
-		self.conceptTable.setObjectName("ConceptConceptTable") #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
+		self.conceptTable.setObjectName("ConceptConceptTable%s"%len(self.Headquarter.concept_heap)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
 
 		self.fileTab.setHeadquarter(self.Headquarter)
 		self.fileTab.fileTable.setObjectName("ConceptFileTable%s"%len(self.Headquarter.concept_heap)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
@@ -35,8 +35,11 @@ class Concept(QWidget,Ui_Concept):
 		self.textList.setObjectName("ConceptTextList%s"%len(self.Headquarter.concept_heap)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
 		
 		self.parentTable.setHeadquarter(self.Headquarter)
+		self.parentTable.setObjectName("ParentConceptTable%s"%len(self.Headquarter.concept_heap)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
 		self.childTree.setHeadquarter(self.Headquarter)
+		self.childTree.setObjectName("ConceptTree%s"%len(self.Headquarter.concept_heap)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
 		self.relativeTable.setHeadquarter(self.Headquarter)
+		self.relativeTable.setObjectName("RelativeConceptTable%s"%len(self.Headquarter.concept_heap)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
 
 		self.lineEdit_parent.setHeadquarter(self.Headquarter)
 		self.lineEdit_child.setHeadquarter(self.Headquarter)
@@ -223,6 +226,7 @@ class Concept(QWidget,Ui_Concept):
 			concept["name"]=self.lineEdit_name.text()
 			concept["az"]=Str_to_AZ(concept["name"])
 			self.showSearch()
+			self.window().setWindowTitle("Concept %s"%concept["name"])
 	
 	def saveDetail(self):
 		if self.current_id!=-1:
