@@ -1,5 +1,7 @@
 # DongliTeahouseStudio2
 
+This project is based on [DTPySide](https://github.com/Holence/DongliTeahousePySide), please install the package first.
+
 ## Demo
 
 ![Lobby](demo/Lobby.jpg)
