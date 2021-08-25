@@ -225,6 +225,10 @@
         <source>Open File Location</source>
         <translation>開いているファイルの場所</translation>
     </message>
+    <message>
+        <source>Copy File Path</source>
+        <translation>ファイルパスのコピー</translation>
+    </message>
 </context>
 <context>
     <name>LibraryCheck</name>

@@ -225,6 +225,10 @@
         <source>Open File Location</source>
         <translation>Malfermu Dosierlokon</translation>
     </message>
+    <message>
+        <source>Copy File Path</source>
+        <translation>Kopiu Dosieran Vojon</translation>
+    </message>
 </context>
 <context>
     <name>LibraryCheck</name>

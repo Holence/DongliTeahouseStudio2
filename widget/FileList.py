@@ -239,6 +239,15 @@ class FileList(QListWidget):
 		def slotDelete():
 			self.fileDelete.emit()
 		
+		def slotCopyPath():
+			text=""
+			for model_index in self.selectionModel().selectedRows():
+				row=model_index.row()
+				url=self.item(row).toolTip().replace("/","\\")#呵window得用反斜线
+				text+=url+"\n"
+			clip=QGuiApplication.clipboard()
+			clip.setText(text[:-1])
+		
 		if "Bookmark" in self.objectName():
 			super().mousePressEvent(event)
 			return
@@ -267,12 +276,17 @@ class FileList(QListWidget):
 						actionViewImage.triggered.connect(slotImage)
 						actionViewImage.setIcon(IconFromCurrentTheme("image.svg"))
 						menu.addAction(actionViewImage)
-					
+						
 					if "|" not in name:
 						actionOpenLocation=QAction(QCoreApplication.translate("Library", "Open File Location"))
 						actionOpenLocation.triggered.connect(slotLocation)
 						actionOpenLocation.setIcon(IconFromCurrentTheme("folder.svg"))
 						menu.addAction(actionOpenLocation)
+				
+				actionCopyPath=QAction(QCoreApplication.translate("Library", "Copy File Path"))
+				actionCopyPath.triggered.connect(slotCopyPath)
+				actionCopyPath.setIcon(IconFromCurrentTheme("code.svg"))
+				menu.addAction(actionCopyPath)
 
 				# if "|" not in name:
 				actionCopy=QAction(QCoreApplication.translate("Library", "Copy to..."))

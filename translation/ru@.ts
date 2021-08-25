@@ -225,6 +225,10 @@
         <source>Open File Location</source>
         <translation>Откройте расположение файла</translation>
     </message>
+    <message>
+        <source>Copy File Path</source>
+        <translation>Копировать путь к файлу</translation>
+    </message>
 </context>
 <context>
     <name>LibraryCheck</name>

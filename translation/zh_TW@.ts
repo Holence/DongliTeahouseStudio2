@@ -225,6 +225,10 @@
         <source>Open File Location</source>
         <translation>打開文件位置</translation>
     </message>
+    <message>
+        <source>Copy File Path</source>
+        <translation>複製文件路徑</translation>
+    </message>
 </context>
 <context>
     <name>LibraryCheck</name>

@@ -190,6 +190,15 @@ class FileTable(DTWidget.DTHorizontalTabel):
 		def slotDelete():
 			self.fileDelete.emit()
 
+		def slotCopyPath():
+			text=""
+			for model_index in self.selectionModel().selectedRows():
+				row=model_index.row()
+				url=self.item(row,4).text().replace("/","\\")#呵window得用反斜线
+				text+=url+"\n"
+			clip=QGuiApplication.clipboard()
+			clip.setText(text[:-1])
+		
 		if "Bookmark" in self.objectName():
 			super().mousePressEvent(event)
 			return
@@ -225,6 +234,11 @@ class FileTable(DTWidget.DTHorizontalTabel):
 						actionOpenLocation.setIcon(IconFromCurrentTheme("folder.svg"))
 						menu.addAction(actionOpenLocation)
 
+				actionCopyPath=QAction(QCoreApplication.translate("Library", "Copy File Path"))
+				actionCopyPath.triggered.connect(slotCopyPath)
+				actionCopyPath.setIcon(IconFromCurrentTheme("code.svg"))
+				menu.addAction(actionCopyPath)
+				
 				# if ext!="link":
 				actionCopy=QAction(QCoreApplication.translate("Library", "Copy to..."))
 				actionCopy.triggered.connect(slotCopy)

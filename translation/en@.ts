@@ -225,6 +225,10 @@
         <source>Open File Location</source>
         <translation>Open File Location</translation>
     </message>
+    <message>
+        <source>Copy File Path</source>
+        <translation>Copy File Path</translation>
+    </message>
 </context>
 <context>
     <name>LibraryCheck</name>
