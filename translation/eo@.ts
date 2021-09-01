@@ -214,8 +214,8 @@
         <translation>Serĉu Dosieron</translation>
     </message>
     <message>
-        <source>Copy to...</source>
-        <translation>Kopiu al ...</translation>
+        <source>Copy File</source>
+        <translation>Kopiu dosieron</translation>
     </message>
     <message>
         <source>Refresh Icon</source>

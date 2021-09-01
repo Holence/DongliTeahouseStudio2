@@ -214,8 +214,8 @@
         <translation>Искать в файле</translation>
     </message>
     <message>
-        <source>Copy to...</source>
-        <translation>Скопировать в...</translation>
+        <source>Copy File</source>
+        <translation>Копировать файл</translation>
     </message>
     <message>
         <source>Refresh Icon</source>

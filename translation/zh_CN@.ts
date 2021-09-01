@@ -214,8 +214,8 @@
         <translation>查找文件</translation>
     </message>
     <message>
-        <source>Copy to...</source>
-        <translation>复制到...</translation>
+        <source>Copy File</source>
+        <translation>复制文件</translation>
     </message>
     <message>
         <source>Refresh Icon</source>

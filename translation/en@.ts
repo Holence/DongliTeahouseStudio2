@@ -214,8 +214,8 @@
         <translation>Search File</translation>
     </message>
     <message>
-        <source>Copy to...</source>
-        <translation>Copy to...</translation>
+        <source>Copy File</source>
+        <translation>Copy File</translation>
     </message>
     <message>
         <source>Refresh Icon</source>

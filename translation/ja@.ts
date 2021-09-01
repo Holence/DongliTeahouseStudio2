@@ -214,8 +214,8 @@
         <translation>検索ファイル</translation>
     </message>
     <message>
-        <source>Copy to...</source>
-        <translation>コピー先...</translation>
+        <source>Copy File</source>
+        <translation>ファイルのコピー</translation>
     </message>
     <message>
         <source>Refresh Icon</source>

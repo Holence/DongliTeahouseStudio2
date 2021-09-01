@@ -212,29 +212,29 @@ class FileList(QListWidget):
 			except Exception as e:
 				DTFrame.DTMessageBox(self.window(),"Warning","%s does not exist! Try running Check Library.\n\n%s"%(url,e),DTIcon.Warning())
 		
-		def slotCopy():
-			copy_list=[]
-			for model_index in self.selectionModel().selectedRows():
-				row=model_index.row()
-				url=self.item(row).toolTip().replace("/","\\")
-				if url[:4]!="http":
-					copy_list.append(url)
+		# def slotCopy():
+		# 	copy_list=[]
+		# 	for model_index in self.selectionModel().selectedRows():
+		# 		row=model_index.row()
+		# 		url=self.item(row).toolTip().replace("/","\\")
+		# 		if url[:4]!="http":
+		# 			copy_list.append(url)
 			
-			if copy_list==[]:
-				DTFrame.DTMessageBox(self.window(),"Warning","There is nothing can be copied.",DTIcon.Warning())
-				return
+		# 	if copy_list==[]:
+		# 		DTFrame.DTMessageBox(self.window(),"Warning","There is nothing can be copied.",DTIcon.Warning())
+		# 		return
 				
-			dlg=QFileDialog(self)
-			dst=dlg.getExistingDirectory().replace("/","\\")
-			if dst!="":
-				try:
-					res=Win32_Shellcopy(copy_list,dst)
-					if res==True:
-						os.startfile(dst)
-					else:
-						DTFrame.DTMessageBox(self.window(),"Error","Copy Failed",DTIcon.Error())
-				except Exception as e:
-					DTFrame.DTMessageBox(self.window(),"Error","Error occured: %s\n\nTry running Check Library."%e,DTIcon.Error())
+		# 	dlg=QFileDialog(self)
+		# 	dst=dlg.getExistingDirectory().replace("/","\\")
+		# 	if dst!="":
+		# 		try:
+		# 			res=Win32_Shellcopy(copy_list,dst)
+		# 			if res==True:
+		# 				os.startfile(dst)
+		# 			else:
+		# 				DTFrame.DTMessageBox(self.window(),"Error","Copy Failed",DTIcon.Error())
+		# 		except Exception as e:
+		# 			DTFrame.DTMessageBox(self.window(),"Error","Error occured: %s\n\nTry running Check Library."%e,DTIcon.Error())
 		
 		def slotDelete():
 			self.fileDelete.emit()
@@ -247,6 +247,21 @@ class FileList(QListWidget):
 				text+=url+"\n"
 			clip=QGuiApplication.clipboard()
 			clip.setText(text[:-1])
+		
+		def slotCopyFile():
+			url_list = []
+			for model_index in self.selectionModel().selectedRows():
+				row=model_index.row()
+				
+				url=self.item(row).toolTip()
+				if url[:4]!="http":
+					url="file:///"+url
+					url_list.append(QUrl(url))
+			
+			mime=QMimeData()
+			mime.setUrls(url_list)
+			clip=QGuiApplication.clipboard()
+			clip.setMimeData(mime)
 		
 		if "Bookmark" in self.objectName():
 			super().mousePressEvent(event)
@@ -283,16 +298,21 @@ class FileList(QListWidget):
 						actionOpenLocation.setIcon(IconFromCurrentTheme("folder.svg"))
 						menu.addAction(actionOpenLocation)
 				
+				actionCopyFile=QAction(QCoreApplication.translate("Library", "Copy File"))
+				actionCopyFile.triggered.connect(slotCopyFile)
+				actionCopyFile.setIcon(IconFromCurrentTheme("copy.svg"))
+				menu.addAction(actionCopyFile)
+
 				actionCopyPath=QAction(QCoreApplication.translate("Library", "Copy File Path"))
 				actionCopyPath.triggered.connect(slotCopyPath)
 				actionCopyPath.setIcon(IconFromCurrentTheme("code.svg"))
 				menu.addAction(actionCopyPath)
 
 				# if "|" not in name:
-				actionCopy=QAction(QCoreApplication.translate("Library", "Copy to..."))
-				actionCopy.triggered.connect(slotCopy)
-				actionCopy.setIcon(IconFromCurrentTheme("copy.svg"))
-				menu.addAction(actionCopy)
+				# actionCopy=QAction(QCoreApplication.translate("Library", "Copy to..."))
+				# actionCopy.triggered.connect(slotCopy)
+				# actionCopy.setIcon(IconFromCurrentTheme("copy.svg"))
+				# menu.addAction(actionCopy)
 				
 				actionRefreshIcon=QAction(QCoreApplication.translate("Library", "Refresh Icon"))
 				actionRefreshIcon.triggered.connect(slotRefresh)
