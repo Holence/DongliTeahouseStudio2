@@ -102,7 +102,12 @@ class ConceptTree(DTWidget.DTTree):
 		
 		def deepin(root_item,root_id):
 			child_id_list=self.Headquarter.getConcept(root_id)["child"]
-			id_str_width=len(str(len(child_id_list)))
+
+			if child_id_list!=[]:
+				id_str_width=len(str(max(child_id_list)))
+			else:
+				id_str_width=0
+			
 			for child_id in child_id_list:
 				if child_id not in stack:
 					child_item=QTreeWidgetItem(root_item,[f"%{id_str_width}s"%child_id,self.Headquarter.getConcept(child_id)["name"]])

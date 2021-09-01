@@ -125,7 +125,11 @@ class ConceptTable(DTWidget.DTHorizontalTabel):
 		self.StoreTableStatus()
 		self.Clear()
 
-		id_str_width=len(str(len(concept_id_list)))
+		if concept_id_list!=[]:
+			id_str_width=len(str(max(concept_id_list)))
+		else:
+			id_str_width=0
+		
 		row=0
 		for concept_id in concept_id_list:
 			concept=self.Headquarter.getConcept(concept_id)
