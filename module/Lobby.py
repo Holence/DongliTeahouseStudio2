@@ -52,7 +52,7 @@ class Lobby(QWidget,Ui_Lobby):
 			self.actionSwitch_Secure_Mode.setText(QCoreApplication.translate("Lobby", "Secure Mode - On"))
 			DTFrame.DTMessageBox(self,"Information","Secure mode is on. Password will be needed opening modules.",DTIcon.Happy())
 		else:
-			if DTSession.DTLoginSession(self.Headquarter.UserSetting().value("BasicInfo/Password")).exec_():
+			if DTSession.DTLoginSession(self.Headquarter.UserSetting().value("BasicInfo/Password"),"Secure Lock").exec_():
 				self.SecureMode=False
 				self.actionSwitch_Secure_Mode.setIcon(IconFromCurrentTheme("toggle-left.svg"))
 				self.actionSwitch_Secure_Mode.setText(QCoreApplication.translate("Lobby", "Secure Mode - Off"))
@@ -60,7 +60,7 @@ class Lobby(QWidget,Ui_Lobby):
 	
 	def summon(self, へ_へ, ヘ＿ヘ):
 		if self.SecureMode==True:
-			if not DTSession.DTLoginSession(self.Headquarter.UserSetting().value("BasicInfo/Password")).exec_():
+			if not DTSession.DTLoginSession(self.Headquarter.UserSetting().value("BasicInfo/Password"),"Secure Lock").exec_():
 				return
 		
 		exec(f"""
@@ -100,7 +100,7 @@ else:
 	def checkLibrary(self):
 		
 		if self.SecureMode==True:
-			if not DTSession.DTLoginSession(self.Headquarter.UserSetting().value("BasicInfo/Password")).exec_():
+			if not DTSession.DTLoginSession(self.Headquarter.UserSetting().value("BasicInfo/Password"),"Secure Lock").exec_():
 				return
 		
 		if not os.path.exists(self.Headquarter.library_base):

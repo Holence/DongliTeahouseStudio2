@@ -216,6 +216,10 @@ class LobbySession(DTSession.DTMainSession):
 		super().backup()
 
 	def setting(self):
+		if self.lobby.SecureMode==True:
+			if not DTSession.DTLoginSession(self.UserSetting().value("BasicInfo/Password"),"Secure Lock").exec_():
+				return
+		
 		from session.SettingSession import SettingSession
 		dlg=SettingSession(self,self.app)
 		dlg.exec_()
