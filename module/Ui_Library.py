@@ -23,8 +23,8 @@ class Ui_Library(object):
     def setupUi(self, Library):
         if not Library.objectName():
             Library.setObjectName(u"Library")
-        Library.resize(900, 600)
-        Library.setMinimumSize(QSize(900, 600))
+        Library.resize(827, 600)
+        Library.setMinimumSize(QSize(0, 600))
         self.actionDelete = QAction(Library)
         self.actionDelete.setObjectName(u"actionDelete")
         self.actionSearch_File = QAction(Library)
@@ -46,7 +46,7 @@ class Ui_Library(object):
 
         self.lineEdit_search = QLineEdit(self.layoutWidget)
         self.lineEdit_search.setObjectName(u"lineEdit_search")
-        self.lineEdit_search.setMinimumSize(QSize(200, 0))
+        self.lineEdit_search.setMinimumSize(QSize(400, 0))
 
         self.verticalLayout.addWidget(self.lineEdit_search)
 

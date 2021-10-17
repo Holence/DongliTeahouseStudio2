@@ -67,7 +67,7 @@
          <widget class="QLineEdit" name="lineEdit_name">
           <property name="minimumSize">
            <size>
-            <width>550</width>
+            <width>450</width>
             <height>0</height>
            </size>
           </property>
@@ -90,7 +90,7 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>550</width>
+            <width>450</width>
             <height>100</height>
            </size>
           </property>

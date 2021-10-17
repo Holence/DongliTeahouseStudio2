@@ -25,7 +25,7 @@ class Ui_Diary(object):
     def setupUi(self, Diary):
         if not Diary.objectName():
             Diary.setObjectName(u"Diary")
-        Diary.resize(963, 618)
+        Diary.resize(913, 618)
         self.actionSwitch_Eidt_View = QAction(Diary)
         self.actionSwitch_Eidt_View.setObjectName(u"actionSwitch_Eidt_View")
         self.actionPrevious_Day = QAction(Diary)
@@ -62,21 +62,24 @@ class Ui_Diary(object):
         self.page_edit = QWidget()
         self.page_edit.setObjectName(u"page_edit")
         self.verticalLayout = QVBoxLayout(self.page_edit)
+        self.verticalLayout.setSpacing(0)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
-        self.textList = TextList(self.page_edit)
+        self.splitter_left = QSplitter(self.page_edit)
+        self.splitter_left.setObjectName(u"splitter_left")
+        self.splitter_left.setOrientation(Qt.Vertical)
+        self.splitter_left.setChildrenCollapsible(False)
+        self.textList = TextList(self.splitter_left)
         self.textList.setObjectName(u"textList")
-        self.textList.setMinimumSize(QSize(600, 400))
-
-        self.verticalLayout.addWidget(self.textList)
-
-        self.textEdit = DTPlainTextEdit(self.page_edit)
+        self.textList.setMinimumSize(QSize(500, 350))
+        self.splitter_left.addWidget(self.textList)
+        self.textEdit = DTPlainTextEdit(self.splitter_left)
         self.textEdit.setObjectName(u"textEdit")
+        self.textEdit.setMinimumSize(QSize(500, 150))
+        self.splitter_left.addWidget(self.textEdit)
 
-        self.verticalLayout.addWidget(self.textEdit)
+        self.verticalLayout.addWidget(self.splitter_left)
 
-        self.verticalLayout.setStretch(0, 15)
-        self.verticalLayout.setStretch(1, 4)
         self.stackedWidget.addWidget(self.page_edit)
         self.page_view = QWidget()
         self.page_view.setObjectName(u"page_view")
@@ -86,17 +89,17 @@ class Ui_Diary(object):
         self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.textViewer = MarkdownViewer(self.page_view)
         self.textViewer.setObjectName(u"textViewer")
-        self.textViewer.setMinimumSize(QSize(600, 600))
+        self.textViewer.setMinimumSize(QSize(500, 500))
         self.textViewer.setOpenExternalLinks(True)
 
         self.horizontalLayout_2.addWidget(self.textViewer)
 
         self.stackedWidget.addWidget(self.page_view)
         self.splitter_whole.addWidget(self.stackedWidget)
-        self.splitter = QSplitter(self.splitter_whole)
-        self.splitter.setObjectName(u"splitter")
-        self.splitter.setOrientation(Qt.Vertical)
-        self.widget = QWidget(self.splitter)
+        self.splitter_right = QSplitter(self.splitter_whole)
+        self.splitter_right.setObjectName(u"splitter_right")
+        self.splitter_right.setOrientation(Qt.Vertical)
+        self.widget = QWidget(self.splitter_right)
         self.widget.setObjectName(u"widget")
         sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -130,8 +133,8 @@ class Ui_Diary(object):
 
         self.verticalLayout_2.addWidget(self.calendar)
 
-        self.splitter.addWidget(self.widget)
-        self.layoutWidget_4 = QWidget(self.splitter)
+        self.splitter_right.addWidget(self.widget)
+        self.layoutWidget_4 = QWidget(self.splitter_right)
         self.layoutWidget_4.setObjectName(u"layoutWidget_4")
         self.verticalLayout_concept = QVBoxLayout(self.layoutWidget_4)
         self.verticalLayout_concept.setSpacing(4)
@@ -162,8 +165,8 @@ class Ui_Diary(object):
 
         self.verticalLayout_concept.addWidget(self.conceptTable)
 
-        self.splitter.addWidget(self.layoutWidget_4)
-        self.layoutWidget1_2 = QWidget(self.splitter)
+        self.splitter_right.addWidget(self.layoutWidget_4)
+        self.layoutWidget1_2 = QWidget(self.splitter_right)
         self.layoutWidget1_2.setObjectName(u"layoutWidget1_2")
         self.verticalLayout_file = QVBoxLayout(self.layoutWidget1_2)
         self.verticalLayout_file.setSpacing(4)
@@ -184,8 +187,8 @@ class Ui_Diary(object):
 
         self.verticalLayout_file.addWidget(self.fileTab)
 
-        self.splitter.addWidget(self.layoutWidget1_2)
-        self.splitter_whole.addWidget(self.splitter)
+        self.splitter_right.addWidget(self.layoutWidget1_2)
+        self.splitter_whole.addWidget(self.splitter_right)
 
         self.horizontalLayout.addWidget(self.splitter_whole)
 

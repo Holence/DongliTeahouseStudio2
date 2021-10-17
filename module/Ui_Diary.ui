@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>963</width>
+    <width>913</width>
     <height>618</height>
    </rect>
   </property>
@@ -24,7 +24,10 @@
        <number>0</number>
       </property>
       <widget class="QWidget" name="page_edit">
-       <layout class="QVBoxLayout" name="verticalLayout" stretch="15,4">
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <property name="spacing">
+         <number>0</number>
+        </property>
         <property name="leftMargin">
          <number>0</number>
         </property>
@@ -38,17 +41,30 @@
          <number>0</number>
         </property>
         <item>
-         <widget class="TextList" name="textList">
-          <property name="minimumSize">
-           <size>
-            <width>600</width>
-            <height>400</height>
-           </size>
+         <widget class="QSplitter" name="splitter_left">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
           </property>
+          <property name="childrenCollapsible">
+           <bool>false</bool>
+          </property>
+          <widget class="TextList" name="textList">
+           <property name="minimumSize">
+            <size>
+             <width>500</width>
+             <height>350</height>
+            </size>
+           </property>
+          </widget>
+          <widget class="DTPlainTextEdit" name="textEdit">
+           <property name="minimumSize">
+            <size>
+             <width>500</width>
+             <height>150</height>
+            </size>
+           </property>
+          </widget>
          </widget>
-        </item>
-        <item>
-         <widget class="DTPlainTextEdit" name="textEdit"/>
         </item>
        </layout>
       </widget>
@@ -73,8 +89,8 @@
          <widget class="MarkdownViewer" name="textViewer">
           <property name="minimumSize">
            <size>
-            <width>600</width>
-            <height>600</height>
+            <width>500</width>
+            <height>500</height>
            </size>
           </property>
           <property name="openExternalLinks">
@@ -85,7 +101,7 @@
        </layout>
       </widget>
      </widget>
-     <widget class="QSplitter" name="splitter">
+     <widget class="QSplitter" name="splitter_right">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
       </property>

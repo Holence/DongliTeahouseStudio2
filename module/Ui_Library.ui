@@ -6,13 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>900</width>
+    <width>827</width>
     <height>600</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>900</width>
+    <width>0</width>
     <height>600</height>
    </size>
   </property>
@@ -38,7 +38,7 @@
         <widget class="QLineEdit" name="lineEdit_search">
          <property name="minimumSize">
           <size>
-           <width>200</width>
+           <width>400</width>
            <height>0</height>
           </size>
          </property>

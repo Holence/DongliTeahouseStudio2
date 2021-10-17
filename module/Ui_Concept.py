@@ -82,7 +82,7 @@ class Ui_Concept(object):
 
         self.lineEdit_name = QLineEdit(self.layoutWidget0)
         self.lineEdit_name.setObjectName(u"lineEdit_name")
-        self.lineEdit_name.setMinimumSize(QSize(550, 0))
+        self.lineEdit_name.setMinimumSize(QSize(450, 0))
 
         self.verticalLayout_info.addWidget(self.lineEdit_name)
 
@@ -98,7 +98,7 @@ class Ui_Concept(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.plainTextEdit_detail.sizePolicy().hasHeightForWidth())
         self.plainTextEdit_detail.setSizePolicy(sizePolicy)
-        self.plainTextEdit_detail.setMinimumSize(QSize(550, 100))
+        self.plainTextEdit_detail.setMinimumSize(QSize(450, 100))
 
         self.verticalLayout_info.addWidget(self.plainTextEdit_detail)
 

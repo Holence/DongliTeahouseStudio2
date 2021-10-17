@@ -13,11 +13,14 @@ class Diary(QWidget,Ui_Diary):
 		self.initializeWindow()
 		self.initializeSignal()
 		self.current_date=self.calendar.selectedDate()
+		self.current_index=-1
 	
 	def initializeWindow(self):
 
 		self.splitter_whole.setStretchFactor(0,5)
 		self.splitter_whole.setStretchFactor(0,1)
+		self.splitter_left.setStretchFactor(0,10)
+		self.splitter_left.setStretchFactor(0,1)
 
 		self.textList.setHeadquarter(self.Headquarter)
 		self.textList.setObjectName("DiaryTextList%s"%len(self.Headquarter.diary_heap)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
@@ -45,6 +48,7 @@ class Diary(QWidget,Ui_Diary):
 		self.actionFind_Text.setIcon(IconFromCurrentTheme("search.svg"))
 
 		self.CalendarPaintMonth()
+		self.textEdit.setEnabled(False)
 	
 	def initializeSignal(self):
 		self.actionSwitch_Eidt_View.triggered.connect(self.switchEditAndView)
@@ -67,6 +71,7 @@ class Diary(QWidget,Ui_Diary):
 		
 		# 点击日期
 		self.calendar.clicked.connect(self.showDay)
+		self.calendar.clicked.connect(lambda:self.textEdit.setEnabled(False))
 
 		self.calendar.currentPageChanged.connect(self.CalendarPaintMonth)
 		
@@ -145,6 +150,7 @@ class Diary(QWidget,Ui_Diary):
 				self.textList.scrollToTop()
 				self.textList.clearSelection()
 				self.textList.setCurrentRow(-1)
+				self.current_index=-1
 			else:
 				# 无指定日，刷新行
 				self.showLine()
@@ -163,6 +169,8 @@ class Diary(QWidget,Ui_Diary):
 
 		index=self.textList.currentRow()
 		if index!=-1:
+			self.textEdit.setEnabled(True)
+			self.current_index=index
 			line=self.Headquarter.getDiaryDayLine(self.current_date,index)
 			if line!=None:
 				self.textEdit.setPlainText(line["text"])
@@ -212,6 +220,7 @@ class Diary(QWidget,Ui_Diary):
 		self.current_date=self.current_date.addDays(-7)
 		self.calendar.setSelectedDate(self.current_date)
 		self.showDay(self.current_date)
+		self.textEdit.setEnabled(False)
 		self.textEdit.clearFocus()
 
 	def toPreviousDay(self):
@@ -219,6 +228,7 @@ class Diary(QWidget,Ui_Diary):
 		self.current_date=self.current_date.addDays(-1)
 		self.calendar.setSelectedDate(self.current_date)
 		self.showDay(self.current_date)
+		self.textEdit.setEnabled(False)
 		self.textEdit.clearFocus()
 		
 	def toNextDay(self):
@@ -226,6 +236,7 @@ class Diary(QWidget,Ui_Diary):
 		self.current_date=self.current_date.addDays(1)
 		self.calendar.setSelectedDate(self.current_date)
 		self.showDay(self.current_date)
+		self.textEdit.setEnabled(False)
 		self.textEdit.clearFocus()
 		
 	def toNextWeek(self):
@@ -233,6 +244,7 @@ class Diary(QWidget,Ui_Diary):
 		self.current_date=self.current_date.addDays(7)
 		self.calendar.setSelectedDate(self.current_date)
 		self.showDay(self.current_date)
+		self.textEdit.setEnabled(False)
 		self.textEdit.clearFocus()
 	
 	def toFirstLine(self):
@@ -258,7 +270,7 @@ class Diary(QWidget,Ui_Diary):
 		self.showLine()
 
 	def saveLine(self,focus=True):
-		index=self.textList.currentRow()
+		index=self.current_index
 		
 		if index!=-1:
 		
@@ -271,9 +283,9 @@ class Diary(QWidget,Ui_Diary):
 
 	def addLine(self):
 		
-		index=self.textList.currentRow()
+		index=self.current_index
 		
-		if index!=-1:
+		if index!=-1:# and self.textEdit.isEnabled():
 			self.saveLine()
 		else:
 			# 没有选择，就不存储行
@@ -372,7 +384,7 @@ class Diary(QWidget,Ui_Diary):
 				
 				diary_data=self.Headquarter.getDiaryData()
 				y,m,d=map(str,QDate_to_Tuple(self.current_date))
-				diary_data[y][m][d]=[line for line in day_data if day_data.index(line) not in delete_index]
+				diary_data[y][m][d]=[day_data[index] for index in range(len(day_data)) if index not in delete_index]
 				self.showDay(self.current_date)
 	
 	def deleteLineConcept(self):
