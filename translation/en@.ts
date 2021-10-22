@@ -28,6 +28,10 @@
         <translation>Navigate</translation>
     </message>
     <message>
+        <source>Import Text</source>
+        <translation>Import Text</translation>
+    </message>
+    <message>
         <source>Add Concept</source>
         <translation>Add Concept</translation>
     </message>
@@ -286,6 +290,10 @@
     <message>
         <source>Export Diary to Json</source>
         <translation>Export Diary to Json</translation>
+    </message>
+    <message>
+        <source>Export Diary to Markdown</source>
+        <translation>Export Diary to Markdown</translation>
     </message>
     <message>
         <source>Data Security</source>

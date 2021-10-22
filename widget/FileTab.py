@@ -208,6 +208,8 @@ class FileTab(Ui_FileTab,QWidget):
 	def __init__(self,parent):
 		super().__init__(parent)
 		self.setupUi(self)
+		self.setMinimumHeight(150)
+
 		self.file_list=[]
 
 		def slot1(url_list,file_list):

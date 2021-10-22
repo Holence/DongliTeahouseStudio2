@@ -56,7 +56,7 @@ class LobbySession(DTSession.DTMainSession):
 				DTFrame.DTMessageBox(self,"Information","You need to set Library Base first!")
 				self.library_base=dlg.getExistingDirectory()
 			self.UserSetting().setValue("LibraryBase",Fernet_Encrypt(self.password(),self.library_base))
-		
+	
 	def dataValidityCheck(self):
 		return True
 	
@@ -90,7 +90,7 @@ class LobbySession(DTSession.DTMainSession):
 			self.resize(self.UserSetting().value("WindowStatus/LobbySize"))
 			self.move(self.UserSetting().value("WindowStatus/LobbyPos"))
 		except:
-			pass
+			self.resize(self.minimumHeight(),self.minimumWidth())
 
 	def initializeSignal(self):
 		super().initializeSignal()
@@ -115,6 +115,7 @@ class LobbySession(DTSession.DTMainSession):
 		menuDataTransfer=QMenu(QCoreApplication.translate("Lobby","Data Transfer"),self)
 		menuDataTransfer.setIcon(IconFromCurrentTheme("send.svg"))
 		menuDataTransfer.addAction(self.lobby.actionExport_Diary_to_Json)
+		menuDataTransfer.addAction(self.lobby.actionExport_Diary_to_Markdown)
 		menuDataTransfer.addAction(self.lobby.actionExport_Concept_to_Json)
 		menuDataTransfer.addAction(self.lobby.actionExport_Library_to_Json)
 		menuDataTransfer.addAction(self.lobby.actionImport_Bookmarks)
@@ -262,6 +263,20 @@ class LobbySession(DTSession.DTMainSession):
 		except:
 			return None
 
+	def deleteDiaryDayLine(self, day:QDate, delete_index_list):
+		y,m,d=map(str,QDate_to_Tuple(day))
+		day_data=self.getDiaryDay(day)
+		self.data[0][y][m][d]=[day_data[index] for index in range(len(day_data)) if index not in delete_index_list]
+		
+		if len(self.data[0][y][m][d])==0:
+			self.data[0][y][m].pop(d)
+			
+			if len(self.data[0][y][m])==0:
+				self.data[0][y].pop(m)
+				
+				if len(self.data[0][y])==0:
+					self.data[0].pop(y)
+		
 	def getDiaryLineList(self,search_list=[],date_range_list=[],concept_name_list=[],rank=False):
 		
 		def add_all_lines():

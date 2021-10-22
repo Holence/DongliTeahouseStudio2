@@ -46,6 +46,7 @@ class Diary(QWidget,Ui_Diary):
 		self.actionAdd_Line.setIcon(IconFromCurrentTheme("plus.svg"))
 		self.actionAdd_Concept.setIcon(IconFromCurrentTheme("hash.svg"))
 		self.actionFind_Text.setIcon(IconFromCurrentTheme("search.svg"))
+		self.actionImport_Text.setIcon(IconFromCurrentTheme("download-cloud.svg"))
 
 		self.CalendarPaintMonth()
 		self.textEdit.setEnabled(False)
@@ -91,9 +92,12 @@ class Diary(QWidget,Ui_Diary):
 		self.fileTab.fileDropped.connect(self.addLineFile)
 
 		self.actionFind_Text.triggered.connect(self.findText)
+
+		self.actionImport_Text.triggered.connect(self.importText)
 	
 	def CalendarPaintMonth(self):
 		format = QTextCharFormat()
+		empty_format=QTextCharFormat()
 		format.setForeground(QColor("#FFADAD"))
 		year=self.calendar.yearShown()
 		month=self.calendar.monthShown()
@@ -105,6 +109,8 @@ class Diary(QWidget,Ui_Diary):
 			res=self.Headquarter.getDiaryDay(begin)
 			if res!=None:
 				self.calendar.setDateTextFormat(begin,format)
+			else:
+				self.calendar.setDateTextFormat(begin,empty_format)
 			begin=begin.addDays(1)
 
 	def refresh(self):
@@ -117,10 +123,14 @@ class Diary(QWidget,Ui_Diary):
 			self.textEdit.clear()
 			self.current_date=date
 			self.calendar.setSelectedDate(date)
+		else:
+			self.CalendarPaintMonth()
 		
 		self.window().setWindowTitle("Diary %s"%QLocale().toString(self.current_date,"yyyy.M.d ddd"))
 		
 		day_data=self.Headquarter.getDiaryDay(self.current_date)
+		
+		self.current_index=-1
 		
 		if day_data!=None:
 			# 有该日
@@ -150,7 +160,6 @@ class Diary(QWidget,Ui_Diary):
 				self.textList.scrollToTop()
 				self.textList.clearSelection()
 				self.textList.setCurrentRow(-1)
-				self.current_index=-1
 			else:
 				# 无指定日，刷新行
 				self.showLine()
@@ -369,22 +378,16 @@ class Diary(QWidget,Ui_Diary):
 		if index!=-1:
 			day_data=self.Headquarter.getDiaryDay(self.current_date)
 			warning_text=""
-			delete_index=[]
+			delete_index_list=[]
 			for model_index in self.textList.selectionModel().selectedRows():
 				index=model_index.row()
 				warning_text+=day_data[index]["text"]+"\n"
-				delete_index.append(index)
+				delete_index_list.append(index)
 			
 			if DTFrame.DTConfirmBox(self,"Delete Confirm","You want to delete text:",DTIcon.Question(),warning_text).exec_():
-				# 这里不能用day_data=self.Headquarter.getDiaryDay()，然后day_data=[...]
-				# 因为diary_data[y][m][d]中，d是字典的键，day_data是作为d索引的值（即使day_data是列表，是不可变对象）
-				# 被取出来的不是指针，而是d索引的值
-				# 如果被再次赋值，当然不会改变d的索引值
-				# 所以应该以d为指针，比如可以pointer=diary_data[y][m]，然后pointer[d]=[...]，这是可以的
-				
-				diary_data=self.Headquarter.getDiaryData()
-				y,m,d=map(str,QDate_to_Tuple(self.current_date))
-				diary_data[y][m][d]=[day_data[index] for index in range(len(day_data)) if index not in delete_index]
+				self.Headquarter.deleteDiaryDayLine(self.current_date,delete_index_list)
+				self.CalendarPaintMonth()
+				self.textEdit.setEnabled(False)
 				self.showDay(self.current_date)
 	
 	def deleteLineConcept(self):
@@ -456,3 +459,89 @@ class Diary(QWidget,Ui_Diary):
 		self.dairy_search_window.closed.connect(slot)
 		self.dairy_search_window.show()
 		self.dairy_search_window.setGeometry(self.window().x()+50,self.window().y()+50,self.dairy_search_window.minimumWidth(),self.dairy_search_window.minimumHeight())
+	
+	def importText(self):
+		dlg=DTFrame.DTDialog(self,"Import Text")
+		dlg.setFocus()
+		label=QLabel("Format:\n\n# 2001.1.1\n\nFirst text block.\n\n~~~\n\nSecond text block.\n\n# 2001.1.2\n\nFirst text block.\n\n~~~\n\nSecond text block.")
+		label.setStyleSheet("font-size:12pt;")
+		textedit=QPlainTextEdit()
+		textedit.setStyleSheet("font-size:10pt;")
+		textedit.setFocus()
+		layout=QHBoxLayout()
+		layout.addWidget(label)
+		layout.addWidget(textedit)
+		widget=QWidget()
+		widget.setLayout(layout)
+		dlg.setCentralWidget(widget)
+		dlg.setMinimumSize(500,500)
+
+		if dlg.exec_():
+			text=[i for i in textedit.toPlainText().splitlines() if i!=""]
+			
+			if text==[]:
+				return
+			
+			if text[0][:2]!="# ":
+				DTFrame.DTMessageBox(dlg,"Error","Wrong format!\n\nText should start with \"# \".",DTIcon.Error())
+			else:
+				
+				text_block=""
+				date_list=[]
+				for i in text:
+					if i[:2]=="# ":
+						
+						# 新一日之前的最后一个block
+						if text_block!="":
+							date_list[-1].append({
+								"text": text_block.strip(),
+								"concept": [],
+								"file": []
+							})
+							text_block=""
+						
+						try:
+							date=list(map(int,i[2:].split(".")))
+							date=QDate(date[0],date[1],date[2])
+							if not date.isValid():
+								DTFrame.DTMessageBox(dlg,"Error","Wrong format!\n\nError occurs parsing date.%s"%i,DTIcon.Error())
+								break
+						
+						except Exception as e:
+							DTFrame.DTMessageBox(dlg,"Error","Wrong format!\n\nError occurs parsing date.%s"%i,DTIcon.Error())
+							break
+						
+						date_list.append([date])
+					
+					elif i=="~~~":
+						date_list[-1].append({
+							"text": text_block.strip(),
+							"concept": [],
+							"file": []
+						})
+						text_block=""
+					else:
+						text_block+=i+"\n\n"
+				
+				# 最后一日的最后一个block
+				else:
+					if text_block!="":
+						date_list[-1].append({
+							"text": text_block.strip(),
+							"concept": [],
+							"file": []
+						})
+
+					for day in date_list:
+						date=day[0]
+						text_list=day[1:]
+						day_data=self.Headquarter.getDiaryDay(date)
+						if day_data==None:
+							day_data=self.Headquarter.addDiaryDay(date)
+						
+						for text in text_list:
+							day_data.append(text)
+					self.CalendarPaintMonth()
+					self.refresh()
+					DTFrame.DTMessageBox(dlg,"Information","Import successed!",DTIcon.Happy())
+						

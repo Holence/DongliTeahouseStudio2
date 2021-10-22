@@ -28,6 +28,10 @@
         <translation>Navigi</translation>
     </message>
     <message>
+        <source>Import Text</source>
+        <translation>Importu Tekston</translation>
+    </message>
+    <message>
         <source>Add Concept</source>
         <translation>Aldoni Koncepton</translation>
     </message>
@@ -286,6 +290,10 @@
     <message>
         <source>Export Diary to Json</source>
         <translation>Eksportu Taglibron al Json</translation>
+    </message>
+    <message>
+        <source>Export Diary to Markdown</source>
+        <translation>Eksportu Taglibron al Markdown</translation>
     </message>
     <message>
         <source>Data Security</source>

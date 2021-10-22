@@ -28,6 +28,10 @@
         <translation>Навигация</translation>
     </message>
     <message>
+        <source>Import Text</source>
+        <translation>Импортировать текст</translation>
+    </message>
+    <message>
         <source>Add Concept</source>
         <translation>Добавить концепцию</translation>
     </message>
@@ -286,6 +290,10 @@
     <message>
         <source>Export Diary to Json</source>
         <translation>Экспорт дневника в Json</translation>
+    </message>
+    <message>
+        <source>Export Diary to Markdown</source>
+        <translation>Экспорт дневника в Markdown</translation>
     </message>
     <message>
         <source>Data Security</source>

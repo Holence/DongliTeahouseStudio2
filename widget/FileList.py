@@ -331,7 +331,6 @@ class FileList(QListWidget):
 	
 	def __init__(self, parent):
 		super().__init__(parent=parent)
-		self.setMinimumHeight(150)
 		
 		self.setEditTriggers(QAbstractItemView.NoEditTriggers)
 		self.setSelectionMode(QAbstractItemView.ExtendedSelection)

@@ -68,6 +68,7 @@ class DiarySession(DTFrame.DTMainWindow):
 		self.addAction(self.diary_module.actionSwitch_Eidt_View)
 		self.addAction(self.diary_module.actionFind_Text)
 		self.addAction(self.diary_module.actionAdd_Concept)
+		self.addAction(self.diary_module.actionImport_Text)
 	
 	def initializeMenu(self):
 
@@ -87,6 +88,7 @@ class DiarySession(DTFrame.DTMainWindow):
 		self.menu_edit.setIcon(IconFromCurrentTheme("pen-tool.svg"))
 		self.menu_edit.addAction(self.diary_module.actionAdd_Line)
 		self.menu_edit.addAction(self.diary_module.actionAdd_Concept)
+		self.menu_edit.addAction(self.diary_module.actionImport_Text)
 		# self.menu_edit.addAction(self.diary_module.actionDelete)
 		self.addMenuToMainMenu(self.menu_edit)
 		

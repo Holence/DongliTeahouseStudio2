@@ -28,6 +28,10 @@
         <translation>导航</translation>
     </message>
     <message>
+        <source>Import Text</source>
+        <translation>導入文本</translation>
+    </message>
+    <message>
         <source>Add Concept</source>
         <translation>添加概念</translation>
     </message>
@@ -286,6 +290,10 @@
     <message>
         <source>Export Diary to Json</source>
         <translation>导出日记到Json</translation>
+    </message>
+    <message>
+        <source>Export Diary to Markdown</source>
+        <translation>导出日记到Markdown</translation>
     </message>
     <message>
         <source>Data Security</source>

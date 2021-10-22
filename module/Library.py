@@ -26,6 +26,8 @@ class Library(QWidget,Ui_Library):
 		self.conceptTable.setObjectName("LibraryConceptTable%s"%len(self.Headquarter.library_heap)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
 
 		self.actionSearch_File.setIcon(IconFromCurrentTheme("search.svg"))
+		self.dateEdit.setDate(WhatDayIsToday(1))
+		self.dateEdit.setDisplayFormat("yyyy.MM.dd")
 
 	def initializeSignal(self):
 		self.actionDelete.triggered.connect(self.deleteCenter)

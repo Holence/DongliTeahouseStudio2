@@ -26,6 +26,10 @@ class Lobby(QWidget,Ui_Lobby):
 		self.actionExport_Concept_to_Json.setIcon(IconFromCurrentTheme("upload-cloud.svg"))
 		self.actionExport_Library_to_Json.triggered.connect(lambda:self.ExportToJson(2))
 		self.actionExport_Library_to_Json.setIcon(IconFromCurrentTheme("upload-cloud.svg"))
+		
+		self.actionExport_Diary_to_Markdown.setIcon(IconFromCurrentTheme("upload-cloud.svg"))
+		self.actionExport_Diary_to_Markdown.triggered.connect(self.ExportDiaryToMarkdown)
+
 
 		self.actionCheck_Library.triggered.connect(self.checkLibrary)
 		self.actionCheck_Library.setIcon(IconFromCurrentTheme("crosshair.svg"))
@@ -97,6 +101,69 @@ else:
 		else:
 			self.Headquarter.app.TrayIcon.showMessage("Error","Error occured during Data Export!",DTIcon.Error())
 	
+	def ExportDiaryToMarkdown(self):
+		dlg=DTFrame.DTDialog(self,"Export Diary to Markdown")
+		
+		label=QLabel("Date Range:")
+		date_begin=QDateEdit(WhatDayIsToday(1))
+		date_begin.setDisplayFormat("yyyy.MM.dd")
+		date_end=QDateEdit(WhatDayIsToday(1))
+		date_end.setDisplayFormat("yyyy.MM.dd")
+		layout=QHBoxLayout()
+		layout.addWidget(label)
+		layout.addWidget(date_begin)
+		layout.addWidget(date_end)
+		widget=QWidget()
+		widget.setLayout(layout)
+		dlg.setCentralWidget(widget)
+
+		if dlg.exec_():
+			begin=date_begin.date()
+			end=date_end.date()
+
+			if begin>end:
+				DTFrame.DTMessageBox(self,"Warning","Wrong date range!",DTIcon.Warning())
+				return
+			
+			current=QDate(begin)
+			dir_dlg=QFileDialog(self,"Select output directory")
+			dir=dir_dlg.getExistingDirectory()
+			if dir:
+				
+				text=""
+				last_year=None
+				last_month=None
+				while current<=end:
+					y,m,d=map(str,QDate_to_Tuple(current))
+					
+					try:
+						day=self.Headquarter.data[0][y][m][d]
+						if last_year!=y:
+							text+="# %s\n\n"%y
+							last_year=y
+						if last_month!=m:
+							text+="## %s.%s\n\n"%(y,m)
+							last_month=m
+						text+="### "+QLocale().toString(QDate(int(y),int(m),int(d)),"yyyy.M.d dddd")+"\n\n"
+						text+="".join([line["text"]+"\n\n" for line in day])
+					except:
+						pass
+						
+					current=current.addDays(1)
+				
+				if text=="":
+					DTFrame.DTMessageBox(self,"Warning","Nothing exists during %s to %s."%(begin.toString("yyyy.M.d"),end.toString("yyyy.M.d")),DTIcon.Warning())
+					return
+
+				try:
+					url=os.path.abspath(dir+"/Diary_%s_%s.md"%(begin.toString("yyyyMMdd"),end.toString("yyyyMMdd")))
+					with open(url,"w",encoding="utf-8") as f:
+						f.write(text)
+					self.Headquarter.app.TrayIcon.showMessage("Information","Diary Export Successfully!",DTIcon.Information())
+					os.popen("explorer /select,\"%s\""%url)
+				except Exception as e:
+					DTFrame.DTMessageBox(self,"Error","Error occurs during output!\n\n%s"%e,DTIcon.Error())
+	
 	def checkLibrary(self):
 		
 		if self.SecureMode==True:
@@ -135,6 +202,7 @@ else:
 			library_data=self.Headquarter.getLibraryData()
 
 			error="Check Started: %s\n\n"%QLocale().toString(QDateTime().currentDateTime(),"yyyy.M.d hh:mm:ss")
+			# error+=str(diary_data)+"\n\n"+str(concept_data)+"\n\n"+str(library_data)+"\n\n"
 			# Diary
 			error+="------------------------Diary------------------------\n\n"
 			for year in diary_data:

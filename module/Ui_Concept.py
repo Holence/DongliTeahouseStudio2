@@ -26,7 +26,7 @@ class Ui_Concept(object):
     def setupUi(self, Concept):
         if not Concept.objectName():
             Concept.setObjectName(u"Concept")
-        Concept.resize(1034, 718)
+        Concept.resize(886, 622)
         self.actionAdd_Concept = QAction(Concept)
         self.actionAdd_Concept.setObjectName(u"actionAdd_Concept")
         self.actionDelete = QAction(Concept)
@@ -67,42 +67,52 @@ class Ui_Concept(object):
         self.layoutSearch.addWidget(self.conceptTable)
 
         self.splitter_whole.addWidget(self.layoutWidget4)
-        self.splitter_center = QSplitter(self.splitter_whole)
-        self.splitter_center.setObjectName(u"splitter_center")
-        self.splitter_center.setOrientation(Qt.Vertical)
-        self.layoutWidget0 = QWidget(self.splitter_center)
-        self.layoutWidget0.setObjectName(u"layoutWidget0")
-        self.verticalLayout_info = QVBoxLayout(self.layoutWidget0)
-        self.verticalLayout_info.setObjectName(u"verticalLayout_info")
-        self.verticalLayout_info.setContentsMargins(0, 0, 0, 0)
-        self.label_name = QLabel(self.layoutWidget0)
+        self.layoutWidget = QWidget(self.splitter_whole)
+        self.layoutWidget.setObjectName(u"layoutWidget")
+        self.verticalLayout_center = QVBoxLayout(self.layoutWidget)
+        self.verticalLayout_center.setObjectName(u"verticalLayout_center")
+        self.verticalLayout_center.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_name = QVBoxLayout()
+        self.verticalLayout_name.setObjectName(u"verticalLayout_name")
+        self.label_name = QLabel(self.layoutWidget)
         self.label_name.setObjectName(u"label_name")
 
-        self.verticalLayout_info.addWidget(self.label_name)
+        self.verticalLayout_name.addWidget(self.label_name)
 
-        self.lineEdit_name = QLineEdit(self.layoutWidget0)
+        self.lineEdit_name = QLineEdit(self.layoutWidget)
         self.lineEdit_name.setObjectName(u"lineEdit_name")
-        self.lineEdit_name.setMinimumSize(QSize(450, 0))
+        self.lineEdit_name.setMinimumSize(QSize(425, 0))
 
-        self.verticalLayout_info.addWidget(self.lineEdit_name)
+        self.verticalLayout_name.addWidget(self.lineEdit_name)
 
-        self.label_detail = QLabel(self.layoutWidget0)
+
+        self.verticalLayout_center.addLayout(self.verticalLayout_name)
+
+        self.splitter_center = QSplitter(self.layoutWidget)
+        self.splitter_center.setObjectName(u"splitter_center")
+        self.splitter_center.setOrientation(Qt.Vertical)
+        self.layoutWidget_2 = QWidget(self.splitter_center)
+        self.layoutWidget_2.setObjectName(u"layoutWidget_2")
+        self.verticalLayout_detail = QVBoxLayout(self.layoutWidget_2)
+        self.verticalLayout_detail.setObjectName(u"verticalLayout_detail")
+        self.verticalLayout_detail.setContentsMargins(0, 0, 0, 0)
+        self.label_detail = QLabel(self.layoutWidget_2)
         self.label_detail.setObjectName(u"label_detail")
 
-        self.verticalLayout_info.addWidget(self.label_detail)
+        self.verticalLayout_detail.addWidget(self.label_detail)
 
-        self.plainTextEdit_detail = DTPlainTextEdit(self.layoutWidget0)
+        self.plainTextEdit_detail = DTPlainTextEdit(self.layoutWidget_2)
         self.plainTextEdit_detail.setObjectName(u"plainTextEdit_detail")
         sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.plainTextEdit_detail.sizePolicy().hasHeightForWidth())
         self.plainTextEdit_detail.setSizePolicy(sizePolicy)
-        self.plainTextEdit_detail.setMinimumSize(QSize(450, 100))
+        self.plainTextEdit_detail.setMinimumSize(QSize(425, 100))
 
-        self.verticalLayout_info.addWidget(self.plainTextEdit_detail)
+        self.verticalLayout_detail.addWidget(self.plainTextEdit_detail)
 
-        self.splitter_center.addWidget(self.layoutWidget0)
+        self.splitter_center.addWidget(self.layoutWidget_2)
         self.layoutWidget9 = QWidget(self.splitter_center)
         self.layoutWidget9.setObjectName(u"layoutWidget9")
         self.verticalLayout_tab = QVBoxLayout(self.layoutWidget9)
@@ -163,15 +173,18 @@ class Ui_Concept(object):
         self.verticalLayout_tab.addWidget(self.tabWidget)
 
         self.splitter_center.addWidget(self.layoutWidget9)
-        self.splitter_whole.addWidget(self.splitter_center)
-        self.layoutWidget = QWidget(self.splitter_whole)
-        self.layoutWidget.setObjectName(u"layoutWidget")
-        self.verticalLayout_PCR = QVBoxLayout(self.layoutWidget)
+
+        self.verticalLayout_center.addWidget(self.splitter_center)
+
+        self.splitter_whole.addWidget(self.layoutWidget)
+        self.layoutWidget_1 = QWidget(self.splitter_whole)
+        self.layoutWidget_1.setObjectName(u"layoutWidget_1")
+        self.verticalLayout_PCR = QVBoxLayout(self.layoutWidget_1)
         self.verticalLayout_PCR.setObjectName(u"verticalLayout_PCR")
         self.verticalLayout_PCR.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout_parent = QHBoxLayout()
         self.horizontalLayout_parent.setObjectName(u"horizontalLayout_parent")
-        self.label_parent = QLabel(self.layoutWidget)
+        self.label_parent = QLabel(self.layoutWidget_1)
         self.label_parent.setObjectName(u"label_parent")
         sizePolicy2 = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
         sizePolicy2.setHorizontalStretch(0)
@@ -181,7 +194,7 @@ class Ui_Concept(object):
 
         self.horizontalLayout_parent.addWidget(self.label_parent)
 
-        self.lineEdit_parent = ConceptSearch(self.layoutWidget)
+        self.lineEdit_parent = ConceptSearch(self.layoutWidget_1)
         self.lineEdit_parent.setObjectName(u"lineEdit_parent")
 
         self.horizontalLayout_parent.addWidget(self.lineEdit_parent)
@@ -189,27 +202,27 @@ class Ui_Concept(object):
 
         self.verticalLayout_PCR.addLayout(self.horizontalLayout_parent)
 
-        self.parentTable = ConceptTable(self.layoutWidget)
+        self.parentTable = ConceptTable(self.layoutWidget_1)
         self.parentTable.setObjectName(u"parentTable")
         sizePolicy3 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
         sizePolicy3.setHorizontalStretch(0)
         sizePolicy3.setVerticalStretch(0)
         sizePolicy3.setHeightForWidth(self.parentTable.sizePolicy().hasHeightForWidth())
         self.parentTable.setSizePolicy(sizePolicy3)
-        self.parentTable.setMinimumSize(QSize(250, 0))
+        self.parentTable.setMinimumSize(QSize(225, 0))
 
         self.verticalLayout_PCR.addWidget(self.parentTable)
 
         self.horizontalLayout_child = QHBoxLayout()
         self.horizontalLayout_child.setObjectName(u"horizontalLayout_child")
-        self.label_child = QLabel(self.layoutWidget)
+        self.label_child = QLabel(self.layoutWidget_1)
         self.label_child.setObjectName(u"label_child")
         sizePolicy2.setHeightForWidth(self.label_child.sizePolicy().hasHeightForWidth())
         self.label_child.setSizePolicy(sizePolicy2)
 
         self.horizontalLayout_child.addWidget(self.label_child)
 
-        self.lineEdit_child = ConceptSearch(self.layoutWidget)
+        self.lineEdit_child = ConceptSearch(self.layoutWidget_1)
         self.lineEdit_child.setObjectName(u"lineEdit_child")
 
         self.horizontalLayout_child.addWidget(self.lineEdit_child)
@@ -217,24 +230,24 @@ class Ui_Concept(object):
 
         self.verticalLayout_PCR.addLayout(self.horizontalLayout_child)
 
-        self.childTree = ConceptTree(self.layoutWidget)
+        self.childTree = ConceptTree(self.layoutWidget_1)
         self.childTree.setObjectName(u"childTree")
         sizePolicy1.setHeightForWidth(self.childTree.sizePolicy().hasHeightForWidth())
         self.childTree.setSizePolicy(sizePolicy1)
-        self.childTree.setMinimumSize(QSize(250, 0))
+        self.childTree.setMinimumSize(QSize(225, 0))
 
         self.verticalLayout_PCR.addWidget(self.childTree)
 
         self.horizontalLayout_5 = QHBoxLayout()
         self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
-        self.label_relative = QLabel(self.layoutWidget)
+        self.label_relative = QLabel(self.layoutWidget_1)
         self.label_relative.setObjectName(u"label_relative")
         sizePolicy2.setHeightForWidth(self.label_relative.sizePolicy().hasHeightForWidth())
         self.label_relative.setSizePolicy(sizePolicy2)
 
         self.horizontalLayout_5.addWidget(self.label_relative)
 
-        self.lineEdit_relative = ConceptSearch(self.layoutWidget)
+        self.lineEdit_relative = ConceptSearch(self.layoutWidget_1)
         self.lineEdit_relative.setObjectName(u"lineEdit_relative")
 
         self.horizontalLayout_5.addWidget(self.lineEdit_relative)
@@ -242,15 +255,15 @@ class Ui_Concept(object):
 
         self.verticalLayout_PCR.addLayout(self.horizontalLayout_5)
 
-        self.relativeTable = ConceptTable(self.layoutWidget)
+        self.relativeTable = ConceptTable(self.layoutWidget_1)
         self.relativeTable.setObjectName(u"relativeTable")
         sizePolicy3.setHeightForWidth(self.relativeTable.sizePolicy().hasHeightForWidth())
         self.relativeTable.setSizePolicy(sizePolicy3)
-        self.relativeTable.setMinimumSize(QSize(250, 0))
+        self.relativeTable.setMinimumSize(QSize(225, 0))
 
         self.verticalLayout_PCR.addWidget(self.relativeTable)
 
-        self.splitter_whole.addWidget(self.layoutWidget)
+        self.splitter_whole.addWidget(self.layoutWidget_1)
 
         self.horizontalLayout_3.addWidget(self.splitter_whole)
 

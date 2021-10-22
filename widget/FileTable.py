@@ -284,7 +284,7 @@ class FileTable(DTWidget.DTHorizontalTabel):
 
 	def __init__(self, parent):
 		super().__init__(parent=parent)
-		self.setMinimumHeight(150)
+		
 		self.setColumn([QCoreApplication.translate("Library", "Type"),QCoreApplication.translate("Library", "Date"),QCoreApplication.translate("Library", "Ext"),QCoreApplication.translate("Library", "File"),QCoreApplication.translate("Library", "Url")])
 		self.setColumnHidden(4,True)
 

@@ -28,6 +28,10 @@
         <translation>ナビゲート</translation>
     </message>
     <message>
+        <source>Import Text</source>
+        <translation>テキストのインポート</translation>
+    </message>
+    <message>
         <source>Add Concept</source>
         <translation>コンセプトを追加</translation>
     </message>
@@ -286,6 +290,10 @@
     <message>
         <source>Export Diary to Json</source>
         <translation>日記をJsonにエクスポート</translation>
+    </message>
+    <message>
+        <source>Export Diary to Markdown</source>
+        <translation>日記をMarkdownにエクスポート</translation>
     </message>
     <message>
         <source>Data Security</source>

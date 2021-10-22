@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>792</width>
-    <height>707</height>
+    <width>456</width>
+    <height>228</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -31,6 +31,9 @@
    </property>
    <item>
     <layout class="QGridLayout" name="gridLayout">
+     <property name="horizontalSpacing">
+      <number>59</number>
+     </property>
      <item row="0" column="2">
       <widget class="QPushButton" name="btn_library">
        <property name="sizePolicy">
@@ -139,15 +142,21 @@
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QLineEdit" name="lineEdit">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
-         <width>0</width>
+         <width>310</width>
          <height>30</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>420</width>
+         <width>310</width>
          <height>16777215</height>
         </size>
        </property>
@@ -219,6 +228,11 @@
   <action name="actionExport_Library_to_Json">
    <property name="text">
     <string>Export Library to Json</string>
+   </property>
+  </action>
+  <action name="actionExport_Diary_to_Markdown">
+   <property name="text">
+    <string>Export Diary to Markdown</string>
    </property>
   </action>
  </widget>

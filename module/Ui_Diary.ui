@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>913</width>
-    <height>618</height>
+    <width>963</width>
+    <height>626</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -51,16 +51,16 @@
           <widget class="TextList" name="textList">
            <property name="minimumSize">
             <size>
-             <width>500</width>
-             <height>350</height>
+             <width>600</width>
+             <height>300</height>
             </size>
            </property>
           </widget>
           <widget class="DTPlainTextEdit" name="textEdit">
            <property name="minimumSize">
             <size>
-             <width>500</width>
-             <height>150</height>
+             <width>600</width>
+             <height>180</height>
             </size>
            </property>
           </widget>
@@ -87,12 +87,6 @@
         </property>
         <item>
          <widget class="MarkdownViewer" name="textViewer">
-          <property name="minimumSize">
-           <size>
-            <width>500</width>
-            <height>500</height>
-           </size>
-          </property>
           <property name="openExternalLinks">
            <bool>true</bool>
           </property>
@@ -368,6 +362,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+E</string>
+   </property>
+  </action>
+  <action name="actionImport_Text">
+   <property name="text">
+    <string>Import Text</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
    </property>
   </action>
  </widget>
