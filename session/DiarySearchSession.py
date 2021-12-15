@@ -16,5 +16,6 @@ class DiarySearchSession(DTFrame.DTMainWindow):
 		self.setWindowTitle("Diary Search")
 
 		from module import DiarySearch
-		diary_search_module=DiarySearch(self,Headquarter,diary)
-		self.setCentralWidget(diary_search_module)
+		self.diary_search_module=DiarySearch(self,Headquarter,diary)
+		self.setCentralWidget(self.diary_search_module)
+		self.diary_search_module.lineEdit.setFocus()

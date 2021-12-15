@@ -426,7 +426,8 @@ class LobbySession(DTSession.DTMainSession):
 			id_list=[concept["id"] for concept in self.data[1] if concept["parent"]==[] and concept["child"]==[] ]
 		else:
 			for concept in self.data[1]:
-				if search in concept["name"] or search.lower() in concept["az"] or search.lower() in concept["detail"].lower() or search.lower() in Str_to_AZ(concept["detail"]):
+				if search in concept["name"] or search.lower() in concept["az"]:
+				# if search in concept["name"] or search.lower() in concept["az"] or search.lower() in concept["detail"].lower() or search.lower() in Str_to_AZ(concept["detail"]):
 					id_list.append(concept["id"])
 		
 		return id_list
