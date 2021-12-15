@@ -49,6 +49,15 @@ class LobbySession(DTSession.DTMainSession):
 			self.cache={}
 			Fernet_Encrypt_Save(self.password(),self.cache,"cache")
 		
+		if os.path.exists("confreq"):
+			self.concept_frequency=Fernet_Decrypt_Load(self.password(),"confreq")
+			if self.concept_frequency==False:
+				DTFrame.DTMessageBox(self,"Error","Concept Frequency data error!")
+				self.app.quit()
+		else:
+			self.concept_frequency={}
+			Fernet_Encrypt_Save(self.password(),self.concept_frequency,"confreq")
+		
 		self.library_base=Fernet_Decrypt(self.password(),self.UserSetting().value("LibraryBase"))
 		if self.library_base==False:
 			dlg=QFileDialog(self)
@@ -202,6 +211,7 @@ class LobbySession(DTSession.DTMainSession):
 		try:
 			Fernet_Encrypt_Save(self.password(),self.data,"data.dlcw")
 			Fernet_Encrypt_Save(self.password(),self.cache,"cache")
+			Fernet_Encrypt_Save(self.password(),self.concept_frequency,"confreq")
 			if force==True:
 				self.app.TrayIcon.showMessage("Information","Data Saved Successfully!",DTIcon.Information())
 		except:
@@ -413,7 +423,7 @@ class LobbySession(DTSession.DTMainSession):
 		except:
 			return None
 	
-	def getConceptIDList(self,search:str):
+	def getConceptIDList(self,search:str,rank=False):
 		id_list=[]
 		if search=="\^p":
 			# no parent
@@ -426,9 +436,19 @@ class LobbySession(DTSession.DTMainSession):
 			id_list=[concept["id"] for concept in self.data[1] if concept["parent"]==[] and concept["child"]==[] ]
 		else:
 			for concept in self.data[1]:
-				if search in concept["name"] or search.lower() in concept["az"]:
-				# if search in concept["name"] or search.lower() in concept["az"] or search.lower() in concept["detail"].lower() or search.lower() in Str_to_AZ(concept["detail"]):
+				if search in concept["name"] or search.lower() in concept["az"] or search.lower() in concept["detail"].lower() or search.lower() in Str_to_AZ(concept["detail"]):
 					id_list.append(concept["id"])
+		
+		# 用concept_frequency记录的频度排序
+		if rank==True:
+			chosen={}
+			new_id_list=id_list.copy()
+			for i in id_list:
+				if i in self.concept_frequency.keys():
+					new_id_list.remove(i)
+					chosen[i]=self.concept_frequency[i]
+			chosen=sorted(chosen.items(),key=lambda x:x[1],reverse=True)
+			id_list=[i[0] for i in chosen]+new_id_list
 		
 		return id_list
 
@@ -497,6 +517,13 @@ class LobbySession(DTSession.DTMainSession):
 			concept["parent"]=Bake_ID_List(concept["parent"])
 			concept["child"]=Bake_ID_List(concept["child"])
 			concept["relative"]=Bake_ID_List(concept["relative"])
+		
+		# 改concept_frequency中的id
+		new_concept_frequency={}
+		for id in self.concept_frequency.keys():
+			if id not in delete_id_list:
+				new_concept_frequency[New_ID_Dict[id]]=self.concept_frequency[id]
+		self.concept_frequency=new_concept_frequency
 
 	def addParent(self,concept_id,parent_id_list):
 		concept=self.data[1][concept_id]
