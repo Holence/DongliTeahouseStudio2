@@ -107,6 +107,7 @@ class LobbySession(DTSession.DTMainSession):
 		self.refreshModuleSingal()
 		self.addAction(self.lobby.actionSave_Data)
 		self.addAction(self.lobby.actionCheck_Data_Completeness)
+		self.addAction(self.lobby.actionCheck_Unsaved_Data)
 
 
 		# 全局快捷键

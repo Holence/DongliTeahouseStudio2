@@ -499,10 +499,14 @@ else:
 
 		from jsondiff import diff
 		import pprint
+		import deepdiff
 
-		def diff_str(old,new):
-			return pprint.pformat(diff(old,new),indent=4,compact=True)
+		def diff1(old,new):
+			return pprint.pformat(diff(old,new,syntax='symmetric'),indent=4,compact=True)
 		
+		def diff2(old,new):
+			return deepdiff.DeepDiff(old,new,ignore_order=True).pretty()
+
 		def check():
 
 			old_data=Fernet_Decrypt_Load(self.Headquarter.password(),"data.dlcw")
@@ -516,9 +520,9 @@ else:
 			
 			info=""
 			info="Check Started: %s\n\n"%QLocale().toString(QDateTime().currentDateTime(),"yyyy.M.d hh:mm:ss")
-			info+="----------Diary Data Difference----------\n\n"+diff_str(old_diary_data,new_diary_data)+"\n\n"
-			info+="----------Concept Data Difference----------\n\n"+diff_str(old_concept_data,new_concept_data)+"\n\n"
-			info+="----------Library Data Difference----------\n\n"+diff_str(old_library_data,new_library_data)+"\n\n"
+			info+="----------Diary Data Difference----------\n\n"+diff1(old_diary_data,new_diary_data)+"\n\n"
+			info+="----------Concept Data Difference----------\n\n"+diff2(old_concept_data,new_concept_data)+"\n\n"
+			info+="----------Library Data Difference----------\n\n"+diff1(old_library_data,new_library_data)+"\n\n"
 			info+="\n\nCheck Finished: %s"%QLocale().toString(QDateTime().currentDateTime(),"yyyy.M.d hh:mm:ss")
 			
 			return info

@@ -242,6 +242,12 @@
    <property name="toolTip">
     <string>Check Unsaved Data</string>
    </property>
+   <property name="shortcut">
+    <string>F5</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
   </action>
  </widget>
  <customwidgets>
