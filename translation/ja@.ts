@@ -312,6 +312,10 @@
         <translation>データの完全性を確認する</translation>
     </message>
     <message>
+        <source>Check Unsaved Data</source>
+        <translation>保存されていないデータを確認する</translation>
+    </message>
+    <message>
         <source>Export Library to Json</source>
         <translation>ライブラリをJsonにエクスポート</translation>
     </message>

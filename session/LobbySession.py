@@ -119,6 +119,7 @@ class LobbySession(DTSession.DTMainSession):
 		menuDataSecurity.setIcon(IconFromCurrentTheme("shield.svg"))
 		menuDataSecurity.addAction(self.lobby.actionCheck_Library)
 		menuDataSecurity.addAction(self.lobby.actionCheck_Data_Completeness)
+		menuDataSecurity.addAction(self.lobby.actionCheck_Unsaved_Data)
 		self.addMenuToMainMenu(menuDataSecurity)
 
 		menuDataTransfer=QMenu(QCoreApplication.translate("Lobby","Data Transfer"),self)
@@ -174,6 +175,7 @@ class LobbySession(DTSession.DTMainSession):
 				if diary.isVisible()==True:
 					flag=True
 					diary.diary_module.showDay(QDate(y,m,d))
+					diary.diary_module.textList.clearSelection()
 					diary.diary_module.textList.setCurrentRow(index)
 					diary.diary_module.showLine()
 					diary.showNormal()
@@ -184,6 +186,7 @@ class LobbySession(DTSession.DTMainSession):
 				self.diary_heap[0].showNormal()
 				self.diary_heap[0].raise_()
 				self.diary_heap[0].diary_module.showDay(QDate(y,m,d))
+				self.diary_heap[0].diary_module.textList.clearSelection()
 				self.diary_heap[0].diary_module.textList.setCurrentRow(index)
 				self.diary_heap[0].diary_module.showLine()
 

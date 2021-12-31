@@ -75,7 +75,7 @@ class Diary(QWidget,Ui_Diary):
 			self.textList.scrollToTop()
 			self.textViewer.verticalScrollBar().setValue(0)
 			self.textEdit.setEnabled(False)
-			self.showDay(True)
+			self.showDay(reset=True)
 		self.calendar.clicked.connect(slot)
 
 		self.calendar.currentPageChanged.connect(self.CalendarPaintMonth)
@@ -120,10 +120,15 @@ class Diary(QWidget,Ui_Diary):
 	def refresh(self):
 		self.showDay()
 
-	def showDay(self, reset=False):
+	def showDay(self, date=None, reset=False):
 		"""展示选中的日期，相当于全刷新
 		"""
-		self.current_date=self.calendar.selectedDate()
+		if date!=None:
+			self.current_date=date
+			self.calendar.setSelectedDate(self.current_date)
+		else:
+			self.current_date=self.calendar.selectedDate()
+		
 		if reset==True:
 			self.textEdit.clear()
 		else:
@@ -231,7 +236,7 @@ class Diary(QWidget,Ui_Diary):
 		self.saveLine()
 		self.current_date=self.current_date.addDays(-7)
 		self.calendar.setSelectedDate(self.current_date)
-		self.showDay(True)
+		self.showDay(reset=True)
 		self.textEdit.setEnabled(False)
 		self.textEdit.clearFocus()
 
@@ -239,7 +244,7 @@ class Diary(QWidget,Ui_Diary):
 		self.saveLine()
 		self.current_date=self.current_date.addDays(-1)
 		self.calendar.setSelectedDate(self.current_date)
-		self.showDay(True)
+		self.showDay(reset=True)
 		self.textEdit.setEnabled(False)
 		self.textEdit.clearFocus()
 		
@@ -247,7 +252,7 @@ class Diary(QWidget,Ui_Diary):
 		self.saveLine()
 		self.current_date=self.current_date.addDays(1)
 		self.calendar.setSelectedDate(self.current_date)
-		self.showDay(True)
+		self.showDay(reset=True)
 		self.textEdit.setEnabled(False)
 		self.textEdit.clearFocus()
 		
@@ -255,7 +260,7 @@ class Diary(QWidget,Ui_Diary):
 		self.saveLine()
 		self.current_date=self.current_date.addDays(7)
 		self.calendar.setSelectedDate(self.current_date)
-		self.showDay(True)
+		self.showDay(reset=True)
 		self.textEdit.setEnabled(False)
 		self.textEdit.clearFocus()
 	
@@ -391,7 +396,7 @@ class Diary(QWidget,Ui_Diary):
 				self.Headquarter.deleteDiaryDayLine(self.current_date,delete_index_list)
 				self.CalendarPaintMonth()
 				self.textEdit.setEnabled(False)
-				self.showDay(True)
+				self.showDay(reset=True)
 	
 	def deleteLineConcept(self):
 		index=self.textList.currentRow()

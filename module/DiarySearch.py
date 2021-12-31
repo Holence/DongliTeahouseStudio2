@@ -21,6 +21,7 @@ class DiarySearch(Ui_DiarySearch,QWidget):
 			index=line["index"]
 			
 			self.diary.showDay(QDate(y,m,d))
+			self.diary.textList.clearSelection()
 			self.diary.textList.setCurrentRow(index)
 			self.diary.showLine()
 		

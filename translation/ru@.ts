@@ -312,6 +312,10 @@
         <translation>Проверить полноту данных</translation>
     </message>
     <message>
+        <source>Check Unsaved Data</source>
+        <translation>Проверить несохраненные данные</translation>
+    </message>
+    <message>
         <source>Export Library to Json</source>
         <translation>Экспорт библиотеки в Json</translation>
     </message>

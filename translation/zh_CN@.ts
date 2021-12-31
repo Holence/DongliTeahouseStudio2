@@ -312,6 +312,10 @@
         <translation>检查数据完备性</translation>
     </message>
     <message>
+        <source>Check Unsaved Data</source>
+        <translation>检查未保存的数据</translation>
+    </message>
+    <message>
         <source>Export Library to Json</source>
         <translation>导出仓库到Json</translation>
     </message>

@@ -312,6 +312,10 @@
         <translation>Check Data Completeness</translation>
     </message>
     <message>
+        <source>Check Unsaved Data</source>
+        <translation>Check Unsaved Data</translation>
+    </message>
+    <message>
         <source>Export Library to Json</source>
         <translation>Export Library to Json</translation>
     </message>

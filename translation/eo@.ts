@@ -312,6 +312,10 @@
         <translation>Kontrolu Datumplenecon</translation>
     </message>
     <message>
+        <source>Check Unsaved Data</source>
+        <translation>Kontrolu Nekonservitajn Datumojn</translation>
+    </message>
+    <message>
         <source>Export Library to Json</source>
         <translation>Eksporti Bibliotekon al Json</translation>
     </message>

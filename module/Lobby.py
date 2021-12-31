@@ -39,6 +39,9 @@ class Lobby(QWidget,Ui_Lobby):
 
 		self.actionCheck_Data_Completeness.triggered.connect(self.checkDataCompleteness)
 		self.actionCheck_Data_Completeness.setIcon(IconFromCurrentTheme("shield.svg"))
+		
+		self.actionCheck_Unsaved_Data.triggered.connect(self.checkUnsavedData)
+		self.actionCheck_Unsaved_Data.setIcon(IconFromCurrentTheme("git-pull-request.svg"))
 
 		self.actionSave_Data.triggered.connect(lambda:self.Headquarter.saveData(force=True))
 		self.actionSave_Data.setIcon(IconFromCurrentTheme("save.svg"))
@@ -482,6 +485,7 @@ else:
 			self.DataChecker.TitleBar.btn_close.clicked.connect(slot)
 
 			self.DataChecker.errorText=QPlainTextEdit(error)
+			self.DataChecker.errorText.setReadOnly(True)
 			self.DataChecker.setMinimumSize(600,600)
 			self.DataChecker.setGeometry(self.Headquarter.x()+50,self.Headquarter.y()+50,self.DataChecker.minimumWidth(),self.DataChecker.minimumHeight())
 			self.DataChecker.setCentralWidget(self.DataChecker.errorText)
@@ -489,6 +493,63 @@ else:
 		
 		self.DataChecker.showNormal()
 		self.DataChecker.raise_()
+
+	def checkUnsavedData(self):
+		# Could be SLOW if data_size are large, WAIT PATIENTLY!
+
+		from jsondiff import diff
+		import pprint
+
+		def diff_str(old,new):
+			return pprint.pformat(diff(old,new),indent=4,compact=True)
+		
+		def check():
+
+			old_data=Fernet_Decrypt_Load(self.Headquarter.password(),"data.dlcw")
+			old_diary_data=old_data[0]
+			old_concept_data=old_data[1]
+			old_library_data=old_data[2]
+			
+			new_diary_data=self.Headquarter.getDiaryData()
+			new_concept_data=self.Headquarter.getConceptData()
+			new_library_data=self.Headquarter.getLibraryData()
+			
+			info=""
+			info="Check Started: %s\n\n"%QLocale().toString(QDateTime().currentDateTime(),"yyyy.M.d hh:mm:ss")
+			info+="----------Diary Data Difference----------\n\n"+diff_str(old_diary_data,new_diary_data)+"\n\n"
+			info+="----------Concept Data Difference----------\n\n"+diff_str(old_concept_data,new_concept_data)+"\n\n"
+			info+="----------Library Data Difference----------\n\n"+diff_str(old_library_data,new_library_data)+"\n\n"
+			info+="\n\nCheck Finished: %s"%QLocale().toString(QDateTime().currentDateTime(),"yyyy.M.d hh:mm:ss")
+			
+			return info
+
+		def slot():
+			self.DataChecker2.deleteLater()
+			del self.DataChecker2
+		
+		info=check()
+		
+		try:
+			self.DataChecker2.infoText.setPlainText(info)
+		except:
+			self.DataChecker2=DTFrame.DTMainWindow(self.Headquarter.app)
+			self.DataChecker2.initialize()
+			self.DataChecker2.setWindowTitle("Check Unsaved Data")
+
+			self.DataChecker2.actionExit.triggered.disconnect(self.DataChecker2.close)
+			self.DataChecker2.actionExit.triggered.connect(slot)
+			self.DataChecker2.TitleBar.btn_close.clicked.disconnect(self.DataChecker2.close)
+			self.DataChecker2.TitleBar.btn_close.clicked.connect(slot)
+
+			self.DataChecker2.infoText=QPlainTextEdit(info)
+			self.DataChecker2.infoText.setReadOnly(True)
+			self.DataChecker2.setMinimumSize(600,600)
+			self.DataChecker2.setGeometry(self.Headquarter.x()+50,self.Headquarter.y()+50,self.DataChecker2.minimumWidth(),self.DataChecker2.minimumHeight())
+			self.DataChecker2.setCentralWidget(self.DataChecker2.infoText)
+			self.DataChecker2.show()
+		
+		self.DataChecker2.showNormal()
+		self.DataChecker2.raise_()
 
 	def ImportBookmarks(self):
 		def slot():
