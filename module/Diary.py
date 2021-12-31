@@ -71,8 +71,12 @@ class Diary(QWidget,Ui_Diary):
 		self.conceptTable.conceptDelete.connect(self.deleteLineConcept)
 		
 		# 点击日期
-		self.calendar.clicked.connect(self.showDay)
-		self.calendar.clicked.connect(lambda:self.textEdit.setEnabled(False))
+		def slot():
+			self.textList.scrollToTop()
+			self.textViewer.verticalScrollBar().setValue(0)
+			self.textEdit.setEnabled(False)
+			self.showDay(True)
+		self.calendar.clicked.connect(slot)
 
 		self.calendar.currentPageChanged.connect(self.CalendarPaintMonth)
 		
@@ -116,13 +120,12 @@ class Diary(QWidget,Ui_Diary):
 	def refresh(self):
 		self.showDay()
 
-	def showDay(self,date=None):
+	def showDay(self, reset=False):
 		"""展示选中的日期，相当于全刷新
 		"""
-		if date!=None:
+		self.current_date=self.calendar.selectedDate()
+		if reset==True:
 			self.textEdit.clear()
-			self.current_date=date
-			self.calendar.setSelectedDate(date)
 		else:
 			self.CalendarPaintMonth()
 		
@@ -155,7 +158,7 @@ class Diary(QWidget,Ui_Diary):
 			self.conceptTable.clearSelection()
 			self.fileTab.setFileList(file_list)
 			self.fileTab.clearSelection()
-			if date!=None:
+			if reset==True:
 				# 指定日，全刷
 				self.textList.scrollToTop()
 				self.textList.clearSelection()
@@ -222,13 +225,13 @@ class Diary(QWidget,Ui_Diary):
 			# Edit
 			self.stackedWidget.setCurrentIndex(0)
 		
-		self.showDay(self.current_date)
+		self.showDay()
 
 	def toPreviousWeek(self):
 		self.saveLine()
 		self.current_date=self.current_date.addDays(-7)
 		self.calendar.setSelectedDate(self.current_date)
-		self.showDay(self.current_date)
+		self.showDay(True)
 		self.textEdit.setEnabled(False)
 		self.textEdit.clearFocus()
 
@@ -236,7 +239,7 @@ class Diary(QWidget,Ui_Diary):
 		self.saveLine()
 		self.current_date=self.current_date.addDays(-1)
 		self.calendar.setSelectedDate(self.current_date)
-		self.showDay(self.current_date)
+		self.showDay(True)
 		self.textEdit.setEnabled(False)
 		self.textEdit.clearFocus()
 		
@@ -244,7 +247,7 @@ class Diary(QWidget,Ui_Diary):
 		self.saveLine()
 		self.current_date=self.current_date.addDays(1)
 		self.calendar.setSelectedDate(self.current_date)
-		self.showDay(self.current_date)
+		self.showDay(True)
 		self.textEdit.setEnabled(False)
 		self.textEdit.clearFocus()
 		
@@ -252,7 +255,7 @@ class Diary(QWidget,Ui_Diary):
 		self.saveLine()
 		self.current_date=self.current_date.addDays(7)
 		self.calendar.setSelectedDate(self.current_date)
-		self.showDay(self.current_date)
+		self.showDay(True)
 		self.textEdit.setEnabled(False)
 		self.textEdit.clearFocus()
 	
@@ -388,7 +391,7 @@ class Diary(QWidget,Ui_Diary):
 				self.Headquarter.deleteDiaryDayLine(self.current_date,delete_index_list)
 				self.CalendarPaintMonth()
 				self.textEdit.setEnabled(False)
-				self.showDay(self.current_date)
+				self.showDay(True)
 	
 	def deleteLineConcept(self):
 		index=self.textList.currentRow()

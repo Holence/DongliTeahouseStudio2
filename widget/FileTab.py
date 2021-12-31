@@ -357,7 +357,6 @@ class FileTab(Ui_FileTab,QWidget):
 			"""
 			
 			selected_index=self.fileList.selectedIndexes()
-			store=self.fileList.verticalScrollBar().value()
 
 			self.fileList.clear()
 
@@ -399,7 +398,6 @@ class FileTab(Ui_FileTab,QWidget):
 			
 			for index in selected_index:
 				self.fileList.selectionModel().select(index,QItemSelectionModel.Select | QItemSelectionModel.Rows)
-			self.fileList.verticalScrollBar().setValue(store)
 		
 		self.label_info.clear()
 		self.file_list=file_list

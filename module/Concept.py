@@ -72,9 +72,15 @@ class Concept(QWidget,Ui_Concept):
 		self.lineEdit_search.returnPressed.connect(slot)
 		self.actionSearch_Concept.triggered.connect(self.lineEdit_search.setFocus)
 
+		def slot(id):
+			self.fileTab.fileList.scrollToTop()
+			self.fileTab.fileTable.scrollToTop()
+			self.textList.scrollToTop()
+			self.textViewer.verticalScrollBar().setValue(0)
+			self.showConcept(id)
 		# 点击concept，展示concept
-		self.conceptTable.conceptClicked.connect(self.showConcept)
-		self.conceptTable.conceptReturnPressed.connect(self.showConcept)
+		self.conceptTable.conceptClicked.connect(slot)
+		self.conceptTable.conceptReturnPressed.connect(slot)
 
 		#修改concept信息
 		self.lineEdit_name.editingFinished.connect(self.saveName)
@@ -86,17 +92,17 @@ class Concept(QWidget,Ui_Concept):
 		self.tabWidget.currentChanged.connect(self.refreshTab)
 		self.textList.textDropped.connect(self.addConceptText)
 
-		self.parentTable.conceptDoubleClicked.connect(self.showConcept)
+		self.parentTable.conceptDoubleClicked.connect(slot)
 		self.parentTable.conceptDropped.connect(self.addParent)
 		self.lineEdit_parent.conceptAdd.connect(self.addParent)
 		self.actionAdd_Parent.triggered.connect(self.lineEdit_parent.setFocus)
 		
-		self.childTree.conceptDoubleClicked.connect(self.showConcept)
+		self.childTree.conceptDoubleClicked.connect(slot)
 		self.childTree.conceptDropped.connect(self.addChild)
 		self.lineEdit_child.conceptAdd.connect(self.addChild)
 		self.actionAdd_Child.triggered.connect(self.lineEdit_child.setFocus)
 
-		self.relativeTable.conceptDoubleClicked.connect(self.showConcept)
+		self.relativeTable.conceptDoubleClicked.connect(slot)
 		self.relativeTable.conceptDropped.connect(self.addRelative)
 		self.lineEdit_relative.conceptAdd.connect(self.addRelative)
 		self.actionAdd_Relative.triggered.connect(self.lineEdit_relative.setFocus)
@@ -105,7 +111,7 @@ class Concept(QWidget,Ui_Concept):
 	
 	def refresh(self):
 		self.showSearch()
-		self.showConcept(self.current_id)
+		self.showConcept(self.current_id,reset=False)
 	
 	def showSearch(self):
 		search=self.lineEdit_search.text()
@@ -114,8 +120,9 @@ class Concept(QWidget,Ui_Concept):
 		# 有时候按了shift后添加concept，shift没被消除
 		self.window().setSelect(False)
 
-	def refreshTab(self):
+	def refreshTab(self, reset=False):
 		def showConceptTextList():
+			# 嘿，listwidget的scrollbar就不需要手动设置
 			self.textList.setTextList("Concept",id_list)
 		
 		def ShowConceptText():
@@ -128,13 +135,16 @@ class Concept(QWidget,Ui_Concept):
 						for line in diary_data[year][month][day]:
 							if List_Intersection(line["concept"],id_list)!=[]:
 								if flag==False:
-									text+=QLocale().toString(QDate(int(year),int(month),int(day)),"yyyy.M.d ddd")+"\n\n"
+									text+="### "+QLocale().toString(QDate(int(year),int(month),int(day)),"yyyy.M.d ddd")+"\n\n"
 									flag=True
 								text+=line["text"]+"\n\n"
 			
 			store=self.textViewer.verticalScrollBar().value()
 			self.textViewer.setMarkdown(text)
-			self.textViewer.verticalScrollBar().setValue(store)
+			if reset==True:
+				self.textViewer.verticalScrollBar().setValue(0)
+			else:
+				self.textViewer.verticalScrollBar().setValue(store)
 
 		def showConceptFile():
 			file_list=[]
@@ -142,6 +152,10 @@ class Concept(QWidget,Ui_Concept):
 				concept=self.Headquarter.getConcept(id)
 				file_list+=concept["file"]
 			self.fileTab.setFileList(file_list)
+
+			if reset==True:
+				self.fileTab.fileList.scrollToTop()
+				self.fileTab.fileTable.scrollToTop()
 		
 		def deepin(root_id):
 			child_id_list=self.Headquarter.getConcept(root_id)["child"]
@@ -173,13 +187,12 @@ class Concept(QWidget,Ui_Concept):
 				ShowConceptText()
 
 
-	def showConcept(self, id:int,force=False):
+	def showConcept(self, id:int, force=False, reset=True):
 		
 		if not self.window().isSelect() or force==True:
-			# 如果列表中选中的不是这个id，就清空选中，减少一些误导
 
+			# 如果列表中选中的不是这个id，就清空选中，减少一些误导
 			row=self.conceptTable.currentRow()
-			
 			if row!=-1 and int(self.conceptTable.item(row,0).text())!=id:
 				self.conceptTable.clearSelection()
 
@@ -190,7 +203,7 @@ class Concept(QWidget,Ui_Concept):
 				self.window().setWindowTitle("Concept %s"%concept["name"])
 				self.plainTextEdit_detail.setPlainText(concept["detail"])
 				
-				self.refreshTab()
+				self.refreshTab(reset)
 
 				# parent child relative
 				self.parentTable.setConceptIDList(concept["parent"])

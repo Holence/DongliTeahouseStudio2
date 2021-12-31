@@ -40,10 +40,18 @@ class Library(QWidget,Ui_Library):
 		
 		def slot():
 			self.showSearch(clear=True)
-			self.fileTab.setFocus()
-			self.fileTab.selectRow(0)
+			self.fileTab.clearSelection()
+			self.fileTab.fileList.scrollToTop()
+			self.fileTab.fileTable.scrollToTop()
+			
 		self.lineEdit_search.returnPressed.connect(slot)
-		self.fileTab.fileClicked.connect(self.showFile)
+
+		def slot2():
+			self.conceptTable.scrollToTop()
+			self.textList.scrollToTop()
+			self.textViewer.verticalScrollBar().setValue(0)
+			self.showFile(reset=True)
+		self.fileTab.fileClicked.connect(slot2)
 		self.fileTab.fileDropped.connect(self.addFile)
 
 		self.lineEdit_name.editingFinished.connect(self.saveFileName)
@@ -73,12 +81,18 @@ class Library(QWidget,Ui_Library):
 			self.textList.clear()
 			self.textViewer.clear()
 
-	def refreshTab(self):
+	def refreshTab(self, reset=False):
 		
 		def ShowFileConcept():
+			store=self.conceptTable.verticalScrollBar().value()
 			self.conceptTable.setConceptIDList(file["concept"])
+			if reset==True:
+				self.conceptTable.scrollToTop()
+			else:
+				self.conceptTable.verticalScrollBar().setValue(store)
 		
 		def showFileTextList():
+			# 嘿，listwidget的scrollbar就不需要手动设置
 			self.textList.setTextList("Library",file_dict)
 		
 		def showFileText():
@@ -91,13 +105,16 @@ class Library(QWidget,Ui_Library):
 						for line in diary_data[year][month][day]:
 							if List_Intersection_Full(line["file"],[file_dict])!=[]:
 								if flag==False:
-									text+=QLocale().toString(QDate(int(year),int(month),int(day)),"yyyy.M.d ddd")+"\n\n"
+									text+="### "+QLocale().toString(QDate(int(year),int(month),int(day)),"yyyy.M.d ddd")+"\n\n"
 									flag=True
 								text+=line["text"]+"\n\n"
-			
+
 			store=self.textViewer.verticalScrollBar().value()
 			self.textViewer.setMarkdown(text)
-			self.textViewer.verticalScrollBar().setValue(store)
+			if reset==True:
+				self.textViewer.verticalScrollBar().setValue(0)
+			else:
+				self.textViewer.verticalScrollBar().setValue(store)
 		
 		date=self.dateEdit.date()
 		name=self.lineEdit_name.text()
@@ -113,7 +130,7 @@ class Library(QWidget,Ui_Library):
 			elif self.tabWidget.currentIndex()==2:
 				showFileText()
 
-	def showFile(self):
+	def showFile(self, reset=False):
 		res=self.fileTab.currentFile()
 		if res!=None:
 			date,name=res
@@ -121,7 +138,7 @@ class Library(QWidget,Ui_Library):
 			self.dateEdit.setDate(date)
 			self.lineEdit_name.setText(name)
 
-			self.refreshTab()
+			self.refreshTab(reset)
 		else:
 			self.dateEdit.clear()
 			self.lineEdit_name.clear()
