@@ -6,10 +6,10 @@ This project is based on [DTPySide](https://github.com/Holence/DongliTeahousePyS
 
 ## Demo
 
-![Lobby](demo/Lobby.jpg)
+Here is a demo:
 
-![Diary](demo/Diary.jpg)
+![demo](demo/demo.jpg)
 
-![Concept](demo/Concept.jpg)
+Here are some themes generated in custom settings:
 
-![Library](demo/Library.jpg)
+![theme](demo/theme.jpg)
