@@ -8,8 +8,8 @@ This project is based on [DTPySide](https://github.com/Holence/DongliTeahousePyS
 
 Here is a demo:
 
-![demo](demo/demo.jpg)
+![demo](demo/demo.png)
 
 Here are some themes generated in custom settings:
 
-![theme](demo/theme.jpg)
+![theme](demo/theme.png)
