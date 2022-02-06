@@ -112,10 +112,57 @@ else:
 		date_begin.setDisplayFormat("yyyy.MM.dd")
 		date_end=QDateEdit(WhatDayIsToday(1))
 		date_end.setDisplayFormat("yyyy.MM.dd")
-		layout=QHBoxLayout()
-		layout.addWidget(label)
-		layout.addWidget(date_begin)
-		layout.addWidget(date_end)
+
+		checkbox=QCheckBox("Convert to EPUB")
+		def slot():
+			if checkbox.isChecked():
+				label_yaml.setEnabled(True)
+				yaml_edit.setEnabled(True)
+				label_extra.setEnabled(True)
+				extra_edit.setEnabled(True)
+			else:
+				label_yaml.setEnabled(False)
+				yaml_edit.setEnabled(False)
+				label_extra.setEnabled(False)
+				extra_edit.setEnabled(False)
+
+		checkbox.stateChanged.connect(slot)
+		hh=int(self.Headquarter.app.Font().pointSize()*0.7)
+		label_yaml=QLabel("YAML Front Matter:")
+		yaml_edit=QPlainTextEdit("""---
+title: 
+author: 
+publisher: 
+description: 
+cover-image: cover.jpg
+---""")
+		yaml_edit.setMinimumHeight(hh*7*2)
+
+		label_extra=QLabel("Pandoc Extra Arguments:")
+		extra_edit=QLineEdit()
+
+		slot()
+
+		layout_date=QHBoxLayout()
+		layout_date.addWidget(label)
+		layout_date.addWidget(date_begin)
+		layout_date.addWidget(date_end)
+		frame0=QFrame()
+		frame0.setLayout(layout_date)
+
+		layout_epub=QVBoxLayout()
+		layout_epub.addWidget(checkbox)
+		layout_epub.addWidget(label_yaml)
+		layout_epub.addWidget(yaml_edit)
+		layout_epub.addWidget(label_extra)
+		layout_epub.addWidget(extra_edit)
+		frame1=QFrame()
+		frame1.setLayout(layout_epub)
+		frame1.setStyleSheet("font-size:%spt"%hh)
+
+		layout=QVBoxLayout()
+		layout.addWidget(frame0)
+		layout.addWidget(frame1)
 		widget=QWidget()
 		widget.setLayout(layout)
 		dlg.setCentralWidget(widget)
@@ -133,7 +180,11 @@ else:
 			dir=dir_dlg.getExistingDirectory()
 			if dir:
 				
-				text=""
+				if checkbox.isChecked():
+					text=yaml_edit.toPlainText()+"\n\n"
+				else:
+					text=""
+				
 				last_year=None
 				last_month=None
 				while current<=end:
@@ -162,8 +213,18 @@ else:
 					url=os.path.abspath(dir+"/Diary_%s_%s.md"%(begin.toString("yyyyMMdd"),end.toString("yyyyMMdd")))
 					with open(url,"w",encoding="utf-8") as f:
 						f.write(text)
-					self.Headquarter.app.TrayIcon.showMessage("Information","Diary Export Successfully!",DTIcon.Information())
+					
+					if checkbox.isChecked():
+						import subprocess
+						process = subprocess.Popen("pandoc -i %s -o %s %s"%(url, url[:-2]+"epub", extra_edit.text()), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+						stdout, stderr = process.communicate()
+						self.Headquarter.app.TrayIcon.showMessage("Information","Convert to EPUB Successfully!",DTIcon.Information())
+						DTFrame.DTMessageBox(self,"Pandoc Output","",detail=stdout.decode("utf-8")+"\n"+stderr.decode("utf-8"))
+					else:
+						self.Headquarter.app.TrayIcon.showMessage("Information","Diary Export Successfully!",DTIcon.Information())
+					
 					os.popen("explorer /select,\"%s\""%url)
+
 				except Exception as e:
 					DTFrame.DTMessageBox(self,"Error","Error occurs during output!\n\n%s"%e,DTIcon.Error())
 	
