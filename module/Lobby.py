@@ -99,10 +99,9 @@ else:
 		url=os.path.abspath("./Export_Data_%s.json"%WhatDayIsToday(1).toString("yyyyMMdd"))
 		res=Json_Save(self.Headquarter.data[index],url)
 		if res==True:
-			self.Headquarter.app.TrayIcon.showMessage("Information","Data Export Successfully!",DTIcon.Information())
-			os.popen("explorer /select,\"%s\""%url)
+			self.Headquarter.app.showMessage("Information", "Data Export Successfully!", DTIcon.Information(), clicked_slot=lambda:os.popen("explorer /select,\"%s\""%url))
 		else:
-			self.Headquarter.app.TrayIcon.showMessage("Error","Error occured during Data Export!",DTIcon.Error())
+			self.Headquarter.app.showMessage("Error","Error occured during Data Export!",DTIcon.Error())
 	
 	def ExportDiaryToMarkdown(self):
 		dlg=DTFrame.DTDialog(self,"Export Diary to Markdown")
@@ -113,9 +112,11 @@ else:
 		date_end=QDateEdit(WhatDayIsToday(1))
 		date_end.setDisplayFormat("yyyy.MM.dd")
 
-		checkbox=QCheckBox("Convert to EPUB")
+		checkbox_caption=QCheckBox("Remove image caption")
+
+		checkbox_epub=QCheckBox("Convert to EPUB")
 		def slot():
-			if checkbox.isChecked():
+			if checkbox_epub.isChecked():
 				label_yaml.setEnabled(True)
 				yaml_edit.setEnabled(True)
 				label_extra.setEnabled(True)
@@ -126,7 +127,7 @@ else:
 				label_extra.setEnabled(False)
 				extra_edit.setEnabled(False)
 
-		checkbox.stateChanged.connect(slot)
+		checkbox_epub.stateChanged.connect(slot)
 		hh=int(self.Headquarter.app.Font().pointSize()*0.7)
 		label_yaml=QLabel("YAML Front Matter:")
 		yaml_edit=QPlainTextEdit("""---
@@ -140,24 +141,26 @@ cover-image: cover.jpg
 
 		label_extra=QLabel("Pandoc Extra Arguments:")
 		extra_edit=QLineEdit()
+		extra_edit.setText("--toc -c default.css")
 
 		slot()
 
-		layout_date=QHBoxLayout()
-		layout_date.addWidget(label)
-		layout_date.addWidget(date_begin)
-		layout_date.addWidget(date_end)
+		layout_H=QHBoxLayout()
+		layout_H.addWidget(label)
+		layout_H.addWidget(date_begin)
+		layout_H.addWidget(date_end)
 		frame0=QFrame()
-		frame0.setLayout(layout_date)
+		frame0.setLayout(layout_H)
 
-		layout_epub=QVBoxLayout()
-		layout_epub.addWidget(checkbox)
-		layout_epub.addWidget(label_yaml)
-		layout_epub.addWidget(yaml_edit)
-		layout_epub.addWidget(label_extra)
-		layout_epub.addWidget(extra_edit)
+		layout_V=QVBoxLayout()
+		layout_V.addWidget(checkbox_caption)
+		layout_V.addWidget(checkbox_epub)
+		layout_V.addWidget(label_yaml)
+		layout_V.addWidget(yaml_edit)
+		layout_V.addWidget(label_extra)
+		layout_V.addWidget(extra_edit)
 		frame1=QFrame()
-		frame1.setLayout(layout_epub)
+		frame1.setLayout(layout_V)
 		frame1.setStyleSheet("font-size:%spt"%hh)
 
 		layout=QVBoxLayout()
@@ -175,55 +178,56 @@ cover-image: cover.jpg
 				DTFrame.DTMessageBox(self,"Warning","Wrong date range!",DTIcon.Warning())
 				return
 			
+			if checkbox_epub.isChecked():
+				text=yaml_edit.toPlainText()+"\n\n"
+			else:
+				text=""
+			
+			last_year=None
+			last_month=None
 			current=QDate(begin)
+			while current<=end:
+				y,m,d=map(str,QDate_to_Tuple(current))
+				
+				try:
+					day=self.Headquarter.data[0][y][m][d]
+					if last_year!=y:
+						text+="# %s\n\n"%y
+						last_year=y
+					if last_month!=m:
+						text+="## %s.%s\n\n"%(y,m)
+						last_month=m
+					text+="### "+QLocale().toString(QDate(int(y),int(m),int(d)),"yyyy.M.d dddd")+"\n\n"
+					block="".join([line["text"]+"\n\n" for line in day])
+					if checkbox_caption.isChecked():
+						text+=re.sub("(?<=!\[).*?(?=\])","",block)
+					else:
+						text+=block
+				except:
+					pass
+					
+				current=current.addDays(1)
+			
+			if text=="":
+				DTFrame.DTMessageBox(self,"Warning","Nothing exists during %s to %s."%(begin.toString("yyyy.M.d"),end.toString("yyyy.M.d")),DTIcon.Warning())
+				return
+
 			dir_dlg=QFileDialog(self,"Select output directory")
 			dir=dir_dlg.getExistingDirectory()
 			if dir:
-				
-				if checkbox.isChecked():
-					text=yaml_edit.toPlainText()+"\n\n"
-				else:
-					text=""
-				
-				last_year=None
-				last_month=None
-				while current<=end:
-					y,m,d=map(str,QDate_to_Tuple(current))
-					
-					try:
-						day=self.Headquarter.data[0][y][m][d]
-						if last_year!=y:
-							text+="# %s\n\n"%y
-							last_year=y
-						if last_month!=m:
-							text+="## %s.%s\n\n"%(y,m)
-							last_month=m
-						text+="### "+QLocale().toString(QDate(int(y),int(m),int(d)),"yyyy.M.d dddd")+"\n\n"
-						text+="".join([line["text"]+"\n\n" for line in day])
-					except:
-						pass
-						
-					current=current.addDays(1)
-				
-				if text=="":
-					DTFrame.DTMessageBox(self,"Warning","Nothing exists during %s to %s."%(begin.toString("yyyy.M.d"),end.toString("yyyy.M.d")),DTIcon.Warning())
-					return
-
 				try:
 					url=os.path.abspath(dir+"/Diary_%s_%s.md"%(begin.toString("yyyyMMdd"),end.toString("yyyyMMdd")))
 					with open(url,"w",encoding="utf-8") as f:
 						f.write(text)
 					
-					if checkbox.isChecked():
-						import subprocess
-						process = subprocess.Popen("pandoc -i %s -o %s %s"%(url, url[:-2]+"epub", extra_edit.text()), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-						stdout, stderr = process.communicate()
-						self.Headquarter.app.TrayIcon.showMessage("Information","Convert to EPUB Successfully!",DTIcon.Information())
-						DTFrame.DTMessageBox(self,"Pandoc Output","",detail=stdout.decode("utf-8")+"\n"+stderr.decode("utf-8"))
+					if checkbox_epub.isChecked():
+						cmd="start powershell "
+						cmd+="pandoc -i %s -o %s -s %s;"%(url, url[:-2]+"epub", extra_edit.text())
+						cmd+="pause;"
+						os.system(cmd)
+						self.Headquarter.app.showMessage("Information", "Convert to EPUB Successfully!", DTIcon.Information(), clicked_slot=lambda:os.popen("explorer /select,\"%s\""%url[:-2]+"epub"))
 					else:
-						self.Headquarter.app.TrayIcon.showMessage("Information","Diary Export Successfully!",DTIcon.Information())
-					
-					os.popen("explorer /select,\"%s\""%url)
+						self.Headquarter.app.showMessage("Information", "Diary Export Successfully!", DTIcon.Information(), clicked_slot=lambda:os.popen("explorer /select,\"%s\""%url))
 
 				except Exception as e:
 					DTFrame.DTMessageBox(self,"Error","Error occurs during output!\n\n%s"%e,DTIcon.Error())

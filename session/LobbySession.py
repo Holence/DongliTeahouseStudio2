@@ -217,9 +217,9 @@ class LobbySession(DTSession.DTMainSession):
 			Fernet_Encrypt_Save(self.password(),self.cache,"cache")
 			Fernet_Encrypt_Save(self.password(),self.concept_frequency,"confreq")
 			if force==True:
-				self.app.TrayIcon.showMessage("Information","Data Saved Successfully!",DTIcon.Information())
-		except:
-			self.app.TrayIcon.showMessage("Error","Error occured during Data Saving!",DTIcon.Error())
+				self.app.showMessage("Information","Data Saved Successfully!",DTIcon.Information(),clicked_slot=lambda:os.popen("explorer /select,\"%s\""%os.path.abspath("data.dlcw")))
+		except Exception as e:
+			self.app.showMessage("Error","Error occured during Data Saving!\n\n%s"%e,DTIcon.Error())
 
 	def saveAllEncryptData(self):
 		super().saveAllEncryptData()
@@ -764,7 +764,7 @@ class LobbySession(DTSession.DTMainSession):
 					return None
 				
 				# 移动
-				shutil.move(old_dir,new_dir)
+				Win32_Shellmove(old_dir,new_dir)
 			
 			except Exception as e:
 				# 出错

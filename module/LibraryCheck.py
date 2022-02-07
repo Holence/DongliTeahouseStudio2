@@ -67,7 +67,7 @@ class LibraryCheck(Ui_LibraryCheck,QWidget):
 			try:
 				origin_base=os.path.dirname(origin_url)
 				if os.path.dirname(replicant_url)!=origin_base:
-					shutil.move(replicant_url,origin_base)
+					Win32_Shellmove(replicant_url,origin_base)
 			except Exception as e:
 				DTFrame.DTMessageBox(self,"Error",str(e),DTIcon.Error())
 			
