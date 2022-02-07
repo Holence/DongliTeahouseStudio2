@@ -693,7 +693,7 @@ class LobbySession(DTSession.DTMainSession):
 
 		return file_list
 
-	def addLibraryFile(self, date:QDate, url:str, concept:list, force=False):
+	def addLibraryFile(self, date:QDate, url:str, concept:list, move_from_outside=True):
 		# 他奶奶的，这里concept本来写成了默认参数, concept:list=[]，
 		# 然后又在Library的addFile的循环中调用的时候在这个参数的空什么都没写（其他几个地方如果为空倒是写了）
 		# 然后在addFile的循环中，这个[]的地址就一直没变，
@@ -744,7 +744,7 @@ class LobbySession(DTSession.DTMainSession):
 				pass
 
 			# 禁止从library_base层添加文件
-			if self.library_base in os.path.dirname(old_dir) and force==False:
+			if self.library_base in os.path.dirname(old_dir) and move_from_outside:
 				if os.path.dirname(old_dir).replace(self.library_base+"/","").count("/")<=2:
 					DTFrame.DTMessageBox(self,"Error","Do not add file from library_base",DTIcon.Warning())
 					return None
@@ -759,12 +759,13 @@ class LobbySession(DTSession.DTMainSession):
 					os.makedirs(new_base)
 				
 				# 检查日期文件夹中是否已存在同名文件
-				if name in os.listdir(new_base) and force==False:
+				if name in os.listdir(new_base) and move_from_outside:
 					DTFrame.DTMessageBox(self,"Error","%s already exsit in %s!"%(name,new_base),DTIcon.Warning())
 					return None
 				
 				# 移动
-				Win32_Shellmove(old_dir,new_dir)
+				if move_from_outside:
+					Win32_Shellmove(old_dir,new_dir)
 			
 			except Exception as e:
 				# 出错
@@ -840,7 +841,7 @@ class LobbySession(DTSession.DTMainSession):
 
 		return name,self.data[2][y][m][d][name]
 	
-	def renameLibraryFile(self,date:QDate,old_name,new_name,rename_operation=True):
+	def renameLibraryFile(self,date:QDate,old_name,new_name,rename_operation=True,new_file_type=None):
 		y, m, d= map(str, QDate_to_Tuple(date))
 		if old_name==new_name:
 			return False
@@ -848,15 +849,16 @@ class LobbySession(DTSession.DTMainSession):
 			DTFrame.DTMessageBox(self,"Warning","Alreay have file in %s.%s.%s named %s"%(y,m,d,new_name))
 			return False
 
-		file=self.data[2][y][m][d][old_name]
-		
-		old_url=file["url"]
-		if file["type"]!=2:
-			new_url=file["url"].replace(old_name,new_name)
+		old_file=self.data[2][y][m][d][old_name]
+		old_file_type=old_file["type"]
+
+		old_url=old_file["url"]
+		if old_file["type"]!=2:
+			new_url=old_file["url"].replace(old_name,new_name)
 		else:
 			new_url=old_url
 
-		if file["type"]!=2 and rename_operation==True:
+		if old_file["type"]!=2 and rename_operation==True:
 			try:
 				os.rename(os.path.join(self.library_base,old_url),os.path.join(self.library_base,new_url))
 			except Exception as e:
@@ -870,16 +872,18 @@ class LobbySession(DTSession.DTMainSession):
 			del self.cache[old_cache_name]
 			self.cache[new_cache_name]=cache
 
-		
-		file["url"]=new_url
+		new_file=old_file
+		new_file["url"]=new_url
+		if new_file_type!=None:
+			new_file["type"]=new_file_type
 		del self.data[2][y][m][d][old_name]
-		self.data[2][y][m][d][new_name]=file
+		self.data[2][y][m][d][new_name]=new_file
 		
 		old_file={
 			"y":int(y),
 			"m":int(m),
 			"d":int(d),
-			"type":file["type"],
+			"type":old_file_type,
 			"name":old_name,
 			"url":old_url
 		}
@@ -893,6 +897,8 @@ class LobbySession(DTSession.DTMainSession):
 							file=line["file"][line["file"].index(old_file)]
 							file["name"]=new_name
 							file["url"]=new_url
+							if new_file_type!=None:
+								file["type"]=new_file_type
 		
 		# 重命名Concept链接的file
 		for concept in self.data[1]:
@@ -900,6 +906,8 @@ class LobbySession(DTSession.DTMainSession):
 				file=concept["file"][concept["file"].index(old_file)]
 				file["name"]=new_name
 				file["url"]=new_url
+				if new_file_type!=None:
+					file["type"]=new_file_type
 	
 	def deleteLibraryFile(self, delete_file_list, delete_operation=True):
 		"""删除多个LibraryFile

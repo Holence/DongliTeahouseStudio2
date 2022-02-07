@@ -49,7 +49,7 @@ class LibraryCheck(Ui_LibraryCheck,QWidget):
 			url=self.redundant.item(row).text()
 			y,m,d,_=url.replace(self.Headquarter.library_base+"/","").split("/")
 			date=QDate(int(y),int(m),int(d))
-			self.Headquarter.addLibraryFile(date,"file:///"+url,[],force=True)
+			self.Headquarter.addLibraryFile(date,"file:///"+url,[],move_from_outside=False)
 			self.plainTextEdit.appendPlainText("Added %s\n"%url)
 		
 		self.refresh()
@@ -64,6 +64,11 @@ class LibraryCheck(Ui_LibraryCheck,QWidget):
 
 			replicant_url=self.right.item(row).text()
 			
+			if os.path.isdir(replicant_url):
+				TYPE=0 # folder=0
+			else:
+				TYPE=1 # file=1
+			
 			try:
 				origin_base=os.path.dirname(origin_url)
 				if os.path.dirname(replicant_url)!=origin_base:
@@ -73,7 +78,7 @@ class LibraryCheck(Ui_LibraryCheck,QWidget):
 			
 			new_name=os.path.basename(replicant_url)
 			
-			self.Headquarter.renameLibraryFile(date,origin_name,new_name,rename_operation=False)
+			self.Headquarter.renameLibraryFile(date,origin_name,new_name,rename_operation=False,new_file_type=TYPE)
 			self.plainTextEdit.appendPlainText("Replaced %s to %s\n"%(origin_name,new_name))
 		
 		self.refresh()
