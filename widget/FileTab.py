@@ -21,7 +21,7 @@ class LoadThumbnailThread(QThread):
 		type=self.file["type"]
 		name=self.file["name"]
 		url=self.file["url"]
-		ext=url.split(".")[-1].lower()
+		ext=os.path.splitext(url)[1].lower()[1:]
 		cache_name=QDate(y,m,d).toString("yyyyMMdd")+name
 
 		redirect_dict={
@@ -331,7 +331,7 @@ class FileTab(Ui_FileTab,QWidget):
 					url=os.path.join(self.Headquarter.library_base,url).replace("\\","/")
 				elif type==1:
 					url=os.path.join(self.Headquarter.library_base,url).replace("\\","/")
-					ext=url.split(".")[-1].lower()
+					ext=os.path.splitext(url)[1].lower()[1:]
 				elif type==2:
 					ext="link"
 

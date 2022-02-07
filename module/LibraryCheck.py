@@ -148,7 +148,7 @@ class LibraryCheck(Ui_LibraryCheck,QWidget):
 				ext="folder"
 			elif type==1:
 				url=os.path.join(self.Headquarter.library_base,url).replace("\\","/")
-				ext=url.split(".")[-1].lower()
+				ext=os.path.splitext(url)[1].lower()[1:]
 			elif type==2:
 				ext="link"
 
