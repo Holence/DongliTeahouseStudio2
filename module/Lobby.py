@@ -222,6 +222,7 @@ cover-image: cover.jpg
 					
 					if checkbox_epub.isChecked():
 						cmd="start powershell "
+						cmd+="chcp 65001;"
 						cmd+="pandoc -i %s -o %s -s %s;"%(url, url[:-2]+"epub", extra_edit.text())
 						cmd+="pause;"
 						os.system(cmd)

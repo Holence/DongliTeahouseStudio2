@@ -33,6 +33,7 @@ or build into single executable file:
 Finnaly, move these three things into `./dist/DongliTeahouseStudio` (or `./dist` if it's single executable build)
 
 - `qt.conf` (this is an optimization option for font rendering)
+- `default.css` (this is a stylesheet for generating Epub)
 - `icon` folder (some icons)
 - `translation` folder (the `.py` and `.ts` files is not needed, you can delete them)
 
