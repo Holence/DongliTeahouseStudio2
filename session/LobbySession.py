@@ -305,7 +305,6 @@ class LobbySession(DTSession.DTMainSession):
 								"d":int(day),
 								"text":line["text"],
 								"concept":line["concept"],
-								"concept_az":[self.data[1][id]["az"] for id in line["concept"]],
 								"index":index,
 								"rank":0
 							})
@@ -330,7 +329,6 @@ class LobbySession(DTSession.DTMainSession):
 									"d":int(day),
 									"text":line["text"],
 									"concept":line["concept"],
-									"concept_az":[self.data[1][id]["az"] for id in line["concept"]],
 									"index":index,
 									"rank":0
 								})
@@ -338,7 +336,7 @@ class LobbySession(DTSession.DTMainSession):
 		
 		def namelist_in_text(text):
 			# 判断文本是否包含搜索列表中的所有元素，如果全部包含则返回非零值（True），否则返回0（False）
-			return not len([i for i in search_list if i.lower() not in text.lower()])
+			return not len([i for i in search_list if i not in text.lower()])
 		
 		line_list=[]
 		if date_range_list==[]:
@@ -354,17 +352,15 @@ class LobbySession(DTSession.DTMainSession):
 			# 搜索没有链接concept的内容
 			line_list=[line for line in line_list if line["concept"]==[] ]
 		elif concept_name_list!=[]:
-			concept_name_list=[ Str_to_AZ(concept_name) for concept_name in concept_name_list]
-			
 			if rank==True:
 				new_list=[]
 				for line in line_list:
-					if List_Difference(concept_name_list,line["concept_az"])==[]:
-						line["rank"]=len(List_Intersection(concept_name_list,line["concept_az"]))*2
+					if List_Difference(concept_name_list,[self.data[1][id]["name"].lower() for id in line["concept"]])==[]:
+						line["rank"]=len(List_Intersection(concept_name_list,[self.data[1][id]["name"].lower() for id in line["concept"]]))*2
 						new_list.append(line)
 				line_list=new_list
 			else:
-				line_list=[line for line in line_list if List_Difference(concept_name_list,line["concept_az"])==[] ]
+				line_list=[line for line in line_list if List_Difference(concept_name_list,[self.data[1][id]["name"].lower() for id in line["concept"]])==[] ]
 		
 		if search_list!=[]:
 			if rank==True:
@@ -372,7 +368,7 @@ class LobbySession(DTSession.DTMainSession):
 				for line in line_list:
 					text=line["text"]
 					if namelist_in_text(text):
-						line["rank"]+=sum( [ text.lower().count(i.lower()) for i in search_list if i.lower() in text.lower()] )
+						line["rank"]+=sum( [ text.lower().count(i) for i in search_list if i in text.lower()] )
 						new_list.append(line)
 				line_list=new_list
 			else:
@@ -529,6 +525,14 @@ class LobbySession(DTSession.DTMainSession):
 				new_concept_frequency[New_ID_Dict[id]]=self.concept_frequency[id]
 		self.concept_frequency=new_concept_frequency
 
+		# 改concept_history_queue中的id
+		for i in range(len(self.concept_heap)):
+			new_history=[]
+			for id in self.concept_heap[i].concept_module.concept_history_queue:
+				if id not in delete_id_list:
+					new_history.append(New_ID_Dict[id])
+			self.concept_heap[i].concept_module.concept_history_queue=new_history
+
 	def addParent(self,concept_id,parent_id_list):
 		concept=self.data[1][concept_id]
 			
@@ -637,8 +641,7 @@ class LobbySession(DTSession.DTMainSession):
 								"type":file["type"],
 								"name":file_name,
 								"url":file["url"],
-								"concept":file["concept"],
-								"concept_az":[self.data[1][id]["az"] for id in file["concept"]]
+								"concept":file["concept"]
 							})
 							
 
@@ -660,13 +663,12 @@ class LobbySession(DTSession.DTMainSession):
 									"type":file["type"],
 									"name":file_name,
 									"url":file["url"],
-									"concept":file["concept"],
-									"concept_az":[self.data[1][id]["az"] for id in file["concept"]]
+									"concept":file["concept"]
 								})
 		
 		def namelist_in_filename(file_name):
 			# 判断文件名是否包含搜索name列表中的所有元素，如果全部包含则返回非零值（True），否则返回0（False）
-			return not len([i for i in name_list if i.lower() not in file_name.lower() and i.lower() not in Str_to_AZ(file_name)])
+			return not len([i for i in name_list if i not in file_name.lower() and i not in Str_to_AZ(file_name)])
 		
 		file_list=[]
 		if date_range_list==[]:
@@ -684,9 +686,8 @@ class LobbySession(DTSession.DTMainSession):
 		if concept_name_list==None:
 			# 搜索没有链接concept的内容
 			file_list=[file for file in file_list if file["concept"]==[] ]
-		elif concept_name_list!=[]:
-			concept_name_list=[ Str_to_AZ(concept_name) for concept_name in concept_name_list]
-			file_list=[file for file in file_list if List_Difference(concept_name_list,file["concept_az"])==[] ]
+		elif concept_name_list!=[]:			
+			file_list=[file for file in file_list if List_Difference(concept_name_list,[self.data[1][id]["name"].lower() for id in file["concept"]])==[] ]
 		
 		if name_list!=[]:
 			file_list=[file for file in file_list if namelist_in_filename(file["name"])]
@@ -971,6 +972,20 @@ class LobbySession(DTSession.DTMainSession):
 		}
 		return file
 	
+	def generateLibraryFileDict(self,date:QDate,type:int,name:str,url:str):
+		y,m,d=map(str,QDate_to_Tuple(date))
+		concept_list=self.data[2][y][m][d][name]["concept"]
+		file={
+			"y":int(y),
+			"m":int(m),
+			"d":int(d),
+			"type":type,
+			"name":name,
+			"url":url,
+			"concept":concept_list
+		}
+		return file
+	
 	######################################################################
 
 	def parseSearchText(self,search:str):
@@ -1042,7 +1057,7 @@ class LobbySession(DTSession.DTMainSession):
 			
 			return None
 		
-
+		search=search.lower()
 		if search.strip()!="":
 			search=" "+search+" "
 			

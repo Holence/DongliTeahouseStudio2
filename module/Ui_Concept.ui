@@ -22,11 +22,22 @@
      <widget class="QWidget" name="layoutWidget4">
       <layout class="QVBoxLayout" name="layoutSearch">
        <item>
-        <widget class="QLabel" name="label">
+        <layout class="QHBoxLayout" name="horizontalLayout_6">
+         <item>
+          <widget class="QLabel" name="label_search">
          <property name="text">
           <string>Search</string>
          </property>
         </widget>
+       </item>
+       <item>
+          <widget class="ConceptBackButton" name="pushButton_back">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
         <widget class="QLineEdit" name="lineEdit_search">
@@ -55,11 +66,22 @@
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_name">
          <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_7">
+           <item>
           <widget class="QLabel" name="label_name">
            <property name="text">
             <string>Name</string>
            </property>
           </widget>
+         </item>
+         <item>
+            <widget class="QPushButton" name="pushButton_delete">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
          <item>
           <widget class="QLineEdit" name="lineEdit_name">
@@ -420,6 +442,11 @@
   <customwidget>
    <class>ConceptTree</class>
    <extends>QTreeWidget</extends>
+   <header>widget</header>
+  </customwidget>
+  <customwidget>
+   <class>ConceptBackButton</class>
+   <extends>QPushButton</extends>
    <header>widget</header>
   </customwidget>
  </customwidgets>

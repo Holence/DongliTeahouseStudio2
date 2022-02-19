@@ -169,7 +169,8 @@ cover-image: cover.jpg
 		widget=QWidget()
 		widget.setLayout(layout)
 		dlg.setCentralWidget(widget)
-
+		
+		from filetype import image_extension
 		if dlg.exec_():
 			begin=date_begin.date()
 			end=date_end.date()
@@ -198,7 +199,25 @@ cover-image: cover.jpg
 						text+="## %s.%s\n\n"%(y,m)
 						last_month=m
 					text+="### "+QLocale().toString(QDate(int(y),int(m),int(d)),"yyyy.M.d dddd")+"\n\n"
-					block="".join([line["text"]+"\n\n" for line in day])
+					block=""
+					for line in day:
+						block+=line["text"]+"\n\n"
+						if line["file"]!=[]:
+							for file in line["file"]:
+								name=file["name"]
+								if file["type"]==2:
+									block+="> Linked Url\n>\n> [%s](%s)\n\n"%(name,file["url"])
+								else:
+									url=self.Headquarter.library_base+"/"+file["url"]
+									ext=os.path.splitext(url)[1][1:]
+									if file["type"]==0:
+										block+="> Linked Folder\n>\n> [%s](%s)\n\n"%(name,url)
+									elif file["type"]==1:
+										if ext.lower() in image_extension:
+											block+="> Linked Image\n>\n> ![%s](%s)\n\n"%(name,url)
+										else:
+											block+="> Linked File\n>\n> [%s](%s)\n\n"%(name,url)
+
 					if checkbox_caption.isChecked():
 						text+=re.sub("(?<=!\[).*?(?=\])","",block)
 					else:
@@ -226,9 +245,8 @@ cover-image: cover.jpg
 						cmd+="pandoc -i %s -o %s -s %s;"%(url, url[:-2]+"epub", extra_edit.text())
 						cmd+="pause;"
 						os.system(cmd)
-						self.Headquarter.app.showMessage("Information", "Convert to EPUB Successfully!", DTIcon.Information(), clicked_slot=lambda:os.popen("explorer /select,\"%s\""%url[:-2]+"epub"))
-					else:
-						self.Headquarter.app.showMessage("Information", "Diary Export Successfully!", DTIcon.Information(), clicked_slot=lambda:os.popen("explorer /select,\"%s\""%url))
+					
+					self.Headquarter.app.showMessage("Information", "Diary Export Successfully!", DTIcon.Information(), clicked_slot=lambda:os.popen("explorer /select,\"%s\""%url))
 
 				except Exception as e:
 					DTFrame.DTMessageBox(self,"Error","Error occurs during output!\n\n%s"%e,DTIcon.Error())

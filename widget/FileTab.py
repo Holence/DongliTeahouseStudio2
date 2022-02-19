@@ -198,6 +198,7 @@ class FileTab(Ui_FileTab,QWidget):
 
 	fileClicked=Signal()
 	fileDropped=Signal(list,list)
+	fileDelete=Signal()
 
 	def eventFilter(self, watched: QObject, event:QKeyEvent) -> bool:
 		if event.type()==QEvent.KeyPress:
@@ -234,6 +235,11 @@ class FileTab(Ui_FileTab,QWidget):
 		self.fileTable.selectionModel().selectionChanged.connect(lambda:slot3(self.fileTable))
 		self.fileList.selectionModel().selectionChanged.connect(lambda:slot3(self.fileList))
 
+		def slot4():
+			self.fileDelete.emit()
+		self.fileTable.fileDelete.connect(slot4)
+		self.fileList.fileDelete.connect(slot4)
+
 		self.setStyleSheet("""
 		QPushButton{
 			border: none;
@@ -258,6 +264,9 @@ class FileTab(Ui_FileTab,QWidget):
 		self.pushButton_list.clicked.connect(lambda:self.stackedWidget.setCurrentIndex(1))
 		self.pushButton_list.clicked.connect(lambda:self.setFileList(self.file_list))
 		self.pushButton_list.setIcon(IconFromCurrentTheme("image.svg"))
+
+		# sort取消，手动重新赋值
+		self.fileTable.sortReset.connect(lambda:self.setFileList(self.file_list))
 
 		self.installEventFilter(self)
 	
@@ -340,7 +349,7 @@ class FileTab(Ui_FileTab,QWidget):
 				loading_thread.finished.connect(loading_thread.deleteLater)
 				loading_thread.start()
 				
-				self.fileTable.addRow(row,[QTableWidgetItem(str(type)),QTableWidgetItem("%s.%s.%s"%(y,m,d)),QTableWidgetItem(ext),QTableWidgetItem(name),QTableWidgetItem(url)])
+				self.fileTable.addRow(row,[QTableWidgetItem(str(type)),QTableWidgetItem("%02d.%02d.%02d"%(y,m,d)),QTableWidgetItem(ext),QTableWidgetItem(name),QTableWidgetItem(url)])
 				self.fileTable.setRowHeight(row,32)
 				row+=1
 			

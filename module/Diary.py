@@ -66,8 +66,7 @@ class Diary(QWidget,Ui_Diary):
 
 		self.actionDelete.triggered.connect(self.deleteCenter)
 		self.textList.textDelete.connect(self.deleteLine)
-		self.fileTab.fileTable.fileDelete.connect(self.deleteLineFile)
-		self.fileTab.fileList.fileDelete.connect(self.deleteLineFile)
+		self.fileTab.fileDelete.connect(self.deleteLineFile)
 		self.conceptTable.conceptDelete.connect(self.deleteLineConcept)
 		
 		# 点击日期
@@ -98,6 +97,9 @@ class Diary(QWidget,Ui_Diary):
 		self.actionFind_Text.triggered.connect(self.findText)
 
 		self.actionImport_Text.triggered.connect(self.importText)
+
+		self.fileTab.fileTable.fileSorted.connect(self.sortLineFile)
+		self.conceptTable.conceptSort.connect(self.sortLineConcept)
 	
 	def CalendarPaintMonth(self):
 		format = QTextCharFormat()
@@ -552,4 +554,32 @@ class Diary(QWidget,Ui_Diary):
 					self.CalendarPaintMonth()
 					self.refresh()
 					DTFrame.DTMessageBox(dlg,"Information","Import successed!",DTIcon.Happy())
-						
+
+	def sortLineFile(self):
+		index=self.textList.currentRow()
+		if index!=-1:
+			line=self.Headquarter.getDiaryDayLine(self.current_date,index)
+			line["file"]=[]
+			for row in range(self.fileTab.fileTable.rowCount()):
+				type=int(self.fileTab.fileTable.item(row,0).text())
+				y,m,d=map(int,self.fileTab.fileTable.item(row,1).text().split("."))
+				date=QDate(y,m,d)
+				name=self.fileTab.fileTable.item(row,3).text()
+				url=self.fileTab.fileTable.item(row,4).text().replace(self.Headquarter.library_base+"/","")
+				new_file=self.Headquarter.generateDiaryConceptFileDict(date,type,name,url)
+				line["file"].append(new_file)
+		else:
+			DTFrame.DTMessageBox(self,"Warning","Please select line first, then select the file to sort.",DTIcon.Warning())
+		self.refresh()
+	
+	def sortLineConcept(self):
+		index=self.textList.currentRow()
+		if index!=-1:
+			line=self.Headquarter.getDiaryDayLine(self.current_date,index)
+			line["concept"]=[]
+			for row in range(self.conceptTable.rowCount()):
+				id=int(self.conceptTable.item(row,0).text())
+				line["concept"].append(id)
+		else:
+			DTFrame.DTMessageBox(self,"Warning","Please select line first, then select the concept to sort.",DTIcon.Warning())
+		self.refresh()

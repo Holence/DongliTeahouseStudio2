@@ -61,6 +61,22 @@ class ConceptTree(DTWidget.DTTree):
 				menu=QMenu()
 				menu.setStyleSheet("font-size:12pt")
 
+				def slotOpenInNewWindow():
+					x=self.Headquarter.x()
+					y=self.Headquarter.y()
+					for item in self.selectedItems():
+						id=int(item.text(0))
+						self.Headquarter.lobby.summon("concept","Concept")
+						self.Headquarter.concept_heap[-1].concept_module.showConcept(id)
+						x+=50
+						y+=50
+						self.Headquarter.concept_heap[-1].move(x,y)
+				
+				actionOpen=QAction(QCoreApplication.translate("Concept", "Open In New Window"))
+				actionOpen.setIcon(IconFromCurrentTheme("external-link.svg"))
+				actionOpen.triggered.connect(slotOpenInNewWindow)
+				menu.addAction(actionOpen)
+
 				def slotDelete():
 					self.conceptDelete.emit()
 				
@@ -68,6 +84,7 @@ class ConceptTree(DTWidget.DTTree):
 				actionDelete.setIcon(IconFromCurrentTheme("trash-2.svg"))
 				actionDelete.triggered.connect(slotDelete)
 				menu.addAction(actionDelete)
+							
 				pos=self.mapToGlobal(pos)+QPoint(0,self.header().height())
 				menu.exec_(pos)
 		else:

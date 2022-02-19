@@ -19,6 +19,7 @@ from widget import TextList
 from widget import ConceptSearch
 from DTPySide.DTWidget import MarkdownViewer
 from widget import ConceptTree
+from widget import ConceptBackButton
 
 import DTPySide.DT_rc
 
@@ -49,10 +50,20 @@ class Ui_Concept(object):
         self.layoutSearch = QVBoxLayout(self.layoutWidget4)
         self.layoutSearch.setObjectName(u"layoutSearch")
         self.layoutSearch.setContentsMargins(0, 0, 0, 0)
-        self.label = QLabel(self.layoutWidget4)
-        self.label.setObjectName(u"label")
+        self.horizontalLayout_6 = QHBoxLayout()
+        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
+        self.label_search = QLabel(self.layoutWidget4)
+        self.label_search.setObjectName(u"label_search")
 
-        self.layoutSearch.addWidget(self.label)
+        self.horizontalLayout_6.addWidget(self.label_search)
+
+        self.pushButton_back = ConceptBackButton(self.layoutWidget4)
+        self.pushButton_back.setObjectName(u"pushButton_back")
+
+        self.horizontalLayout_6.addWidget(self.pushButton_back)
+
+
+        self.layoutSearch.addLayout(self.horizontalLayout_6)
 
         self.lineEdit_search = QLineEdit(self.layoutWidget4)
         self.lineEdit_search.setObjectName(u"lineEdit_search")
@@ -74,10 +85,20 @@ class Ui_Concept(object):
         self.verticalLayout_center.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_name = QVBoxLayout()
         self.verticalLayout_name.setObjectName(u"verticalLayout_name")
+        self.horizontalLayout_7 = QHBoxLayout()
+        self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
         self.label_name = QLabel(self.layoutWidget)
         self.label_name.setObjectName(u"label_name")
 
-        self.verticalLayout_name.addWidget(self.label_name)
+        self.horizontalLayout_7.addWidget(self.label_name)
+
+        self.pushButton_delete = QPushButton(self.layoutWidget)
+        self.pushButton_delete.setObjectName(u"pushButton_delete")
+
+        self.horizontalLayout_7.addWidget(self.pushButton_delete)
+
+
+        self.verticalLayout_name.addLayout(self.horizontalLayout_7)
 
         self.lineEdit_name = QLineEdit(self.layoutWidget)
         self.lineEdit_name.setObjectName(u"lineEdit_name")
@@ -305,8 +326,10 @@ class Ui_Concept(object):
 #if QT_CONFIG(shortcut)
         self.actionSearch_Concept.setShortcut(QCoreApplication.translate("Concept", u"Ctrl+R", None))
 #endif // QT_CONFIG(shortcut)
-        self.label.setText(QCoreApplication.translate("Concept", u"Search", None))
+        self.label_search.setText(QCoreApplication.translate("Concept", u"Search", None))
+        self.pushButton_back.setText("")
         self.label_name.setText(QCoreApplication.translate("Concept", u"Name", None))
+        self.pushButton_delete.setText("")
         self.label_detail.setText(QCoreApplication.translate("Concept", u"Detail", None))
         self.checkBox.setText(QCoreApplication.translate("Concept", u"Only Root", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_file), QCoreApplication.translate("Concept", u" File ", None))

@@ -9,6 +9,7 @@ class ConceptTable(DTWidget.DTHorizontalTabel):
 	conceptDropped=Signal(list)
 	conceptReturnPressed=Signal(int)
 	conceptDelete=Signal()
+	conceptSort=Signal()
 
 	def keyPressEvent(self, event: QKeyEvent):
 		if event.key()==Qt.Key_Return:
@@ -48,17 +49,21 @@ class ConceptTable(DTWidget.DTHorizontalTabel):
 		drag.exec_(actions)
 	
 	def dragEnterEvent(self, event:QDragEnterEvent):
-		if event.mimeData().objectName()!=self.objectName():
-			if event.mimeData().data("Key")==bytes("DTC","utf-8"):
-					event.acceptProposedAction()
+		
+		if event.mimeData().data("Key")==bytes("DTC","utf-8"):
+			event.acceptProposedAction()
 	
 	def dragMoveEvent(self, event: QDragMoveEvent):
 		# 统一一下
 		event.acceptProposedAction()
 	
 	def dropEvent(self, event:QDropEvent):
-		id_list=list(map(int,event.mimeData().text().split()))
-		self.conceptDropped.emit(id_list)
+		if event.mimeData().objectName()==self.objectName():
+			super().dropEvent(event)
+			self.conceptSort.emit()
+		else:
+			id_list=list(map(int,event.mimeData().text().split()))
+			self.conceptDropped.emit(id_list)
 
 	def mousePressEvent(self, event: QMouseEvent):
 		if event.button()==Qt.RightButton:
@@ -70,6 +75,23 @@ class ConceptTable(DTWidget.DTHorizontalTabel):
 				menu=QMenu()
 				menu.setStyleSheet("font-size:12pt")
 
+				def slotOpenInNewWindow():
+					x=self.Headquarter.x()
+					y=self.Headquarter.y()
+					for model_index in self.selectionModel().selectedRows():
+						row=model_index.row()
+						id=int(self.item(row,0).text())
+						self.Headquarter.lobby.summon("concept","Concept")
+						self.Headquarter.concept_heap[-1].concept_module.showConcept(id)
+						x+=50
+						y+=50
+						self.Headquarter.concept_heap[-1].move(x,y)
+				
+				actionOpen=QAction(QCoreApplication.translate("Concept", "Open In New Window"))
+				actionOpen.setIcon(IconFromCurrentTheme("external-link.svg"))
+				actionOpen.triggered.connect(slotOpenInNewWindow)
+				menu.addAction(actionOpen)
+				
 				def slotDelete():
 					self.conceptDelete.emit()
 				
@@ -77,6 +99,7 @@ class ConceptTable(DTWidget.DTHorizontalTabel):
 				actionDelete.setIcon(IconFromCurrentTheme("trash-2.svg"))
 				actionDelete.triggered.connect(slotDelete)
 				menu.addAction(actionDelete)
+				
 				pos=self.mapToGlobal(pos)+QPoint(0,self.horizontalHeader().height())
 				menu.exec_(pos)
 		else:
@@ -89,6 +112,9 @@ class ConceptTable(DTWidget.DTHorizontalTabel):
 
 		self.itemClicked.connect(self.itemClickedSlot)
 		self.itemDoubleClicked.connect(self.itemDoubleClickedSlot)
+
+		# sort取消，手动重新赋值
+		self.sortReset.connect(lambda:self.setConceptIDList(self.concept_id_list))
 	
 	def setHeadquarter(self,Headquarter: LobbySession):
 		self.Headquarter=Headquarter
@@ -121,7 +147,10 @@ class ConceptTable(DTWidget.DTHorizontalTabel):
 
 		Args:
 			concept_id_list (list): 是concept id的列表
-		"""		
+		"""
+		
+		self.concept_id_list=concept_id_list
+
 		self.StoreTableStatus()
 		self.Clear()
 

@@ -37,4 +37,4 @@ class ConceptSearch(QLineEdit):
 
 	def showDropList(self,search):
 		id_list=self.Headquarter.getConceptIDList(search,rank=True)
-		self.search_list.setStringList([str(id)+"|"+self.Headquarter.getConcept(id)["name"] for id in id_list])
+		self.search_list.setStringList([str(id)+" | "+self.Headquarter.getConcept(id)["name"] for id in id_list])

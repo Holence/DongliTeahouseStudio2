@@ -9,6 +9,7 @@ class Concept(QWidget,Ui_Concept):
 		self.setupUi(self)
 		self.Headquarter=Headquarter
 		self.current_id=-1
+		self.concept_history_queue=[] # 储存之前访问过的concept的队列
 
 		self.initializeWindow()
 		self.initializeSignal()
@@ -51,13 +52,18 @@ class Concept(QWidget,Ui_Concept):
 		self.actionAdd_Relative.setIcon(IconFromCurrentTheme("user-plus.svg"))
 		self.actionSearch_Concept.setIcon(IconFromCurrentTheme("search.svg"))
 
+		self.pushButton_back.setFixedSize(self.label_search.height(),self.label_search.height())
+		self.pushButton_back.setIconSize(QSize(self.label_search.height()-8,self.label_search.height()-8))
+
+		self.pushButton_delete.setFixedSize(self.label_name.height(),self.label_name.height())
+		self.pushButton_delete.setIcon(IconFromCurrentTheme("trash-2.svg"))
+		self.pushButton_delete.setIconSize(QSize(self.label_name.height()-8,self.label_name.height()-8))
 
 	def initializeSignal(self):
 		# 添加concept
 		self.actionAdd_Concept.triggered.connect(self.addConcept)
 		self.actionDelete.triggered.connect(self.deleteCenter)
-		self.fileTab.fileTable.fileDelete.connect(self.deleteConceptFile)
-		self.fileTab.fileList.fileDelete.connect(self.deleteConceptFile)
+		self.fileTab.fileDelete.connect(self.deleteConceptFile)
 		self.textList.textDelete.connect(self.deleteConceptText)
 		self.conceptTable.conceptDelete.connect(self.deleteConcept)
 		self.parentTable.conceptDelete.connect(self.deleteParent)
@@ -107,7 +113,14 @@ class Concept(QWidget,Ui_Concept):
 		self.lineEdit_relative.conceptAdd.connect(self.addRelative)
 		self.actionAdd_Relative.triggered.connect(self.lineEdit_relative.setFocus)
 
+		self.pushButton_back.clicked.connect(self.showPreviousConcept)
+		self.pushButton_back.rightClicked.connect(self.showConceptHistory)
 
+		self.pushButton_delete.clicked.connect(lambda:self.deleteConcept(id=self.current_id))
+
+		self.fileTab.fileTable.fileSorted.connect(self.sortConceptFile)
+		self.parentTable.conceptSort.connect(self.sortConceptParent)
+		self.relativeTable.conceptSort.connect(self.sortConceptRelative)
 	
 	def refresh(self):
 		self.showSearch()
@@ -195,6 +208,18 @@ class Concept(QWidget,Ui_Concept):
 			row=self.conceptTable.currentRow()
 			if row!=-1 and int(self.conceptTable.item(row,0).text())!=id:
 				self.conceptTable.clearSelection()
+			
+			# 保存之前的id到concept_history_queue中
+			if self.current_id!=-1:
+				if len(self.concept_history_queue)==10:
+					self.concept_history_queue.pop()
+				if self.current_id not in self.concept_history_queue:
+					self.concept_history_queue.insert(0,self.current_id)
+				else:
+					self.concept_history_queue.remove(self.current_id)
+					self.concept_history_queue.insert(0,self.current_id)
+				if id in self.concept_history_queue:
+					self.concept_history_queue.remove(id)
 
 			self.current_id=id
 			if self.current_id!=-1:
@@ -214,11 +239,32 @@ class Concept(QWidget,Ui_Concept):
 				self.window().setWindowTitle("Concept")
 				self.plainTextEdit_detail.clear()
 				self.fileTab.Clear()
+				self.textList.clear()
 				self.textViewer.clear()
 				self.parentTable.Clear()
 				self.childTree.clear()
 				self.relativeTable.Clear()
 	
+	def showPreviousConcept(self):
+		if self.concept_history_queue!=[]:
+			self.showConcept(self.concept_history_queue[0])
+
+	def showConceptHistory(self):
+		pos=self.pushButton_back.pos()
+		menu=QMenu()
+		menu.setStyleSheet("font-size:12pt")
+
+		
+		for id in self.concept_history_queue:
+
+			name=str(id)+" | "+self.Headquarter.getConcept(id)["name"]
+			action=QAction(name,self)
+			action.triggered.connect(partial(self.showConcept,id))
+			menu.addAction(action)
+
+		pos=self.mapToGlobal(pos)+QPoint(0,self.pushButton_back.height())
+		menu.exec_(pos)
+
 	def addConcept(self):
 		if self.lineEdit_name.hasFocus():
 			self.saveName()
@@ -339,15 +385,18 @@ class Concept(QWidget,Ui_Concept):
 		elif self.relativeTable.hasFocus():
 			self.deleteRelative()
 	
-	def deleteConcept(self):
-		
-		delete_id_list=[]
+	def deleteConcept(self, id=None):
+		if id!=None:
+			delete_id_list=[id]
+		else:
+			delete_id_list=[]
+			for model_index in self.conceptTable.selectionModel().selectedRows():
+				row=model_index.row()
+				id=int(self.conceptTable.item(row,0).text())	
+				delete_id_list.append(id)
+	
 		warning_text=""
-		for model_index in self.conceptTable.selectionModel().selectedRows():
-			row=model_index.row()
-			id=int(self.conceptTable.item(row,0).text())
-			
-			delete_id_list.append(id)
+		for id in delete_id_list:
 			warning_text+="%s: %s\n"%(id,self.Headquarter.getConcept(id)["name"])
 		
 		if delete_id_list!=[]:
@@ -496,3 +545,33 @@ class Concept(QWidget,Ui_Concept):
 			if DTFrame.DTConfirmBox(self,"Delete Confirm","You want to delete relative:",DTIcon.Question(),warning_text).exec_():
 				self.Headquarter.deleteRelative(self.current_id,delete_id_list)
 				self.relativeTable.setConceptIDList(self.Headquarter.getConcept(self.current_id)["relative"])
+
+	def sortConceptFile(self):
+		concept=self.Headquarter.getConcept(self.current_id)
+		concept["file"]=[]
+		for row in range(self.fileTab.fileTable.rowCount()):
+			type=int(self.fileTab.fileTable.item(row,0).text())
+			y,m,d=map(int,self.fileTab.fileTable.item(row,1).text().split("."))
+			date=QDate(y,m,d)
+			name=self.fileTab.fileTable.item(row,3).text()
+			url=self.fileTab.fileTable.item(row,4).text().replace(self.Headquarter.library_base+"/","")
+			new_file=self.Headquarter.generateDiaryConceptFileDict(date,type,name,url)
+			concept["file"].append(new_file)
+		self.refresh()
+
+	def sortConceptParent(self):
+		concept=self.Headquarter.getConcept(self.current_id)
+		concept["parent"]=[]
+		for row in range(self.parentTable.rowCount()):
+			id=int(self.parentTable.item(row,0).text())
+			concept["parent"].append(id)
+		self.refresh()
+	
+	def sortConceptRelative(self):
+		concept=self.Headquarter.getConcept(self.current_id)
+		concept["relative"]=[]
+		for row in range(self.relativeTable.rowCount()):
+			id=int(self.relativeTable.item(row,0).text())
+			concept["relative"].append(id)
+		self.refresh()
+		

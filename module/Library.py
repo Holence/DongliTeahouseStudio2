@@ -11,6 +11,7 @@ class Library(QWidget,Ui_Library):
 		self.Headquarter=Headquarter
 		self.initializeWindow()
 		self.initializeSignal()
+		self.showSearch()
 	
 	def initializeWindow(self):
 		self.splitter.setStretchFactor(0,3)
@@ -31,8 +32,7 @@ class Library(QWidget,Ui_Library):
 
 	def initializeSignal(self):
 		self.actionDelete.triggered.connect(self.deleteCenter)
-		self.fileTab.fileTable.fileDelete.connect(self.deleteFile)
-		self.fileTab.fileList.fileDelete.connect(self.deleteFile)
+		self.fileTab.fileDelete.connect(self.deleteFile)
 		self.conceptTable.conceptDelete.connect(self.deleteFileConcept)
 		self.textList.textDelete.connect(self.deleteFileText)
 		
@@ -59,6 +59,8 @@ class Library(QWidget,Ui_Library):
 		self.tabWidget.currentChanged.connect(self.refreshTab)
 		self.conceptTable.conceptDropped.connect(self.addFileConcept)
 		self.textList.textDropped.connect(self.addFileText)
+
+		self.conceptTable.conceptSort.connect(self.sortFileConcept)
 
 	def showSearch(self,clear=False):
 		search=self.lineEdit_search.text()
@@ -313,3 +315,13 @@ class Library(QWidget,Ui_Library):
 					line["file"].remove(file)
 				
 				self.refreshTab()
+	
+	def sortFileConcept(self):
+		date=self.dateEdit.date()
+		name=self.lineEdit_name.text()
+		current_file=self.Headquarter.getLibraryFile(self.dateEdit.date(),name)
+		current_file["concept"]=[]
+		for row in range(self.conceptTable.rowCount()):
+			id=int(self.conceptTable.item(row,0).text())
+			current_file["concept"].append(id)
+		self.refreshTab()

@@ -263,6 +263,35 @@ class FileList(QListWidget):
 			clip=QGuiApplication.clipboard()
 			clip.setMimeData(mime)
 		
+		def slotOpenInNewLibrary():
+			file_list=[]
+
+			for model_index in self.selectionModel().selectedRows():
+				row=model_index.row()
+
+				url=self.item(row).toolTip().replace(self.Headquarter.library_base+"/","")
+				if url[:4]=="http":
+					name=self.item(row).text()
+					date=QDate().fromString(name[name.rfind("|")+1:][1:-1],"yyyy.M.d")
+					name=name[:name.rfind("|")]
+				else:
+					y,m,d=url.split("/")[:3]
+					date=QDate(int(y),int(m),int(d))
+					name=self.item(row).text()
+
+				type=self.Headquarter.getLibraryFile(date,name)["type"]
+				
+				file_dict=self.Headquarter.generateLibraryFileDict(date,type,name,url)
+				file_list.append(file_dict)
+			
+			self.Headquarter.lobby.summon("library","Library")
+			library=self.Headquarter.library_heap[-1].library_module
+			library.fileTab.setFileList(file_list)
+
+			x=self.Headquarter.x()+50
+			y=self.Headquarter.y()+50
+			library.move(x,y)
+
 		if "Bookmark" in self.objectName():
 			super().mousePressEvent(event)
 			return
@@ -298,6 +327,11 @@ class FileList(QListWidget):
 						actionOpenLocation.setIcon(IconFromCurrentTheme("folder.svg"))
 						menu.addAction(actionOpenLocation)
 				
+				actionOpen=QAction(QCoreApplication.translate("Library", "Open In New Library"))
+				actionOpen.setIcon(IconFromCurrentTheme("external-link.svg"))
+				actionOpen.triggered.connect(slotOpenInNewLibrary)
+				menu.addAction(actionOpen)
+
 				actionCopyFile=QAction(QCoreApplication.translate("Library", "Copy File"))
 				actionCopyFile.triggered.connect(slotCopyFile)
 				actionCopyFile.setIcon(IconFromCurrentTheme("copy.svg"))

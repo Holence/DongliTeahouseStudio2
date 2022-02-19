@@ -5,6 +5,7 @@ class FileTable(DTWidget.DTHorizontalTabel):
 
 	fileDropped=Signal(list,list)
 	fileDelete=Signal()
+	fileSorted=Signal()
 	
 	def startDrag(self, actions:Qt.DropActions):
 		######################################################################
@@ -51,9 +52,10 @@ class FileTable(DTWidget.DTHorizontalTabel):
 		drag.exec_(actions)
 	
 	def dragEnterEvent(self, event:QDragEnterEvent):
-		if event.mimeData().objectName()==self.objectName():
+		if event.mimeData().objectName()==self.objectName() and "Library" not in self.objectName():
 			# 拖到自己
-			event.ignore()
+			# event.ignore()
+			event.acceptProposedAction()
 		elif event.mimeData().objectName()!="" and self.objectName()=="LibraryFileTable":
 			# 内部不允许拖到LibraryFileTable\LibraryFileList
 			if "Bookmark" in event.mimeData().objectName():
@@ -74,24 +76,27 @@ class FileTable(DTWidget.DTHorizontalTabel):
 		event.acceptProposedAction()
 
 	def dropEvent(self, event:QDropEvent):
-
-		if event.mimeData().hasUrls():
-			url_list=[url.toString() for url in event.mimeData().urls()]
-		elif event.mimeData().hasText():
-			url_list=[url.strip() for url in event.mimeData().text().split()]
-		
-		if "Bookmark" not in event.mimeData().objectName():
-			try:
-				file_list=json.loads((event.mimeData().data("FileList").data().decode("utf-8")))
-			except:
-				file_list=[]
+		if event.mimeData().objectName()==self.objectName():
+			super().dropEvent(event)
+			self.fileSorted.emit()
 		else:
-			# BookmarkParser中拖出来的，先把标准型filedict放在url_list，在再drop的时候把filedict付给url_list，再把filedict置空（得算作外部的来对待），最后在headquarter的addLibraryFile的时候侦测类型
-			file_list=json.loads((event.mimeData().data("FileList").data().decode("utf-8")))
-			url_list=copy.deepcopy(file_list)
-			file_list=[]
-
-		self.fileDropped.emit(url_list,file_list)
+			if event.mimeData().hasUrls():
+				url_list=[url.toString() for url in event.mimeData().urls()]
+			elif event.mimeData().hasText():
+				url_list=[url.strip() for url in event.mimeData().text().split()]
+			
+			if "Bookmark" not in event.mimeData().objectName():
+				try:
+					file_list=json.loads((event.mimeData().data("FileList").data().decode("utf-8")))
+				except:
+					file_list=[]
+			else:
+				# BookmarkParser中拖出来的，先把标准型filedict放在url_list，在再drop的时候把filedict付给url_list，再把filedict置空（得算作外部的来对待），最后在headquarter的addLibraryFile的时候侦测类型
+				file_list=json.loads((event.mimeData().data("FileList").data().decode("utf-8")))
+				url_list=copy.deepcopy(file_list)
+				file_list=[]
+			
+			self.fileDropped.emit(url_list,file_list)
 	
 	def mousePressEvent(self, event: QMouseEvent):
 		def slotRefresh():
@@ -216,6 +221,27 @@ class FileTable(DTWidget.DTHorizontalTabel):
 			clip=QGuiApplication.clipboard()
 			clip.setMimeData(mime)
 		
+		def slotOpenInNewLibrary():
+			file_list=[]
+			for model_index in self.selectionModel().selectedRows():
+				row=model_index.row()
+				
+				type=int(self.item(row,0).text())
+				y,m,d=map(int,self.item(row,1).text().split("."))
+				name=self.item(row,3).text()
+				url=self.item(row,4).text().replace(self.Headquarter.library_base+"/","")
+				
+				file_dict=self.Headquarter.generateLibraryFileDict(QDate(y,m,d),type,name,url)
+				file_list.append(file_dict)
+			
+			self.Headquarter.lobby.summon("library","Library")
+			library=self.Headquarter.library_heap[-1].library_module
+			library.fileTab.setFileList(file_list)
+
+			x=self.Headquarter.x()+50
+			y=self.Headquarter.y()+50
+			library.move(x,y)
+	
 		if "Bookmark" in self.objectName():
 			super().mousePressEvent(event)
 			return
@@ -250,6 +276,11 @@ class FileTable(DTWidget.DTHorizontalTabel):
 						actionOpenLocation.triggered.connect(slotLocation)
 						actionOpenLocation.setIcon(IconFromCurrentTheme("folder.svg"))
 						menu.addAction(actionOpenLocation)
+				
+				actionOpen=QAction(QCoreApplication.translate("Library", "Open In New Library"))
+				actionOpen.setIcon(IconFromCurrentTheme("external-link.svg"))
+				actionOpen.triggered.connect(slotOpenInNewLibrary)
+				menu.addAction(actionOpen)
 
 				actionCopyFile=QAction(QCoreApplication.translate("Library", "Copy File"))
 				actionCopyFile.triggered.connect(slotCopyFile)
@@ -287,6 +318,7 @@ class FileTable(DTWidget.DTHorizontalTabel):
 		
 		self.setColumn([QCoreApplication.translate("Library", "Type"),QCoreApplication.translate("Library", "Date"),QCoreApplication.translate("Library", "Ext"),QCoreApplication.translate("Library", "File"),QCoreApplication.translate("Library", "Url")])
 		self.setColumnHidden(4,True)
+		self.setColumnWidth(1,100)
 
 		self.setIconSize(QSize(32,32))
 
