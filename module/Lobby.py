@@ -592,8 +592,8 @@ cover-image: cover.jpg
 			return deepdiff.DeepDiff(old,new,ignore_order=True).pretty()
 
 		def check():
-
-			old_data=Fernet_Decrypt_Load(self.Headquarter.password(),"data.dlcw")
+			
+			old_data=Fernet_Decrypt_Load(self.Headquarter.password(),os.path.join(self.app.DataDir(),"data.dlcw"))
 			old_diary_data=old_data[0]
 			old_concept_data=old_data[1]
 			old_library_data=old_data[2]
