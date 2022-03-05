@@ -12,7 +12,7 @@ app.setAuthor("鍵山狐")
 app.setLoginEnable(True)
 app.loadTranslation(translation)
 app.setBackupEnable(True)
-app.setBackupList(["data.dlcw"])
+app.setDataList(["data.dlcw"])
 
 mainsession=LobbySession(app)
 app.setMainSession(mainsession)

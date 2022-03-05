@@ -29,16 +29,16 @@ class LobbySession(DTSession.DTMainSession):
 		self.__WindowFocusing=which
 	
 	def loadData(self):
-		
-		if os.path.exists("data.dlcw"):
-			self.data=Fernet_Decrypt_Load(self.password(),"data.dlcw")
+		data_dir=os.path.join(self.app.DataDir(),"data.dlcw")
+		if os.path.exists(data_dir):
+			self.data=Fernet_Decrypt_Load(self.password(),data_dir)
 			if self.data==False:
 				DTFrame.DTMessageBox(self,"Error","Data error!")
 				self.app.quit()
 			
 		else:
 			self.data=[{},[],{}]
-			Fernet_Encrypt_Save(self.password(),self.data,"data.dlcw")
+			Fernet_Encrypt_Save(self.password(),self.data,data_dir)
 
 		if os.path.exists("cache"):
 			self.cache=Fernet_Decrypt_Load(self.password(),"cache")
@@ -212,12 +212,14 @@ class LobbySession(DTSession.DTMainSession):
 		self.UserSetting().setValue("WindowStatus/LibraryPos",self.library_heap[0].pos())
 
 	def saveData(self,force=False):
+		
 		try:
-			Fernet_Encrypt_Save(self.password(),self.data,"data.dlcw")
-			Fernet_Encrypt_Save(self.password(),self.cache,"cache")
-			Fernet_Encrypt_Save(self.password(),self.concept_frequency,"confreq")
+			data_dir=os.path.join(self.app.DataDir(),"data.dlcw")
+			Fernet_Encrypt_Save(self.password(), self.data, data_dir)
+			Fernet_Encrypt_Save(self.password(), self.cache, "cache")
+			Fernet_Encrypt_Save(self.password(), self.concept_frequency, "confreq")
 			if force==True:
-				self.app.showMessage("Information","Data Saved Successfully!",DTIcon.Information(),clicked_slot=lambda:os.popen("explorer /select,\"%s\""%os.path.abspath("data.dlcw")))
+				self.app.showMessage("Information","Data Saved Successfully!",DTIcon.Information(),clicked_slot=lambda:os.popen("explorer /select,\"%s\""%os.path.abspath(data_dir)))
 		except Exception as e:
 			self.app.showMessage("Error","Error occured during Data Saving!\n\n%s"%e,DTIcon.Error())
 
