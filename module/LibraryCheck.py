@@ -36,7 +36,7 @@ class LibraryCheck(Ui_LibraryCheck,QWidget):
 			date=QDate(y,m,d)
 			type=int(self.missing.item(row,0).text())
 			name=self.missing.item(row,3).text()
-			url=self.missing.item(row,4).text().replace(self.Headquarter.library_base+"/","")
+			url=self.Headquarter.extractFileURL(self.missing.item(row,4).text())
 			erase_list.append(self.Headquarter.generateDiaryConceptFileDict(date,type,name,url))
 			self.plainTextEdit.appendPlainText("Erased %s\n"%name)
 		
@@ -47,7 +47,7 @@ class LibraryCheck(Ui_LibraryCheck,QWidget):
 		for model_index in self.redundant.selectionModel().selectedRows():
 			row=model_index.row()
 			url=self.redundant.item(row).text()
-			y,m,d,_=url.replace(self.Headquarter.library_base+"/","").split("/")
+			y,m,d,_=self.Headquarter.extractFileURL(url).split("/")
 			date=QDate(int(y),int(m),int(d))
 			self.Headquarter.addLibraryFile(date,"file:///"+url,[],move_from_outside=False)
 			self.plainTextEdit.appendPlainText("Added %s\n"%url)

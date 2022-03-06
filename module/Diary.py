@@ -439,7 +439,7 @@ class Diary(QWidget,Ui_Diary):
 				for model_index in self.fileTab.fileList.selectionModel().selectedRows():
 					row=model_index.row()
 
-					url=self.fileTab.fileList.item(row).toolTip().replace(self.Headquarter.library_base+"/","")
+					url=self.Headquarter.extractFileURL(self.fileTab.fileList.item(row).toolTip())
 					if url[:4]=="http":
 						name=self.fileTab.fileList.item(row).text()
 						name=name[:name.rfind("|")]
@@ -565,7 +565,7 @@ class Diary(QWidget,Ui_Diary):
 				y,m,d=map(int,self.fileTab.fileTable.item(row,1).text().split("."))
 				date=QDate(y,m,d)
 				name=self.fileTab.fileTable.item(row,3).text()
-				url=self.fileTab.fileTable.item(row,4).text().replace(self.Headquarter.library_base+"/","")
+				url=self.Headquarter.extractFileURL(self.fileTab.fileTable.item(row,4).text())
 				new_file=self.Headquarter.generateDiaryConceptFileDict(date,type,name,url)
 				line["file"].append(new_file)
 		else:

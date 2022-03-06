@@ -302,7 +302,7 @@ class FileTab(Ui_FileTab,QWidget):
 				date=QDate().fromString(name[name.rfind("|")+1:][1:-1],"yyyy.M.d")
 				name=name[:name.rfind("|")]
 			else:
-				y,m,d=self.fileList.item(row).toolTip().replace(self.Headquarter.library_base+"/","").split("/")[:3]
+				y,m,d=self.Headquarter.extractFileURL(self.fileList.item(row).toolTip()).split("/")[:3]
 				date=QDate(int(y),int(m),int(d))
 				name=self.fileList.item(row).text()
 

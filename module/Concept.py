@@ -418,14 +418,14 @@ class Concept(QWidget,Ui_Concept):
 					y,m,d=map(int,self.fileTab.fileTable.item(row,1).text().split("."))
 					date=QDate(y,m,d)
 					name=self.fileTab.fileTable.item(row,3).text()
-					url=self.fileTab.fileTable.item(row,4).text().replace(self.Headquarter.library_base+"/","")
+					url=self.Headquarter.extractFileURL(self.fileTab.fileTable.item(row,4).text())
 					delete_file_list.append(self.Headquarter.generateDiaryConceptFileDict(date,type,name,url))
 					warning_text+="%s\n\n"%name
 			else:
 				for model_index in self.fileTab.fileList.selectionModel().selectedRows():
 					row=model_index.row()
 
-					url=self.fileTab.fileList.item(row).toolTip().replace(self.Headquarter.library_base+"/","")
+					url=self.Headquarter.extractFileURL(self.fileTab.fileList.item(row).toolTip())
 					if url[:4]=="http":
 						name=self.fileTab.fileList.item(row).text()
 						date=QDate().fromString(name[name.rfind("|")+1:][1:-1],"yyyy.M.d")
@@ -547,16 +547,19 @@ class Concept(QWidget,Ui_Concept):
 				self.relativeTable.setConceptIDList(self.Headquarter.getConcept(self.current_id)["relative"])
 
 	def sortConceptFile(self):
-		concept=self.Headquarter.getConcept(self.current_id)
-		concept["file"]=[]
-		for row in range(self.fileTab.fileTable.rowCount()):
-			type=int(self.fileTab.fileTable.item(row,0).text())
-			y,m,d=map(int,self.fileTab.fileTable.item(row,1).text().split("."))
-			date=QDate(y,m,d)
-			name=self.fileTab.fileTable.item(row,3).text()
-			url=self.fileTab.fileTable.item(row,4).text().replace(self.Headquarter.library_base+"/","")
-			new_file=self.Headquarter.generateDiaryConceptFileDict(date,type,name,url)
-			concept["file"].append(new_file)
+		if self.checkBox.checkState()==Qt.Unchecked:
+			concept=self.Headquarter.getConcept(self.current_id)
+			concept["file"]=[]
+			for row in range(self.fileTab.fileTable.rowCount()):
+				type=int(self.fileTab.fileTable.item(row,0).text())
+				y,m,d=map(int,self.fileTab.fileTable.item(row,1).text().split("."))
+				date=QDate(y,m,d)
+				name=self.fileTab.fileTable.item(row,3).text()
+				url=self.Headquarter.extractFileURL(self.fileTab.fileTable.item(row,4).text())
+				new_file=self.Headquarter.generateDiaryConceptFileDict(date,type,name,url)
+				concept["file"].append(new_file)
+		else:
+			DTFrame.DTMessageBox(self,"Warning","You can only sort file in \"only root\" mode.",DTIcon.Warning())
 		self.refresh()
 
 	def sortConceptParent(self):

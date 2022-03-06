@@ -35,7 +35,7 @@ class FileTable(DTWidget.DTHorizontalTabel):
 			type=int(self.item(row,0).text())
 			y,m,d=map(int,self.item(row,1).text().split("."))
 			name=self.item(row,3).text()
-			url=self.item(row,4).text().replace(self.Headquarter.library_base+"/","")
+			url=self.Headquarter.extractFileURL(self.item(row,4).text())
 			file_list.append(self.Headquarter.generateDiaryConceptFileDict(QDate(y,m,d),type,name,url))
 
 			if type!=2:
@@ -107,7 +107,7 @@ class FileTable(DTWidget.DTHorizontalTabel):
 				type=int(self.item(row,0).text())
 				y,m,d=map(int,self.item(row,1).text().split("."))
 				name=self.item(row,3).text()
-				url=self.item(row,4).text().replace(self.Headquarter.library_base+"/","")
+				url=self.Headquarter.extractFileURL(self.item(row,4).text())
 				file=self.Headquarter.generateDiaryConceptFileDict(QDate(y,m,d),type,name,url)
 				
 				from widget.FileTab import LoadThumbnailThread
@@ -210,7 +210,7 @@ class FileTable(DTWidget.DTHorizontalTabel):
 				row=model_index.row()
 				
 				type=int(self.item(row,0).text())
-				url=self.item(row,4).text().replace(self.Headquarter.library_base+"/","")
+				url=self.Headquarter.extractFileURL(self.item(row,4).text())
 
 				if type!=2:
 					url="file:///"+self.item(row,4).text()
@@ -229,7 +229,7 @@ class FileTable(DTWidget.DTHorizontalTabel):
 				type=int(self.item(row,0).text())
 				y,m,d=map(int,self.item(row,1).text().split("."))
 				name=self.item(row,3).text()
-				url=self.item(row,4).text().replace(self.Headquarter.library_base+"/","")
+				url=self.Headquarter.extractFileURL(self.item(row,4).text())
 				
 				file_dict=self.Headquarter.generateLibraryFileDict(QDate(y,m,d),type,name,url)
 				file_list.append(file_dict)

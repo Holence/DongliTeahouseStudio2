@@ -235,7 +235,7 @@ class Library(QWidget,Ui_Library):
 				y,m,d=map(int,self.fileTab.fileTable.item(row,1).text().split("."))
 				date=QDate(y,m,d)
 				name=self.fileTab.fileTable.item(row,3).text()
-				url=self.fileTab.fileTable.item(row,4).text().replace(self.Headquarter.library_base+"/","")
+				url=self.Headquarter.extractFileURL(self.fileTab.fileTable.item(row,4).text())
 				delete_file_list.append(self.Headquarter.generateDiaryConceptFileDict(date,type,name,url))
 				if type!=2:
 					warning_text+="%s\n"%os.path.join(self.Headquarter.library_base,url)
@@ -245,7 +245,7 @@ class Library(QWidget,Ui_Library):
 			for model_index in self.fileTab.fileList.selectionModel().selectedRows():
 				row=model_index.row()
 
-				url=self.fileTab.fileList.item(row).toolTip().replace(self.Headquarter.library_base+"/","")
+				url=self.Headquarter.extractFileURL(self.fileTab.fileList.item(row).toolTip())
 				if url[:4]=="http":
 					name=self.fileTab.fileList.item(row).text()
 					date=QDate().fromString(name[name.rfind("|")+1:][1:-1],"yyyy.M.d")

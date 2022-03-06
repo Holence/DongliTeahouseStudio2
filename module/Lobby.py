@@ -208,7 +208,7 @@ cover-image: cover.jpg
 								if file["type"]==2:
 									block+="> Linked Url\n>\n> [%s](%s)\n\n"%(name,file["url"])
 								else:
-									url=self.Headquarter.library_base+"/"+file["url"]
+									url=os.path.abspath(self.Headquarter.library_base+"/").replace("\\","/")+file["url"]
 									ext=os.path.splitext(url)[1][1:]
 									if file["type"]==0:
 										block+="> Linked Folder\n>\n> [%s](%s)\n\n"%(name,url)

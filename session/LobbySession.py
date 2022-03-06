@@ -748,7 +748,7 @@ class LobbySession(DTSession.DTMainSession):
 
 			# 禁止从library_base层添加文件
 			if self.library_base in os.path.dirname(old_dir) and move_from_outside:
-				if os.path.dirname(old_dir).replace(self.library_base+"/","").count("/")<=2:
+				if self.extractFileURL(os.path.dirname(old_dir)).count("/")<=2:
 					DTFrame.DTMessageBox(self,"Error","Do not add file from library_base",DTIcon.Warning())
 					return None
 
@@ -1107,3 +1107,12 @@ class LobbySession(DTSession.DTMainSession):
 			return name_list,date_range_list,concept_list,TYPE
 		else:
 			return [],[],[],None
+	
+	def extractFileURL(self, url:str):
+		if url[:4]=="http":
+			pass
+		else:
+			url=os.path.abspath(url).replace("\\","/").replace(os.path.abspath(self.library_base+"/").replace("\\","/"),"")
+			if len(url)>1 and url[0]=="/":
+				url=url[1:]
+		return url

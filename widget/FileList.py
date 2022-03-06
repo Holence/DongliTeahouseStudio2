@@ -61,7 +61,7 @@ class FileList(QListWidget):
 		for model_index in self.selectionModel().selectedRows():
 			row=model_index.row()
 			
-			url=self.item(row).toolTip().replace(self.Headquarter.library_base+"/","")
+			url=self.Headquarter.extractFileURL(self.item(row).toolTip())
 			if url[:4]=="http":
 				name=self.item(row).text()
 				date=QDate().fromString(name[name.rfind("|")+1:][1:-1],"yyyy.M.d")
@@ -137,7 +137,7 @@ class FileList(QListWidget):
 			for model_index in self.selectionModel().selectedRows():
 				row=model_index.row()
 
-				url=self.item(row).toolTip().replace(self.Headquarter.library_base+"/","")
+				url=self.Headquarter.extractFileURL(self.item(row).toolTip())
 				if url[:4]=="http":
 					name=self.item(row).text()
 					date=QDate().fromString(name[name.rfind("|")+1:][1:-1],"yyyy.M.d")
@@ -156,7 +156,7 @@ class FileList(QListWidget):
 				loading_thread.start()
 		
 		def slotRename():
-			url=self.currentItem().toolTip().replace(self.Headquarter.library_base+"/","")
+			url=self.Headquarter.extractFileURL(self.currentItem().toolTip())
 			if url[:4]=="http":
 				name=self.currentItem().text()
 				date=QDate().fromString(name[name.rfind("|")+1:][1:-1],"yyyy.M.d")
@@ -269,7 +269,7 @@ class FileList(QListWidget):
 			for model_index in self.selectionModel().selectedRows():
 				row=model_index.row()
 
-				url=self.item(row).toolTip().replace(self.Headquarter.library_base+"/","")
+				url=self.Headquarter.extractFileURL(self.item(row).toolTip())
 				if url[:4]=="http":
 					name=self.item(row).text()
 					date=QDate().fromString(name[name.rfind("|")+1:][1:-1],"yyyy.M.d")
