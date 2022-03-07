@@ -30,7 +30,7 @@ class Library(QWidget,Ui_Library):
 		self.dateEdit.setDate(WhatDayIsToday(1))
 		self.dateEdit.setDisplayFormat("yyyy.MM.dd")
 
-		self.setStyleSheet("QLabel{font-size: 16pt;}")
+		self.setStyleSheet("QLabel{font-size: 14pt;}")
 
 	def initializeSignal(self):
 		self.actionDelete.triggered.connect(self.deleteCenter)

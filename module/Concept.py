@@ -59,7 +59,7 @@ class Concept(QWidget,Ui_Concept):
 		self.pushButton_delete.setIcon(IconFromCurrentTheme("trash-2.svg"))
 		self.pushButton_delete.setIconSize(QSize(self.label_name.height()-8,self.label_name.height()-8))
 
-		self.setStyleSheet("QLabel{font-size: 16pt;}")
+		self.setStyleSheet("QLabel{font-size: 14pt;}")
 
 	def initializeSignal(self):
 		# 添加concept

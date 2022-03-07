@@ -25,6 +25,7 @@ class Ui_Diary(object):
     def setupUi(self, Diary):
         if not Diary.objectName():
             Diary.setObjectName(u"Diary")
+        Diary.resize(969, 603)
         self.actionSwitch_Eidt_View = QAction(Diary)
         self.actionSwitch_Eidt_View.setObjectName(u"actionSwitch_Eidt_View")
         self.actionPrevious_Day = QAction(Diary)
@@ -72,11 +73,11 @@ class Ui_Diary(object):
         self.splitter_left.setChildrenCollapsible(False)
         self.textList = TextList(self.splitter_left)
         self.textList.setObjectName(u"textList")
-        self.textList.setMinimumSize(QSize(600, 249))
+        self.textList.setMinimumSize(QSize(600, 259))
         self.splitter_left.addWidget(self.textList)
         self.textEdit = DTPlainTextEdit(self.splitter_left)
         self.textEdit.setObjectName(u"textEdit")
-        self.textEdit.setMinimumSize(QSize(600, 183))
+        self.textEdit.setMinimumSize(QSize(600, 182))
         self.splitter_left.addWidget(self.textEdit)
 
         self.verticalLayout.addWidget(self.splitter_left)
@@ -101,8 +102,8 @@ class Ui_Diary(object):
         self.splitter_right.setOrientation(Qt.Vertical)
         self.widget = QWidget(self.splitter_right)
         self.widget.setObjectName(u"widget")
-        self.widget.setMinimumSize(QSize(0, 249))
-        self.widget.setMaximumSize(QSize(16777215, 249))
+        self.widget.setMinimumSize(QSize(0, 259))
+        self.widget.setMaximumSize(QSize(16777215, 259))
         self.verticalLayout_2 = QVBoxLayout(self.widget)
         self.verticalLayout_2.setSpacing(4)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
@@ -114,8 +115,8 @@ class Ui_Diary(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_calendar.sizePolicy().hasHeightForWidth())
         self.label_calendar.setSizePolicy(sizePolicy)
-        self.label_calendar.setMinimumSize(QSize(0, 25))
-        self.label_calendar.setMaximumSize(QSize(16777215, 25))
+        self.label_calendar.setMinimumSize(QSize(0, 15))
+        self.label_calendar.setMaximumSize(QSize(16777215, 15))
 
         self.verticalLayout_2.addWidget(self.label_calendar)
 
@@ -123,11 +124,14 @@ class Ui_Diary(object):
         self.calendar.setObjectName(u"calendar")
         sizePolicy.setHeightForWidth(self.calendar.sizePolicy().hasHeightForWidth())
         self.calendar.setSizePolicy(sizePolicy)
-        self.calendar.setMinimumSize(QSize(0, 220))
-        self.calendar.setMaximumSize(QSize(16777215, 220))
+        self.calendar.setMinimumSize(QSize(0, 240))
+        self.calendar.setMaximumSize(QSize(16777215, 240))
         self.calendar.setFirstDayOfWeek(Qt.Monday)
-        self.calendar.setGridVisible(True)
+        self.calendar.setGridVisible(False)
+        self.calendar.setHorizontalHeaderFormat(QCalendarWidget.ShortDayNames)
+        self.calendar.setVerticalHeaderFormat(QCalendarWidget.ISOWeekNumbers)
         self.calendar.setNavigationBarVisible(False)
+        self.calendar.setDateEditEnabled(True)
 
         self.verticalLayout_2.addWidget(self.calendar)
 

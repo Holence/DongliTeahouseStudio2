@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>Diary</class>
  <widget class="QWidget" name="Diary">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>969</width>
+    <height>603</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>Diary</string>
   </property>
@@ -44,7 +52,7 @@
            <property name="minimumSize">
             <size>
              <width>600</width>
-             <height>249</height>
+             <height>259</height>
             </size>
            </property>
           </widget>
@@ -52,7 +60,7 @@
            <property name="minimumSize">
             <size>
              <width>600</width>
-             <height>183</height>
+             <height>182</height>
             </size>
            </property>
           </widget>
@@ -95,13 +103,13 @@
        <property name="minimumSize">
         <size>
          <width>0</width>
-         <height>249</height>
+         <height>259</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
          <width>16777215</width>
-         <height>249</height>
+         <height>259</height>
         </size>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -131,13 +139,13 @@
           <property name="minimumSize">
            <size>
             <width>0</width>
-            <height>25</height>
+            <height>15</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
             <width>16777215</width>
-            <height>25</height>
+            <height>15</height>
            </size>
           </property>
          </widget>
@@ -153,23 +161,32 @@
           <property name="minimumSize">
            <size>
             <width>0</width>
-            <height>220</height>
+            <height>240</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
             <width>16777215</width>
-            <height>220</height>
+            <height>240</height>
            </size>
           </property>
           <property name="firstDayOfWeek">
            <enum>Qt::Monday</enum>
           </property>
           <property name="gridVisible">
-           <bool>true</bool>
+           <bool>false</bool>
+          </property>
+          <property name="horizontalHeaderFormat">
+           <enum>QCalendarWidget::ShortDayNames</enum>
+          </property>
+          <property name="verticalHeaderFormat">
+           <enum>QCalendarWidget::ISOWeekNumbers</enum>
           </property>
           <property name="navigationBarVisible">
            <bool>false</bool>
+          </property>
+          <property name="dateEditEnabled">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
