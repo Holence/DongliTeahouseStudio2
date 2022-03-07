@@ -50,6 +50,8 @@ class Diary(QWidget,Ui_Diary):
 
 		self.CalendarPaintMonth()
 		self.textEdit.setEnabled(False)
+
+		self.setStyleSheet("QLabel{font-size: 16pt;}")
 	
 	def initializeSignal(self):
 		self.actionSwitch_Eidt_View.triggered.connect(self.switchEditAndView)

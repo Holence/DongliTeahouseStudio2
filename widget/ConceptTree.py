@@ -92,7 +92,7 @@ class ConceptTree(DTWidget.DTTree):
 	
 	def __init__(self, parent):
 		super().__init__(parent=parent)
-		self.setMinimumHeight(200)
+		self.setMinimumHeight(120)
 		self.setColumn([QCoreApplication.translate("Concept", "ID"),QCoreApplication.translate("Concept", "Name")])
 
 		self.itemClicked.connect(self.itemClickedSlot)

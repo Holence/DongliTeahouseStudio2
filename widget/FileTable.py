@@ -140,7 +140,7 @@ class FileTable(DTWidget.DTHorizontalTabel):
 			w.setLayout(l)
 
 			dlg.setCentralWidget(w)
-			dlg.setMinimumSize(600,300)
+			dlg.setMinimumSize(600,120)
 
 			if dlg.exec_():
 				new_name=line_edit2.text()
