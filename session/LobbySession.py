@@ -844,20 +844,29 @@ class LobbySession(DTSession.DTMainSession):
 
 		return name,self.data[2][y][m][d][name]
 	
-	def renameLibraryFile(self,date:QDate,old_name,new_name,rename_operation=True,new_file_type=None):
+	def renameLibraryFile(self,date:QDate,old_name,new_name,rename_operation=True,new_file_type=None,new_date=None):
 		y, m, d= map(str, QDate_to_Tuple(date))
-		if old_name==new_name:
+		if old_name==new_name and new_date==None:
 			return False
-		if self.data[2][y][m][d].get(new_name)!=None:
-			DTFrame.DTMessageBox(self,"Warning","Alreay have file in %s.%s.%s named %s"%(y,m,d,new_name))
-			return False
+		
+		if new_date==None:
+			new_y, new_m, new_d= map(str, QDate_to_Tuple(date))
+		else:
+			new_y, new_m, new_d= map(str, QDate_to_Tuple(new_date))
+		
+		try:
+			if self.data[2][new_y][new_m][new_d].get(new_name)!=None:
+				DTFrame.DTMessageBox(self,"Warning","Alreay have file in %s.%s.%s named %s"%(new_y,new_m,new_d,new_name))
+				return False
+		except:
+			pass
 
 		old_file=self.data[2][y][m][d][old_name]
 		old_file_type=old_file["type"]
 
 		old_url=old_file["url"]
 		if old_file["type"]!=2:
-			new_url=old_file["url"].replace(old_name,new_name)
+			new_url="%s/%s/%s/%s"%(new_y,new_m,new_d,new_name)
 		else:
 			new_url=old_url
 
@@ -869,7 +878,10 @@ class LobbySession(DTSession.DTMainSession):
 				return False
 		
 		old_cache_name=date.toString("yyyyMMdd")+old_name
-		new_cache_name=date.toString("yyyyMMdd")+new_name
+		if new_date==None:
+			new_cache_name=date.toString("yyyyMMdd")+new_name
+		else:
+			new_cache_name=new_date.toString("yyyyMMdd")+new_name
 		if self.cache.get(old_cache_name)!=None:
 			cache=self.cache[old_cache_name]
 			del self.cache[old_cache_name]
@@ -880,7 +892,25 @@ class LobbySession(DTSession.DTMainSession):
 		if new_file_type!=None:
 			new_file["type"]=new_file_type
 		del self.data[2][y][m][d][old_name]
-		self.data[2][y][m][d][new_name]=new_file
+
+		# 臭狗屎
+		if new_date!=None:
+			if self.data[2].get(new_y)==None:
+				self.data[2][new_y]={}
+				self.data[2]=dict(sorted(self.data[2].items(),key=lambda x:int(x[0])))
+			
+			if self.data[2][new_y].get(new_m)==None:
+				self.data[2][new_y][new_m]={}
+				self.data[2][new_y]=dict(sorted(self.data[2][new_y].items(),key=lambda x:int(x[0])))
+			
+			if self.data[2][new_y][new_m].get(new_d)==None:
+				self.data[2][new_y][new_m][new_d]={}
+
+			self.data[2][new_y][new_m][new_d][new_name]=new_file
+
+			self.data[2][new_y][new_m]=dict(sorted(self.data[2][new_y][new_m].items(),key=lambda x:int(x[0])))
+		else:
+			self.data[2][new_y][new_m][new_d][new_name]=new_file
 		
 		old_file={
 			"y":int(y),
@@ -898,6 +928,9 @@ class LobbySession(DTSession.DTMainSession):
 					for line in self.data[0][year][month][day]:
 						if old_file in line["file"]:
 							file=line["file"][line["file"].index(old_file)]
+							file["y"]=int(new_y)
+							file["m"]=int(new_m)
+							file["d"]=int(new_d)
 							file["name"]=new_name
 							file["url"]=new_url
 							if new_file_type!=None:
@@ -907,6 +940,9 @@ class LobbySession(DTSession.DTMainSession):
 		for concept in self.data[1]:
 			if old_file in concept["file"]:
 				file=concept["file"][concept["file"].index(old_file)]
+				file["y"]=int(new_y)
+				file["m"]=int(new_m)
+				file["d"]=int(new_d)
 				file["name"]=new_name
 				file["url"]=new_url
 				if new_file_type!=None:

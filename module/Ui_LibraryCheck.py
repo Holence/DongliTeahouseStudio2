@@ -167,6 +167,11 @@ class Ui_LibraryCheck(object):
 
         self.verticalLayout_12.addWidget(self.pushButton_replace)
 
+        self.pushButton_move_replace = QPushButton(LibraryCheck)
+        self.pushButton_move_replace.setObjectName(u"pushButton_move_replace")
+
+        self.verticalLayout_12.addWidget(self.pushButton_move_replace)
+
 
         self.horizontalLayout_14.addLayout(self.verticalLayout_12)
 
@@ -216,6 +221,8 @@ class Ui_LibraryCheck(object):
         ___qtablewidgetitem9 = self.left.horizontalHeaderItem(4)
         ___qtablewidgetitem9.setText(QCoreApplication.translate("LibraryCheck", u"Url", None));
         self.pushButton_replace.setText(QCoreApplication.translate("LibraryCheck", u"<--\n"
+" REPLACE", None))
+        self.pushButton_move_replace.setText(QCoreApplication.translate("LibraryCheck", u"<--\n"
 " MOVE AND REPLACE", None))
         self.plainTextEdit.setPlainText(QCoreApplication.translate("LibraryCheck", u"This is a log.", None))
     # retranslateUi

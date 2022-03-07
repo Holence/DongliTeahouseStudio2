@@ -262,6 +262,14 @@
       <widget class="QPushButton" name="pushButton_replace">
        <property name="text">
         <string>&lt;--
+ REPLACE</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_move_replace">
+       <property name="text">
+        <string>&lt;--
  MOVE AND REPLACE</string>
        </property>
       </widget>

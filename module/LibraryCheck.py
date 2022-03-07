@@ -27,6 +27,7 @@ class LibraryCheck(Ui_LibraryCheck,QWidget):
 		self.pushButton_erase.clicked.connect(self.erase)
 		self.pushButton_add.clicked.connect(self.add)
 		self.pushButton_replace.clicked.connect(self.replace)
+		self.pushButton_move_replace.clicked.connect(self.move_replace)
 	
 	def erase(self):
 		erase_list=[]
@@ -53,8 +54,38 @@ class LibraryCheck(Ui_LibraryCheck,QWidget):
 			self.plainTextEdit.appendPlainText("Added %s\n"%url)
 		
 		self.refresh()
-
+	
 	def replace(self):
+		if self.left.rowCount()!=self.right.count():
+			DTFrame.DTMessageBox(self,"Warning","The files in Left and Right doesn't match!",DTIcon.Warning())
+			return
+		
+		for row in range(self.left.rowCount()):
+			y,m,d=map(int,self.left.item(row,1).text().split("."))
+			date=QDate(y,m,d)
+			origin_name=self.left.item(row,3).text()
+
+			replicant_url=self.right.item(row).text()
+			
+			new_y,new_m,new_d=map(int,self.Headquarter.extractFileURL(replicant_url).split("/")[:3])
+			new_date=QDate(new_y,new_m,new_d)
+			
+			if os.path.isdir(replicant_url):
+				TYPE=0 # folder=0
+			else:
+				TYPE=1 # file=1
+			
+			new_name=os.path.basename(replicant_url)
+			
+			self.Headquarter.renameLibraryFile(date,origin_name,new_name,rename_operation=False,new_file_type=TYPE,new_date=new_date)
+			self.plainTextEdit.appendPlainText("Replaced %s in %s.%s.%s to %s in %s.%s.%s\n"%(origin_name,y,m,d,new_name,new_y,new_m,new_d))
+		
+		self.refresh()
+	
+	def move_replace(self):
+		if self.left.rowCount()!=self.right.count():
+			DTFrame.DTMessageBox(self,"Warning","The files in Left and Right doesn't match!",DTIcon.Warning())
+			return
 		
 		for row in range(self.left.rowCount()):
 			y,m,d=map(int,self.left.item(row,1).text().split("."))
@@ -79,7 +110,7 @@ class LibraryCheck(Ui_LibraryCheck,QWidget):
 			new_name=os.path.basename(replicant_url)
 			
 			self.Headquarter.renameLibraryFile(date,origin_name,new_name,rename_operation=False,new_file_type=TYPE)
-			self.plainTextEdit.appendPlainText("Replaced %s to %s\n"%(origin_name,new_name))
+			self.plainTextEdit.appendPlainText("Replaced %s to %s and moved from %s to %s\n"%(origin_name,new_name,origin_url,replicant_url))
 		
 		self.refresh()
 
