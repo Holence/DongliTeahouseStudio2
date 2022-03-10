@@ -870,7 +870,7 @@ class LobbySession(DTSession.DTMainSession):
 		else:
 			new_url=old_url
 
-		if old_file["type"]!=2 and rename_operation==True:
+		if old_file["type"]!=2 and rename_operation==True and old_name!=new_name:
 			try:
 				os.rename(os.path.join(self.library_base,old_url),os.path.join(self.library_base,new_url))
 			except Exception as e:

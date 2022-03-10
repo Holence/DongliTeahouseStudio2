@@ -156,12 +156,13 @@ class FileList(QListWidget):
 				loading_thread.start()
 		
 		def slotRename():
-			url=self.Headquarter.extractFileURL(self.currentItem().toolTip())
+			url=self.currentItem().toolTip()
 			if url[:4]=="http":
 				name=self.currentItem().text()
 				date=QDate().fromString(name[name.rfind("|")+1:][1:-1],"yyyy.M.d")
 				old_name=name[:name.rfind("|")]
 			else:
+				url=self.Headquarter.extractFileURL(url)
 				y,m,d=url.split("/")[:3]
 				date=QDate(int(y),int(m),int(d))
 				old_name=self.currentItem().text()
@@ -185,13 +186,67 @@ class FileList(QListWidget):
 			w.setLayout(l)
 
 			dlg.setCentralWidget(w)
-			dlg.setMinimumSize(600,120)
+			dlg.setMinimumWidth(600)
 
 			if dlg.exec_():
 				new_name=line_edit2.text()
 				res=self.Headquarter.renameLibraryFile(date,old_name,new_name)
 				if res!=False:
 					self.window().refresh()
+		
+		def slotDate():
+			url=self.currentItem().toolTip()
+			if url[:4]=="http":
+				name=self.currentItem().text()
+				old_date=QDate().fromString(name[name.rfind("|")+1:][1:-1],"yyyy.M.d")
+				name=name[:name.rfind("|")]
+			else:
+				y,m,d=self.Headquarter.extractFileURL(url).split("/")[:3]
+				old_date=QDate(int(y),int(m),int(d))
+				name=self.currentItem().text()
+
+			dlg=DTFrame.DTDialog(self.window(),"Edit Date")
+			w=QWidget()
+			l=QVBoxLayout(w)
+			
+			lable1=QLabel("Old Date")
+			l.addWidget(lable1)
+
+			date_edit1=QDateEdit()
+			date_edit1.setDisplayFormat("yyyy.MM.dd")
+			date_edit1.setReadOnly(True)
+			date_edit1.setDate(old_date)
+			l.addWidget(date_edit1)
+
+			lable2=QLabel("New Date")
+			l.addWidget(lable2)
+
+			date_edit2=QDateEdit()
+			date_edit2.setDisplayFormat("yyyy.MM.dd")
+			date_edit2.setDate(old_date)
+			l.addWidget(date_edit2)
+
+			w.setLayout(l)
+
+			dlg.setCentralWidget(w)
+			dlg.setMinimumWidth(600)
+
+			if dlg.exec_():
+				new_date=date_edit2.date()
+				if new_date!=old_date:
+					
+					if url[:4]!="http":
+						try:
+							new_base=self.Headquarter.library_base+"/%s/%s/%s"%(new_date.year(),new_date.month(),new_date.day())
+							if not os.path.exists(new_base):
+								os.makedirs(new_base)
+							Win32_Shellmove(url,new_base)
+						except Exception as e:
+							DTFrame.DTMessageBox(self,"Error",str(e),DTIcon.Error())
+					
+					res=self.Headquarter.renameLibraryFile(old_date,name,name,new_date=new_date)
+					if res!=False:
+						self.window().refresh()
 
 		def slotImage():
 			url=self.item(self.currentRow()).toolTip()
@@ -313,6 +368,11 @@ class FileList(QListWidget):
 					actionRename.triggered.connect(slotRename)
 					actionRename.setIcon(IconFromCurrentTheme("edit-3.svg"))
 					menu.addAction(actionRename)
+					
+					actionEditDate=QAction(QCoreApplication.translate("Library", "Eidt Date"))
+					actionEditDate.triggered.connect(slotDate)
+					actionEditDate.setIcon(IconFromCurrentTheme("calendar.svg"))
+					menu.addAction(actionEditDate)
 					
 					from filetype import image_extension
 					if ext.lower() in image_extension:

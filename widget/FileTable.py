@@ -140,13 +140,63 @@ class FileTable(DTWidget.DTHorizontalTabel):
 			w.setLayout(l)
 
 			dlg.setCentralWidget(w)
-			dlg.setMinimumSize(600,120)
+			dlg.setMinimumWidth(600)
 
 			if dlg.exec_():
 				new_name=line_edit2.text()
 				res=self.Headquarter.renameLibraryFile(date,old_name,new_name)
 				if res!=False:
 					self.window().refresh()
+		
+		def slotDate():
+			row=self.currentRow()
+			y,m,d=map(int,self.item(row,1).text().split("."))
+			old_date=QDate(y,m,d)
+			name=self.item(row,3).text()
+			url=self.item(row,4).text()
+
+			dlg=DTFrame.DTDialog(self.window(),"Edit Date")
+			w=QWidget()
+			l=QVBoxLayout(w)
+			
+			lable1=QLabel("Old Date")
+			l.addWidget(lable1)
+
+			date_edit1=QDateEdit()
+			date_edit1.setDisplayFormat("yyyy.MM.dd")
+			date_edit1.setReadOnly(True)
+			date_edit1.setDate(old_date)
+			l.addWidget(date_edit1)
+
+			lable2=QLabel("New Date")
+			l.addWidget(lable2)
+
+			date_edit2=QDateEdit()
+			date_edit2.setDisplayFormat("yyyy.MM.dd")
+			date_edit2.setDate(old_date)
+			l.addWidget(date_edit2)
+
+			w.setLayout(l)
+
+			dlg.setCentralWidget(w)
+			dlg.setMinimumWidth(600)
+
+			if dlg.exec_():
+				new_date=date_edit2.date()
+				if new_date!=old_date:
+					
+					if url[:4]!="http":
+						try:
+							new_base=self.Headquarter.library_base+"/%s/%s/%s"%(new_date.year(),new_date.month(),new_date.day())
+							if not os.path.exists(new_base):
+								os.makedirs(new_base)
+							Win32_Shellmove(url,new_base)
+						except Exception as e:
+							DTFrame.DTMessageBox(self,"Error",str(e),DTIcon.Error())
+					
+					res=self.Headquarter.renameLibraryFile(old_date,name,name,new_date=new_date)
+					if res!=False:
+						self.window().refresh()
 		
 		def slotImage():
 			url=self.item(self.currentRow(),4).text()
@@ -263,8 +313,12 @@ class FileTable(DTWidget.DTHorizontalTabel):
 					actionRename.setIcon(IconFromCurrentTheme("edit-3.svg"))
 					menu.addAction(actionRename)
 
+					actionEditDate=QAction(QCoreApplication.translate("Library", "Eidt Date"))
+					actionEditDate.triggered.connect(slotDate)
+					actionEditDate.setIcon(IconFromCurrentTheme("calendar.svg"))
+					menu.addAction(actionEditDate)
+
 					from filetype import image_extension
-					
 					if ext.lower() in image_extension:
 						actionViewImage=QAction(QCoreApplication.translate("Library", "View in ImageViewer"))
 						actionViewImage.triggered.connect(slotImage)
