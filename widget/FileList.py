@@ -234,15 +234,20 @@ class FileList(QListWidget):
 			if dlg.exec_():
 				new_date=date_edit2.date()
 				if new_date!=old_date:
-					
+
 					if url[:4]!="http":
+						if not os.path.exists(url):
+							DTFrame.DTMessageBox(self.window(),"Error","Cannot access to Library at %s"%url,DTIcon.Error())
+							return
+
 						try:
 							new_base=self.Headquarter.library_base+"/%s/%s/%s"%(new_date.year(),new_date.month(),new_date.day())
 							if not os.path.exists(new_base):
 								os.makedirs(new_base)
 							Win32_Shellmove(url,new_base)
 						except Exception as e:
-							DTFrame.DTMessageBox(self,"Error",str(e),DTIcon.Error())
+							DTFrame.DTMessageBox(self.window(),"Error",str(e),DTIcon.Error())
+							return
 					
 					res=self.Headquarter.renameLibraryFile(old_date,name,name,new_date=new_date)
 					if res!=False:
