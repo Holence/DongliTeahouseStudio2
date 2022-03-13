@@ -41,22 +41,22 @@ class LobbySession(DTSession.DTMainSession):
 			Fernet_Encrypt_Save(self.password(),self.data,data_dir)
 
 		if os.path.exists("cache"):
-			self.cache=Fernet_Decrypt_Load(self.password(),"cache")
+			self.cache=Fernet_Decrypt_Load(self.password(),os.path.abspath("cache"))
 			if self.cache==False:
 				DTFrame.DTMessageBox(self,"Error","Cache data error!")
 				self.app.quit()
 		else:
 			self.cache={}
-			Fernet_Encrypt_Save(self.password(),self.cache,"cache")
-		
+			Fernet_Encrypt_Save(self.password(),self.cache,os.path.abspath("cache"))
+			
 		if os.path.exists("confreq"):
-			self.concept_frequency=Fernet_Decrypt_Load(self.password(),"confreq")
+			self.concept_frequency=Fernet_Decrypt_Load(self.password(),os.path.abspath("confreq"))
 			if self.concept_frequency==False:
 				DTFrame.DTMessageBox(self,"Error","Concept Frequency data error!")
 				self.app.quit()
 		else:
 			self.concept_frequency={}
-			Fernet_Encrypt_Save(self.password(),self.concept_frequency,"confreq")
+			Fernet_Encrypt_Save(self.password(),self.concept_frequency,os.path.abspath("confreq"))
 		
 		self.library_base=Fernet_Decrypt(self.password(),self.UserSetting().value("LibraryBase"))
 		if self.library_base==False:
@@ -216,8 +216,8 @@ class LobbySession(DTSession.DTMainSession):
 		try:
 			data_dir=os.path.join(self.app.DataDir(),"data.dlcw")
 			Fernet_Encrypt_Save(self.password(), self.data, data_dir)
-			Fernet_Encrypt_Save(self.password(), self.cache, "cache")
-			Fernet_Encrypt_Save(self.password(), self.concept_frequency, "confreq")
+			Fernet_Encrypt_Save(self.password(), self.cache, os.path.abspath("cache"))
+			Fernet_Encrypt_Save(self.password(), self.concept_frequency, os.path.abspath("confreq"))
 			if force==True:
 				self.app.showMessage("Information","Data Saved Successfully!",DTIcon.Information(),clicked_slot=lambda:os.popen("explorer /select,\"%s\""%os.path.abspath(data_dir)))
 		except Exception as e:
