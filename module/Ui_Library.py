@@ -166,8 +166,8 @@ class Ui_Library(object):
         self.lineEdit_search.setPlaceholderText(QCoreApplication.translate("Library", u"file name (2000.1.1) (2001.1.1-2001.2.1) [conceptA] [conceptB] {1}", None))
         self.label_date.setText(QCoreApplication.translate("Library", u"Date", None))
         self.label_name.setText(QCoreApplication.translate("Library", u"Name", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_concept), QCoreApplication.translate("Library", u" Concept ", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_textlist), QCoreApplication.translate("Library", u" Text List ", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_textviewer), QCoreApplication.translate("Library", u" Text Viewer ", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_concept), QCoreApplication.translate("Library", u"Concept", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_textlist), QCoreApplication.translate("Library", u"Text List ", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_textviewer), QCoreApplication.translate("Library", u"Text Viewer", None))
     # retranslateUi
 

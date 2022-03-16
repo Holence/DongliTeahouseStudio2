@@ -25,12 +25,12 @@
         <layout class="QHBoxLayout" name="horizontalLayout_6">
          <item>
           <widget class="QLabel" name="label_search">
-         <property name="text">
-          <string>Search</string>
-         </property>
-        </widget>
-       </item>
-       <item>
+           <property name="text">
+            <string>Search</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="ConceptBackButton" name="pushButton_back">
            <property name="text">
             <string/>
@@ -68,13 +68,13 @@
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_7">
            <item>
-          <widget class="QLabel" name="label_name">
-           <property name="text">
-            <string>Name</string>
-           </property>
-          </widget>
-         </item>
-         <item>
+            <widget class="QLabel" name="label_name">
+             <property name="text">
+              <string>Name</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QPushButton" name="pushButton_delete">
              <property name="text">
               <string/>
@@ -155,7 +155,7 @@
              </property>
              <widget class="QWidget" name="tab_file">
               <attribute name="title">
-               <string> File </string>
+               <string>File</string>
               </attribute>
               <layout class="QHBoxLayout" name="horizontalLayout">
                <property name="spacing">
@@ -180,7 +180,7 @@
              </widget>
              <widget class="QWidget" name="tab_textlist">
               <attribute name="title">
-               <string> Text List </string>
+               <string>Text List</string>
               </attribute>
               <layout class="QHBoxLayout" name="horizontalLayout_4">
                <property name="spacing">
@@ -205,7 +205,7 @@
              </widget>
              <widget class="QWidget" name="tab_textviewer">
               <attribute name="title">
-               <string> Text Viewer </string>
+               <string>Text Viewer</string>
               </attribute>
               <layout class="QHBoxLayout" name="horizontalLayout_2">
                <property name="spacing">
