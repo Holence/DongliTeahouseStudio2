@@ -11,10 +11,17 @@ class DesktopButton(QPushButton):
 		self.Headquarter=Headquarter
 		self.clicked.connect(self.openFile)
 		self.setFlat(True)
-		self.setIconSize(QSize(48,48))
-		self.setFixedSize(64,64)
-
-		self.setStyleSheet("QPushbutton:!hover{ background:transparent }")
+		self.setStyleSheet("""
+        QPushButton{
+            icon-size: 24px;
+            max-height: 32px;
+            min-height: 32px;
+            max-width: 32px;
+            min-width: 32px;
+            background:transparent;
+            border:none;
+        };
+        """)
 
 		if url[:8]=="file:///":
 			self.setToolTip(os.path.basename(url))
@@ -57,7 +64,7 @@ class DesktopButton(QPushButton):
 					self.Headquarter.cache[cache_name]=data #cache中存储
 					pixmap=QPixmap()
 					pixmap.loadFromData(base64.b64decode(data))
-					pixmap=pixmap.scaled(48,48,Qt.KeepAspectRatio)
+					pixmap=pixmap.scaled(24,24,Qt.KeepAspectRatio)
 					icon=QIcon(pixmap)
 				# 载入失败
 				else:
@@ -72,7 +79,7 @@ class DesktopButton(QPushButton):
 			else:
 				pixmap=QPixmap()
 				pixmap.loadFromData(base64.b64decode(data))
-				pixmap=pixmap.scaled(48,48,Qt.KeepAspectRatio)
+				pixmap=pixmap.scaled(24,24,Qt.KeepAspectRatio)
 				icon=QIcon(pixmap)
 		
 		self.setIcon(icon)

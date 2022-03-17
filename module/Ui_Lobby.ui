@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>456</width>
-    <height>228</height>
+    <width>300</width>
+    <height>184</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,16 +15,16 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
-    <number>36</number>
+    <number>24</number>
    </property>
    <property name="leftMargin">
-    <number>72</number>
+    <number>24</number>
    </property>
    <property name="topMargin">
-    <number>36</number>
+    <number>28</number>
    </property>
    <property name="rightMargin">
-    <number>72</number>
+    <number>24</number>
    </property>
    <property name="bottomMargin">
     <number>12</number>
@@ -32,7 +32,7 @@
    <item>
     <layout class="QGridLayout" name="gridLayout">
      <property name="horizontalSpacing">
-      <number>59</number>
+      <number>24</number>
      </property>
      <item row="0" column="2">
       <widget class="QPushButton" name="btn_library">
@@ -44,14 +44,14 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>64</width>
-         <height>64</height>
+         <width>52</width>
+         <height>52</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>64</width>
-         <height>64</height>
+         <width>52</width>
+         <height>52</height>
         </size>
        </property>
        <property name="text">
@@ -59,8 +59,8 @@
        </property>
        <property name="iconSize">
         <size>
-         <width>64</width>
-         <height>64</height>
+         <width>52</width>
+         <height>52</height>
         </size>
        </property>
        <property name="flat">
@@ -78,14 +78,14 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>64</width>
-         <height>64</height>
+         <width>52</width>
+         <height>52</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>64</width>
-         <height>64</height>
+         <width>52</width>
+         <height>52</height>
         </size>
        </property>
        <property name="text">
@@ -93,8 +93,8 @@
        </property>
        <property name="iconSize">
         <size>
-         <width>64</width>
-         <height>64</height>
+         <width>52</width>
+         <height>52</height>
         </size>
        </property>
        <property name="flat">
@@ -112,14 +112,14 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>64</width>
-         <height>64</height>
+         <width>52</width>
+         <height>52</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>64</width>
-         <height>64</height>
+         <width>52</width>
+         <height>52</height>
         </size>
        </property>
        <property name="text">
@@ -127,8 +127,8 @@
        </property>
        <property name="iconSize">
         <size>
-         <width>64</width>
-         <height>64</height>
+         <width>52</width>
+         <height>52</height>
         </size>
        </property>
        <property name="flat">
@@ -143,21 +143,15 @@
      <item>
       <widget class="QLineEdit" name="lineEdit">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
        <property name="minimumSize">
         <size>
-         <width>310</width>
+         <width>250</width>
          <height>30</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>310</width>
-         <height>16777215</height>
         </size>
        </property>
       </widget>
