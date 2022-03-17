@@ -45,7 +45,7 @@ class ConceptSession(DTFrame.DTMainWindow):
 			self.resize(self.Headquarter.UserSetting().value("WindowStatus/ConceptSize"))
 			self.move(self.Headquarter.UserSetting().value("WindowStatus/ConceptPos"))
 		except:
-			pass
+			self.resize(self.minimumWidth(),self.minimumHeight())
 
 		from module import Concept
 		self.concept_module=Concept(self,self.Headquarter)

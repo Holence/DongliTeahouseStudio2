@@ -99,7 +99,7 @@ class LobbySession(DTSession.DTMainSession):
 			self.resize(self.UserSetting().value("WindowStatus/LobbySize"))
 			self.move(self.UserSetting().value("WindowStatus/LobbyPos"))
 		except:
-			self.resize(self.minimumHeight(),self.minimumWidth())
+			self.resize(self.minimumWidth(),self.minimumHeight())
 
 	def initializeSignal(self):
 		super().initializeSignal()

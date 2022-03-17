@@ -32,7 +32,7 @@ class LibrarySession(DTFrame.DTMainWindow):
 			self.resize(self.Headquarter.UserSetting().value("WindowStatus/LibrarySize"))
 			self.move(self.Headquarter.UserSetting().value("WindowStatus/LibraryPos"))
 		except:
-			pass
+			self.resize(self.minimumWidth(),self.minimumHeight())
 
 		from module import Library
 		self.library_module=Library(self,self.Headquarter)

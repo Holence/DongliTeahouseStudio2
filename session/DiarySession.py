@@ -37,7 +37,7 @@ class DiarySession(DTFrame.DTMainWindow):
 			self.resize(self.Headquarter.UserSetting().value("WindowStatus/DiarySize"))
 			self.move(self.Headquarter.UserSetting().value("WindowStatus/DiaryPos"))
 		except:
-			pass
+			self.resize(self.minimumWidth(),self.minimumHeight())
 		
 		from module import Diary
 		self.diary_module=Diary(self,self.Headquarter)
