@@ -364,7 +364,6 @@ class FileList(QListWidget):
 			
 			if len(self.selectionModel().selectedRows())>0:
 				menu=QMenu()
-				menu.setStyleSheet("font-size:12pt")
 
 				name=self.item(self.currentRow()).text()
 				ext=os.path.splitext(name)[1][1:]

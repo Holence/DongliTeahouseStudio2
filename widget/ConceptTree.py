@@ -59,7 +59,6 @@ class ConceptTree(DTWidget.DTTree):
 			if len(self.selectionModel().selectedRows())>0:
 				pos=event.pos()
 				menu=QMenu()
-				menu.setStyleSheet("font-size:12pt")
 
 				def slotOpenInNewWindow():
 					x=self.Headquarter.x()

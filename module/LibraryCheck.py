@@ -16,8 +16,6 @@ class LibraryCheck(Ui_LibraryCheck,QWidget):
 		self.Headquarter=Headquarter
 
 		self.plainTextEdit.setStyleSheet("font-size: 10pt")
-		self.right.setStyleSheet("font-size:12pt")
-		self.redundant.setStyleSheet("font-size:12pt")
 		
 		self.initializeSignal()
 		self.refresh()

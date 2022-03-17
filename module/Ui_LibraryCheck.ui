@@ -120,7 +120,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string> ERASE </string>
+            <string>Erase</string>
            </property>
           </widget>
          </item>
@@ -166,7 +166,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string> ADD </string>
+            <string>Add</string>
            </property>
           </widget>
          </item>
@@ -262,7 +262,7 @@
       <widget class="QPushButton" name="pushButton_replace">
        <property name="text">
         <string>&lt;--
- REPLACE</string>
+ Replace</string>
        </property>
       </widget>
      </item>
@@ -270,7 +270,7 @@
       <widget class="QPushButton" name="pushButton_move_replace">
        <property name="text">
         <string>&lt;--
- MOVE AND REPLACE</string>
+ Move and Replace</string>
        </property>
       </widget>
      </item>

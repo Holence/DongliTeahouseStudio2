@@ -51,7 +51,6 @@ class Diary(QWidget,Ui_Diary):
 		self.CalendarPaintMonth()
 		self.textEdit.setEnabled(False)
 
-		self.setStyleSheet("QLabel{font-size: 14pt;}")
 		self.label_calendar.setStyleSheet("font-size: 13pt;")
 	
 	def initializeSignal(self):

@@ -309,7 +309,6 @@ class FileTable(DTWidget.DTHorizontalTabel):
 
 			if len(self.selectionModel().selectedRows())>0:
 				menu=QMenu()
-				menu.setStyleSheet("font-size:12pt")
 
 				ext=self.item(self.currentRow(),2).text()
 				if len(self.selectionModel().selectedRows())==1:

@@ -83,7 +83,6 @@ class TextList(QListWidget):
 			if len(self.selectionModel().selectedRows())>0:
 				pos=event.pos()
 				menu=QMenu()
-				menu.setStyleSheet("font-size:12pt")
 
 				def slotDelete():
 					self.textDelete.emit()
@@ -100,7 +99,7 @@ class TextList(QListWidget):
 
 	def __init__(self, parent):
 		super().__init__(parent=parent)
-		self.setStyleSheet("QListWidget{ font-size: 18pt; } QListWidget::item{ border: transparent; border-radius: 10px;}")
+		self.setStyleSheet("QListWidget{ font-size: 15pt; } QListWidget::item{ border: transparent; border-radius: 10px;}")
 		self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
 		self.verticalScrollBar().setSingleStep(18)
 	

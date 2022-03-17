@@ -207,9 +207,9 @@ class Ui_LibraryCheck(object):
         ___qtablewidgetitem3.setText(QCoreApplication.translate("LibraryCheck", u"File", None));
         ___qtablewidgetitem4 = self.missing.horizontalHeaderItem(4)
         ___qtablewidgetitem4.setText(QCoreApplication.translate("LibraryCheck", u"Url", None));
-        self.pushButton_erase.setText(QCoreApplication.translate("LibraryCheck", u" ERASE ", None))
+        self.pushButton_erase.setText(QCoreApplication.translate("LibraryCheck", u"Erase", None))
         self.label_3.setText(QCoreApplication.translate("LibraryCheck", u"Redundant Files", None))
-        self.pushButton_add.setText(QCoreApplication.translate("LibraryCheck", u" ADD ", None))
+        self.pushButton_add.setText(QCoreApplication.translate("LibraryCheck", u"Add", None))
         ___qtablewidgetitem5 = self.left.horizontalHeaderItem(0)
         ___qtablewidgetitem5.setText(QCoreApplication.translate("LibraryCheck", u"Type", None));
         ___qtablewidgetitem6 = self.left.horizontalHeaderItem(1)
@@ -221,9 +221,9 @@ class Ui_LibraryCheck(object):
         ___qtablewidgetitem9 = self.left.horizontalHeaderItem(4)
         ___qtablewidgetitem9.setText(QCoreApplication.translate("LibraryCheck", u"Url", None));
         self.pushButton_replace.setText(QCoreApplication.translate("LibraryCheck", u"<--\n"
-" REPLACE", None))
+" Replace", None))
         self.pushButton_move_replace.setText(QCoreApplication.translate("LibraryCheck", u"<--\n"
-" MOVE AND REPLACE", None))
+" Move and Replace", None))
         self.plainTextEdit.setPlainText(QCoreApplication.translate("LibraryCheck", u"This is a log.", None))
     # retranslateUi
 

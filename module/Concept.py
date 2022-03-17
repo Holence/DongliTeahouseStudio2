@@ -22,7 +22,7 @@ class Concept(QWidget,Ui_Concept):
 		self.splitter_whole.setStretchFactor(1,2)
 		self.splitter_whole.setStretchFactor(2,1)
 
-		self.plainTextEdit_detail.setStyleSheet("font-size:14pt")
+		self.plainTextEdit_detail.setStyleSheet("font-size:12pt")
 
 		# 搜索处的concept table只能drag out不能drop in
 		self.conceptTable.setDragDropMode(QAbstractItemView.DragOnly)
@@ -58,8 +58,6 @@ class Concept(QWidget,Ui_Concept):
 		self.pushButton_delete.setFixedSize(self.label_name.height(),self.label_name.height())
 		self.pushButton_delete.setIcon(IconFromCurrentTheme("trash-2.svg"))
 		self.pushButton_delete.setIconSize(QSize(self.label_name.height()-8,self.label_name.height()-8))
-
-		self.setStyleSheet("QLabel{font-size: 14pt;}")
 
 	def initializeSignal(self):
 		# 添加concept
@@ -254,8 +252,6 @@ class Concept(QWidget,Ui_Concept):
 	def showConceptHistory(self):
 		pos=self.pushButton_back.pos()
 		menu=QMenu()
-		menu.setStyleSheet("font-size:12pt")
-
 		
 		for id in self.concept_history_queue:
 
