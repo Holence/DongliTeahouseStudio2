@@ -62,7 +62,7 @@ class LobbySession(DTSession.DTMainSession):
 		if self.library_base==False:
 			dlg=QFileDialog(self)
 			while not self.library_base:
-				DTFrame.DTMessageBox(self,"Information","You need to set Library Base first!")
+				DTFrame.DTMessageBox(self,"Information","You need to set Library Base first!",DTIcon.Information())
 				self.library_base=dlg.getExistingDirectory()
 			self.UserSetting().setValue("LibraryBase",Fernet_Encrypt(self.password(),self.library_base))
 	
@@ -100,6 +100,8 @@ class LobbySession(DTSession.DTMainSession):
 			self.move(self.UserSetting().value("WindowStatus/LobbyPos"))
 		except:
 			self.resize(self.minimumWidth(),self.minimumHeight())
+			self.adjustSize()
+			MoveToCenterOfScreen(self)
 
 	def initializeSignal(self):
 		super().initializeSignal()

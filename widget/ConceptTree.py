@@ -61,15 +61,11 @@ class ConceptTree(DTWidget.DTTree):
 				menu=QMenu()
 
 				def slotOpenInNewWindow():
-					x=self.Headquarter.x()
-					y=self.Headquarter.y()
 					for item in self.selectedItems():
 						id=int(item.text(0))
 						self.Headquarter.lobby.summon("concept","Concept")
 						self.Headquarter.concept_heap[-1].concept_module.showConcept(id)
-						x+=50
-						y+=50
-						self.Headquarter.concept_heap[-1].move(x,y)
+						MoveToCenterOfScreen(self.Headquarter.concept_heap[-1])
 				
 				actionOpen=QAction(QCoreApplication.translate("Concept", "Open In New Window"))
 				actionOpen.setIcon(IconFromCurrentTheme("external-link.svg"))

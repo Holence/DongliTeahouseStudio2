@@ -86,8 +86,11 @@ class ImageViewerSession(DTFrame.DTMainWindow):
 		self.setCentralWidget(self.image_label)
 		
 		self.setMinimumSize(600,500)
-		self.image_label.setGeometry(self.image_label.x(),self.image_label.y(),self.width(),self.height())
 		self.image_label.refresh()
+
+		self.resize(self.minimumWidth(),self.minimumHeight())
+		self.adjustSize()
+		MoveToCenterOfScreen(self)
 		
 	def initializeSignal(self):
 		super().initializeSignal()

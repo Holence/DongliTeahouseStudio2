@@ -11,7 +11,6 @@ class ConceptSearch(QLineEdit):
 		
 		self.textEdited.connect(self.showDropList)
 
-		self.setStyleSheet("height: 28px;")
 		self.search_list=QStringListModel(self)
 		self.Completer=QCompleter(self.search_list,self)
 		self.Completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion)

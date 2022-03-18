@@ -18,9 +18,12 @@ class Diary(QWidget,Ui_Diary):
 	def initializeWindow(self):
 
 		self.splitter_whole.setStretchFactor(0,5)
-		self.splitter_whole.setStretchFactor(0,1)
+		self.splitter_whole.setStretchFactor(1,1)
 		self.splitter_left.setStretchFactor(0,10)
-		self.splitter_left.setStretchFactor(0,1)
+		self.splitter_left.setStretchFactor(1,1)
+		self.splitter_right.setStretchFactor(0,1)
+		self.splitter_right.setStretchFactor(1,2)
+		self.splitter_right.setStretchFactor(2,1)
 
 		self.textList.setHeadquarter(self.Headquarter)
 		self.textList.setObjectName("DiaryTextList%s"%len(self.Headquarter.diary_heap)) #三个模块中名字重复了，DND时要判断objectName，这里得手动设置不同的objectName
@@ -470,7 +473,6 @@ class Diary(QWidget,Ui_Diary):
 		self.dairy_search_window=DiarySearchSession(self.Headquarter.app,self.Headquarter,self)
 		self.dairy_search_window.closed.connect(slot)
 		self.dairy_search_window.show()
-		self.dairy_search_window.setGeometry(self.window().x()+50,self.window().y()+50,self.dairy_search_window.minimumWidth(),self.dairy_search_window.minimumHeight())
 	
 	def importText(self):
 		dlg=DTFrame.DTDialog(self,"Import Text")
@@ -481,6 +483,7 @@ class Diary(QWidget,Ui_Diary):
 		textedit.setStyleSheet("font-size:10pt;")
 		textedit.setFocus()
 		layout=QHBoxLayout()
+		layout.setMargin(0)
 		layout.addWidget(label)
 		layout.addWidget(textedit)
 		widget=QWidget()

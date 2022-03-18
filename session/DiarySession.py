@@ -33,15 +33,17 @@ class DiarySession(DTFrame.DTMainWindow):
 		super().initializeWindow()
 		self.setWindowTitle("Diary")
 
+		from module import Diary
+		self.diary_module=Diary(self,self.Headquarter)
+		self.setCentralWidget(self.diary_module)
+
 		try:
 			self.resize(self.Headquarter.UserSetting().value("WindowStatus/DiarySize"))
 			self.move(self.Headquarter.UserSetting().value("WindowStatus/DiaryPos"))
 		except:
 			self.resize(self.minimumWidth(),self.minimumHeight())
-		
-		from module import Diary
-		self.diary_module=Diary(self,self.Headquarter)
-		self.setCentralWidget(self.diary_module)
+			self.adjustSize()
+			MoveToCenterOfScreen(self)
 	
 	def initializeSignal(self):
 		super().initializeSignal()

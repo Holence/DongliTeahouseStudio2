@@ -41,16 +41,17 @@ class ConceptSession(DTFrame.DTMainWindow):
 		super().initializeWindow()
 		self.setWindowTitle("Concept")
 
+		from module import Concept
+		self.concept_module=Concept(self,self.Headquarter)
+		self.setCentralWidget(self.concept_module)
+
 		try:
 			self.resize(self.Headquarter.UserSetting().value("WindowStatus/ConceptSize"))
 			self.move(self.Headquarter.UserSetting().value("WindowStatus/ConceptPos"))
 		except:
 			self.resize(self.minimumWidth(),self.minimumHeight())
-
-		from module import Concept
-		self.concept_module=Concept(self,self.Headquarter)
-		self.setCentralWidget(self.concept_module)
-
+			self.adjustSize()
+			MoveToCenterOfScreen(self)
 	
 	def initializeSignal(self):
 		super().initializeSignal()

@@ -13,6 +13,7 @@ from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
 from widget import TextList
+from DTPySide.DTWidget import MarkdownViewer
 
 
 class Ui_DiarySearch(object):
@@ -38,13 +39,47 @@ class Ui_DiarySearch(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout)
 
-        self.listWidget = TextList(DiarySearch)
-        self.listWidget.setObjectName(u"listWidget")
+        self.tabWidget = QTabWidget(DiarySearch)
+        self.tabWidget.setObjectName(u"tabWidget")
+        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.MinimumExpanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
+        self.tabWidget.setSizePolicy(sizePolicy)
+        self.tabWidget.setTabPosition(QTabWidget.North)
+        self.tab_textlist = QWidget()
+        self.tab_textlist.setObjectName(u"tab_textlist")
+        self.horizontalLayout_5 = QHBoxLayout(self.tab_textlist)
+        self.horizontalLayout_5.setSpacing(0)
+        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.horizontalLayout_5.setContentsMargins(0, 0, 0, 0)
+        self.textList = TextList(self.tab_textlist)
+        self.textList.setObjectName(u"textList")
 
-        self.verticalLayout.addWidget(self.listWidget)
+        self.horizontalLayout_5.addWidget(self.textList)
+
+        self.tabWidget.addTab(self.tab_textlist, "")
+        self.tab_textviewer = QWidget()
+        self.tab_textviewer.setObjectName(u"tab_textviewer")
+        self.horizontalLayout_3 = QHBoxLayout(self.tab_textviewer)
+        self.horizontalLayout_3.setSpacing(0)
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.horizontalLayout_3.setContentsMargins(0, 0, 0, 0)
+        self.textViewer = MarkdownViewer(self.tab_textviewer)
+        self.textViewer.setObjectName(u"textViewer")
+        self.textViewer.setOpenExternalLinks(True)
+
+        self.horizontalLayout_3.addWidget(self.textViewer)
+
+        self.tabWidget.addTab(self.tab_textviewer, "")
+
+        self.verticalLayout.addWidget(self.tabWidget)
 
 
         self.retranslateUi(DiarySearch)
+
+        self.tabWidget.setCurrentIndex(0)
+
 
         QMetaObject.connectSlotsByName(DiarySearch)
     # setupUi
@@ -53,5 +88,7 @@ class Ui_DiarySearch(object):
         DiarySearch.setWindowTitle(QCoreApplication.translate("DiarySearch", u"DiarySearch", None))
         self.lineEdit.setPlaceholderText(QCoreApplication.translate("DiarySearch", u"text text (2000.1.1) (2001.1.1-2001.2.1) [conceptA] [conceptB]", None))
         self.checkBox.setText(QCoreApplication.translate("DiarySearch", u"Rank", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_textlist), QCoreApplication.translate("DiarySearch", u"Text List ", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_textviewer), QCoreApplication.translate("DiarySearch", u"Text Viewer", None))
     # retranslateUi
 

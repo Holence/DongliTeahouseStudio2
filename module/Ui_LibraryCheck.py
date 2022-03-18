@@ -21,6 +21,7 @@ class Ui_LibraryCheck(object):
         LibraryCheck.setMinimumSize(QSize(1400, 900))
         self.horizontalLayout_14 = QHBoxLayout(LibraryCheck)
         self.horizontalLayout_14.setObjectName(u"horizontalLayout_14")
+        self.horizontalLayout_14.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_12 = QVBoxLayout()
         self.verticalLayout_12.setObjectName(u"verticalLayout_12")
         self.pushButton_refresh = QPushButton(LibraryCheck)
@@ -207,9 +208,9 @@ class Ui_LibraryCheck(object):
         ___qtablewidgetitem3.setText(QCoreApplication.translate("LibraryCheck", u"File", None));
         ___qtablewidgetitem4 = self.missing.horizontalHeaderItem(4)
         ___qtablewidgetitem4.setText(QCoreApplication.translate("LibraryCheck", u"Url", None));
-        self.pushButton_erase.setText(QCoreApplication.translate("LibraryCheck", u"Erase", None))
+        self.pushButton_erase.setText(QCoreApplication.translate("LibraryCheck", u" Erase ", None))
         self.label_3.setText(QCoreApplication.translate("LibraryCheck", u"Redundant Files", None))
-        self.pushButton_add.setText(QCoreApplication.translate("LibraryCheck", u"Add", None))
+        self.pushButton_add.setText(QCoreApplication.translate("LibraryCheck", u" Add ", None))
         ___qtablewidgetitem5 = self.left.horizontalHeaderItem(0)
         ___qtablewidgetitem5.setText(QCoreApplication.translate("LibraryCheck", u"Type", None));
         ___qtablewidgetitem6 = self.left.horizontalHeaderItem(1)

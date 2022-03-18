@@ -25,7 +25,7 @@ class Ui_Diary(object):
     def setupUi(self, Diary):
         if not Diary.objectName():
             Diary.setObjectName(u"Diary")
-        Diary.resize(969, 603)
+        Diary.resize(1039, 603)
         self.actionSwitch_Eidt_View = QAction(Diary)
         self.actionSwitch_Eidt_View.setObjectName(u"actionSwitch_Eidt_View")
         self.actionPrevious_Day = QAction(Diary)
@@ -77,7 +77,7 @@ class Ui_Diary(object):
         self.splitter_left.addWidget(self.textList)
         self.textEdit = DTPlainTextEdit(self.splitter_left)
         self.textEdit.setObjectName(u"textEdit")
-        self.textEdit.setMinimumSize(QSize(600, 182))
+        self.textEdit.setMinimumSize(QSize(600, 178))
         self.splitter_left.addWidget(self.textEdit)
 
         self.verticalLayout.addWidget(self.splitter_left)

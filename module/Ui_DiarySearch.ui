@@ -39,7 +39,74 @@
     </layout>
    </item>
    <item>
-    <widget class="TextList" name="listWidget"/>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="tabPosition">
+      <enum>QTabWidget::North</enum>
+     </property>
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="tab_textlist">
+      <attribute name="title">
+       <string>Text List </string>
+      </attribute>
+      <layout class="QHBoxLayout" name="horizontalLayout_5">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="TextList" name="textList"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_textviewer">
+      <attribute name="title">
+       <string>Text Viewer</string>
+      </attribute>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="MarkdownViewer" name="textViewer">
+         <property name="openExternalLinks">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
    </item>
   </layout>
  </widget>
@@ -48,6 +115,11 @@
    <class>TextList</class>
    <extends>QListWidget</extends>
    <header>widget</header>
+  </customwidget>
+  <customwidget>
+   <class>MarkdownViewer</class>
+   <extends>QTextBrowser</extends>
+   <header>DTWidget</header>
   </customwidget>
  </customwidgets>
  <resources/>

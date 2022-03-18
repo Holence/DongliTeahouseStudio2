@@ -170,6 +170,7 @@ class FileList(QListWidget):
 			dlg=DTFrame.DTDialog(self.window(),"Rename")
 			w=QWidget()
 			l=QVBoxLayout(w)
+			l.setMargin(0)
 			
 			lable1=QLabel("Old Name")
 			l.addWidget(lable1)
@@ -186,7 +187,7 @@ class FileList(QListWidget):
 			w.setLayout(l)
 
 			dlg.setCentralWidget(w)
-			dlg.setMinimumWidth(600)
+			dlg.setMinimumWidth(250)
 
 			if dlg.exec_():
 				new_name=line_edit2.text()
@@ -208,6 +209,7 @@ class FileList(QListWidget):
 			dlg=DTFrame.DTDialog(self.window(),"Edit Date")
 			w=QWidget()
 			l=QVBoxLayout(w)
+			l.setMargin(0)
 			
 			lable1=QLabel("Old Date")
 			l.addWidget(lable1)
@@ -229,7 +231,7 @@ class FileList(QListWidget):
 			w.setLayout(l)
 
 			dlg.setCentralWidget(w)
-			dlg.setMinimumWidth(600)
+			dlg.setMinimumWidth(250)
 
 			if dlg.exec_():
 				new_date=date_edit2.date()
@@ -348,9 +350,7 @@ class FileList(QListWidget):
 			library=self.Headquarter.library_heap[-1].library_module
 			library.fileTab.setFileList(file_list)
 
-			x=self.Headquarter.x()+50
-			y=self.Headquarter.y()+50
-			library.move(x,y)
+			MoveToCenterOfScreen(self.Headquarter.library_heap[-1])
 
 		if "Bookmark" in self.objectName():
 			super().mousePressEvent(event)

@@ -75,16 +75,12 @@ class ConceptTable(DTWidget.DTHorizontalTabel):
 				menu=QMenu()
 
 				def slotOpenInNewWindow():
-					x=self.Headquarter.x()
-					y=self.Headquarter.y()
 					for model_index in self.selectionModel().selectedRows():
 						row=model_index.row()
 						id=int(self.item(row,0).text())
 						self.Headquarter.lobby.summon("concept","Concept")
 						self.Headquarter.concept_heap[-1].concept_module.showConcept(id)
-						x+=50
-						y+=50
-						self.Headquarter.concept_heap[-1].move(x,y)
+						MoveToCenterOfScreen(self.Headquarter.concept_heap[-1])
 				
 				actionOpen=QAction(QCoreApplication.translate("Concept", "Open In New Window"))
 				actionOpen.setIcon(IconFromCurrentTheme("external-link.svg"))

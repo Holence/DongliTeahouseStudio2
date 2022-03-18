@@ -12,9 +12,17 @@ class BookmarkParserSession(DTFrame.DTMainWindow):
 	
 	def __init__(self, app: DTAPP, Headquarter):
 		super().__init__(app)
+		self.Headquarter=Headquarter
 		self.initialize()
+
+	def initializeWindow(self):
+		super().initializeWindow()
 		self.setWindowTitle("Import Bookmarks")
 
 		from module import BookmarkParser
-		bookmark_parser=BookmarkParser(self,Headquarter)
+		bookmark_parser=BookmarkParser(self,self.Headquarter)
 		self.setCentralWidget(bookmark_parser)
+
+		self.resize(self.minimumWidth(),self.minimumHeight())
+		self.adjustSize()
+		MoveToCenterOfScreen(self)

@@ -146,6 +146,7 @@ cover-image: cover.jpg
 		slot()
 
 		layout_H=QHBoxLayout()
+		layout_H.setMargin(0)
 		layout_H.addWidget(label)
 		layout_H.addWidget(date_begin)
 		layout_H.addWidget(date_end)
@@ -153,6 +154,7 @@ cover-image: cover.jpg
 		frame0.setLayout(layout_H)
 
 		layout_V=QVBoxLayout()
+		layout_V.setMargin(0)
 		layout_V.addWidget(checkbox_caption)
 		layout_V.addWidget(checkbox_epub)
 		layout_V.addWidget(label_yaml)
@@ -164,6 +166,7 @@ cover-image: cover.jpg
 		frame1.setStyleSheet("font-size:%spt"%hh)
 
 		layout=QVBoxLayout()
+		layout.setMargin(0)
 		layout.addWidget(frame0)
 		layout.addWidget(frame1)
 		widget=QWidget()
@@ -270,7 +273,6 @@ cover-image: cover.jpg
 		module=LibraryCheck(self.Headquarter)
 		dlg.setCentralWidget(module)
 		dlg.buttonBox.hide()
-		dlg.setGeometry(self.Headquarter.x()+50,self.Headquarter.y()+50,dlg.minimumWidth(),dlg.minimumHeight())
 		dlg.buttonBoxLayout.setContentsMargins(QMargins(0,0,32,0))
 		dlg.exec_()
 
@@ -570,9 +572,10 @@ cover-image: cover.jpg
 
 			self.DataChecker.errorText=QPlainTextEdit(error)
 			self.DataChecker.errorText.setReadOnly(True)
-			self.DataChecker.setMinimumSize(600,600)
-			self.DataChecker.setGeometry(self.Headquarter.x()+50,self.Headquarter.y()+50,self.DataChecker.minimumWidth(),self.DataChecker.minimumHeight())
+			self.DataChecker.setMinimumSize(500,500)
 			self.DataChecker.setCentralWidget(self.DataChecker.errorText)
+			self.DataChecker.adjustSize()
+			MoveToCenterOfScreen(self.DataChecker)
 			self.DataChecker.show()
 		
 		self.DataChecker.showNormal()
@@ -631,8 +634,9 @@ cover-image: cover.jpg
 
 			self.DataChecker2.infoText=QPlainTextEdit(info)
 			self.DataChecker2.infoText.setReadOnly(True)
-			self.DataChecker2.setMinimumSize(600,600)
-			self.DataChecker2.setGeometry(self.Headquarter.x()+50,self.Headquarter.y()+50,self.DataChecker2.minimumWidth(),self.DataChecker2.minimumHeight())
+			self.DataChecker2.setMinimumSize(500,500)
+			self.DataChecker2.adjustSize()
+			MoveToCenterOfScreen(self.DataChecker2)
 			self.DataChecker2.setCentralWidget(self.DataChecker2.infoText)
 			self.DataChecker2.show()
 		
@@ -650,5 +654,4 @@ cover-image: cover.jpg
 		from session import BookmarkParserSession
 		self.bookmark_parser_window=BookmarkParserSession(self.Headquarter.app,self.Headquarter)
 		self.bookmark_parser_window.closed.connect(slot)
-		self.bookmark_parser_window.setGeometry(self.Headquarter.x()+50,self.Headquarter.y()+50,self.bookmark_parser_window.minimumWidth(),self.bookmark_parser_window.minimumHeight())
 		self.bookmark_parser_window.show()

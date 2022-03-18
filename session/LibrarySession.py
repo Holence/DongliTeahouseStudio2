@@ -28,15 +28,17 @@ class LibrarySession(DTFrame.DTMainWindow):
 		super().initializeWindow()
 		self.setWindowTitle("Library")
 
+		from module import Library
+		self.library_module=Library(self,self.Headquarter)
+		self.setCentralWidget(self.library_module)
+
 		try:
 			self.resize(self.Headquarter.UserSetting().value("WindowStatus/LibrarySize"))
 			self.move(self.Headquarter.UserSetting().value("WindowStatus/LibraryPos"))
 		except:
 			self.resize(self.minimumWidth(),self.minimumHeight())
-
-		from module import Library
-		self.library_module=Library(self,self.Headquarter)
-		self.setCentralWidget(self.library_module)
+			self.adjustSize()
+			MoveToCenterOfScreen(self)
 	
 	def initializeSignal(self):
 		super().initializeSignal()

@@ -52,12 +52,24 @@ class Concept(QWidget,Ui_Concept):
 		self.actionAdd_Relative.setIcon(IconFromCurrentTheme("user-plus.svg"))
 		self.actionSearch_Concept.setIcon(IconFromCurrentTheme("search.svg"))
 
-		self.pushButton_back.setFixedSize(self.label_search.height(),self.label_search.height())
-		self.pushButton_back.setIconSize(QSize(self.label_search.height()-8,self.label_search.height()-8))
+		self.pushButton_back.setStyleSheet("""
+			border: none;
+			icon-size: 18px;
+			max-height: 24px;
+			min-height: 24px;
+			min-width: 24px;
+			max-width: 24px;
+		""")
 
-		self.pushButton_delete.setFixedSize(self.label_name.height(),self.label_name.height())
 		self.pushButton_delete.setIcon(IconFromCurrentTheme("trash-2.svg"))
-		self.pushButton_delete.setIconSize(QSize(self.label_name.height()-8,self.label_name.height()-8))
+		self.pushButton_delete.setStyleSheet("""
+			border: none;
+			icon-size: 18px;
+			max-height: 24px;
+			min-height: 24px;
+			min-width: 24px;
+			max-width: 24px;
+		""")
 
 	def initializeSignal(self):
 		# 添加concept

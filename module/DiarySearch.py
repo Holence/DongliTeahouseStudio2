@@ -25,11 +25,11 @@ class DiarySearch(Ui_DiarySearch,QWidget):
 			self.diary.textList.setCurrentRow(index)
 			self.diary.showLine()
 		
-		self.listWidget.textClicked.connect(slot)
-		self.listWidget.setObjectName("DiarySeachTextList")
+		self.textList.textClicked.connect(slot)
+		self.textList.setObjectName("DiarySeachTextList")
 		
 		# 不允许拖到SearchList中
-		self.listWidget.setAcceptDrops(False)
+		self.textList.setAcceptDrops(False)
 		
 		self.lineEdit.setFocus()
 	
@@ -41,7 +41,7 @@ class DiarySearch(Ui_DiarySearch,QWidget):
 			return
 		
 		if search_list==[] and date_range_list==[] and concept_list==[]:
-			self.listWidget.clear()
+			self.textList.clear()
 			return
 		
 		rank=False
@@ -49,4 +49,17 @@ class DiarySearch(Ui_DiarySearch,QWidget):
 			rank=True
 		line_list=self.Headquarter.getDiaryLineList(search_list,date_range_list,concept_list,rank=rank)
 		
-		self.listWidget.setTextList("Search",line_list)
+		self.textList.setTextList("Search",line_list)
+
+		text=""
+		old_date=""
+		for line in line_list:
+			year=line["y"]
+			month=line["m"]
+			day=line["d"]
+			date=QLocale().toString(QDate(int(year),int(month),int(day)),"yyyy.M.d ddd")
+			if old_date!=date:
+				text+="### "+date+"\n\n"
+				old_date=date
+			text+=line["text"]+"\n\n"
+		self.textViewer.setMarkdown(text)
