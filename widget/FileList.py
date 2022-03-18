@@ -187,7 +187,10 @@ class FileList(QListWidget):
 			w.setLayout(l)
 
 			dlg.setCentralWidget(w)
-			dlg.setMinimumWidth(250)
+			dlg.setMinimumWidth(400)
+
+			dlg.adjustSize()
+			MoveToCenterOfScreen(dlg)
 
 			if dlg.exec_():
 				new_name=line_edit2.text()
@@ -231,7 +234,10 @@ class FileList(QListWidget):
 			w.setLayout(l)
 
 			dlg.setCentralWidget(w)
-			dlg.setMinimumWidth(250)
+			dlg.setMinimumWidth(300)
+
+			dlg.adjustSize()
+			MoveToCenterOfScreen(dlg)
 
 			if dlg.exec_():
 				new_date=date_edit2.date()

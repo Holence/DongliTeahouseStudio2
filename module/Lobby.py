@@ -172,6 +172,9 @@ cover-image: cover.jpg
 		widget=QWidget()
 		widget.setLayout(layout)
 		dlg.setCentralWidget(widget)
+
+		dlg.adjustSize()
+		MoveToCenterOfScreen(dlg)
 		
 		from filetype import image_extension
 		if dlg.exec_():
@@ -274,6 +277,9 @@ cover-image: cover.jpg
 		dlg.setCentralWidget(module)
 		dlg.buttonBox.hide()
 		dlg.buttonBoxLayout.setContentsMargins(QMargins(0,0,32,0))
+
+		dlg.adjustSize()
+		MoveToCenterOfScreen(dlg)
 		dlg.exec_()
 
 		for diary in self.Headquarter.diary_heap:
@@ -635,9 +641,9 @@ cover-image: cover.jpg
 			self.DataChecker2.infoText=QPlainTextEdit(info)
 			self.DataChecker2.infoText.setReadOnly(True)
 			self.DataChecker2.setMinimumSize(500,500)
+			self.DataChecker2.setCentralWidget(self.DataChecker2.infoText)
 			self.DataChecker2.adjustSize()
 			MoveToCenterOfScreen(self.DataChecker2)
-			self.DataChecker2.setCentralWidget(self.DataChecker2.infoText)
 			self.DataChecker2.show()
 		
 		self.DataChecker2.showNormal()

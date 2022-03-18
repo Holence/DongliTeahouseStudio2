@@ -490,6 +490,9 @@ class Diary(QWidget,Ui_Diary):
 		widget.setLayout(layout)
 		dlg.setCentralWidget(widget)
 		dlg.setMinimumSize(500,500)
+		
+		dlg.adjustSize()
+		MoveToCenterOfScreen(dlg)
 
 		if dlg.exec_():
 			text=[i for i in textedit.toPlainText().splitlines() if i!=""]
