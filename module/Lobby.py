@@ -584,7 +584,7 @@ cover-image: cover.jpg
 			MoveToCenterOfScreen(self.DataChecker)
 			self.DataChecker.show()
 		
-		self.DataChecker.showNormal()
+		self.DataChecker.show()
 		self.DataChecker.raise_()
 
 	def checkUnsavedData(self):
@@ -646,7 +646,7 @@ cover-image: cover.jpg
 			MoveToCenterOfScreen(self.DataChecker2)
 			self.DataChecker2.show()
 		
-		self.DataChecker2.showNormal()
+		self.DataChecker2.show()
 		self.DataChecker2.raise_()
 
 	def ImportBookmarks(self):

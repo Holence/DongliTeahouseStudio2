@@ -153,13 +153,14 @@ class LobbySession(DTSession.DTMainSession):
 				if concept.isVisible()==True:
 					flag=True
 					concept.concept_module.showConcept(id)
-					concept.showNormal()
+					concept.show()
 					concept.raise_()
+					concept.activateWindow() # 设置input focus
 			#如果全部都隐藏着，开启一个
 			if flag==False:
 				self.concept_heap[0].show()
-				self.concept_heap[0].showNormal()
 				self.concept_heap[0].raise_()
+				self.concept_heap[0].activateWindow() # 设置input focus
 				self.concept_heap[0].concept_module.showConcept(id)
 		
 		def slot2(line):
@@ -181,13 +182,14 @@ class LobbySession(DTSession.DTMainSession):
 					diary.diary_module.textList.clearSelection()
 					diary.diary_module.textList.setCurrentRow(index)
 					diary.diary_module.showLine()
-					diary.showNormal()
+					diary.show()
 					diary.raise_()
+					diary.activateWindow() # 设置input focus
 			#如果全部都隐藏着，开启一个
 			if flag==False:
 				self.diary_heap[0].show()
-				self.diary_heap[0].showNormal()
 				self.diary_heap[0].raise_()
+				self.diary_heap[0].activateWindow() # 设置input focus
 				self.diary_heap[0].diary_module.showDay(QDate(y,m,d))
 				self.diary_heap[0].diary_module.textList.clearSelection()
 				self.diary_heap[0].diary_module.textList.setCurrentRow(index)
