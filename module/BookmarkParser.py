@@ -75,8 +75,13 @@ class BookmarkParser(QWidget,Ui_BookmarkParser):
 		url=dlg.getOpenFileUrl(self,"Open Html",filter="Bookmark (*.html)")[0].url()
 		if url!="":
 			url=url.replace("file:///","")
+			
 			import bookmarks_parser
-			bookmarks = bookmarks_parser.parse(url)
+			try:
+				bookmarks = bookmarks_parser.parse(url)
+			except Exception as e:
+				DTFrame.DTMessageBox(self,"Error",str(e),DTIcon.Error())
+				return
 			
 			self.folder_dict={}
 			for s in bookmarks:

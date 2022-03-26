@@ -582,10 +582,8 @@ cover-image: cover.jpg
 			self.DataChecker.setCentralWidget(self.DataChecker.errorText)
 			self.DataChecker.adjustSize()
 			MoveToCenterOfScreen(self.DataChecker)
-			self.DataChecker.show()
-		
-		self.DataChecker.show()
-		self.DataChecker.raise_()
+			
+		ShowUp(self.DataChecker)
 
 	def checkUnsavedData(self):
 		# Could be SLOW if data_size are large, WAIT PATIENTLY!
@@ -644,20 +642,18 @@ cover-image: cover.jpg
 			self.DataChecker2.setCentralWidget(self.DataChecker2.infoText)
 			self.DataChecker2.adjustSize()
 			MoveToCenterOfScreen(self.DataChecker2)
-			self.DataChecker2.show()
-		
-		self.DataChecker2.show()
-		self.DataChecker2.raise_()
+			
+		ShowUp(self.DataChecker2)
 
 	def ImportBookmarks(self):
 		def slot():
 			del self.bookmark_parser_window
 		
 		if hasattr(self,"bookmark_parser_window"):
-			self.bookmark_parser_window.setFocus()
+			ShowUp(self.bookmark_parser_window)
 			return
 		
 		from session import BookmarkParserSession
 		self.bookmark_parser_window=BookmarkParserSession(self.Headquarter.app,self.Headquarter)
 		self.bookmark_parser_window.closed.connect(slot)
-		self.bookmark_parser_window.show()
+		ShowUp(self.bookmark_parser_window)

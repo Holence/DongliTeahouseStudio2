@@ -9,6 +9,11 @@ class DiarySession(DTFrame.DTMainWindow):
 		if hasattr(self.diary_module,"dairy_search_window"):
 			self.diary_module.dairy_search_window.close()
 
+	def hide(self) -> None:
+		super().hide()
+		if hasattr(self.diary_module,"dairy_search_window"):
+			self.diary_module.dairy_search_window.hide()
+	
 	def eventFilter(self, watched: QObject, event:QMouseEvent) -> bool:
 		# 为了实现重新focusIn窗体的时候刷新界面，虽然手动把一堆子控件installEventFilter一遍，但也只能这样了
 		# focusInEvent和mousePressEvent都试了，都不可能捕获子控件的事件，所以只有点击到TitleBar或者window的空白区域，才可能被触发

@@ -466,7 +466,7 @@ class Diary(QWidget,Ui_Diary):
 			del self.dairy_search_window
 		
 		if hasattr(self,"dairy_search_window"):
-			self.dairy_search_window.setFocus()
+			ShowUp(self.dairy_search_window)
 			return
 		
 		from session import DiarySearchSession

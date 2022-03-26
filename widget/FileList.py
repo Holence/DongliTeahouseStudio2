@@ -269,7 +269,7 @@ class FileList(QListWidget):
 				from session import ImageViewerSession
 				self.imageviewer=ImageViewerSession(self.Headquarter.app,pic_list,index)
 				self.imageviewer.initialize()
-				self.imageviewer.show()
+				ShowUp(self.imageviewer)
 			else:
 				DTFrame.DTMessageBox(self.window(),"Error","%s does not exist! Try running Check Library."%url,DTIcon.Error())
 		

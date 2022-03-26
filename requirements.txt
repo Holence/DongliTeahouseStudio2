@@ -1,4 +1,4 @@
 bookmarks_parser==0.1.3
 deepdiff==5.7.0
-DTPySide>=0.1.1
+DTPySide>=0.1.2
 jsondiff==1.3.0
