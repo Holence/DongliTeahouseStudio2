@@ -7,7 +7,7 @@ app=DTAPP(sys.argv)
 
 app.setWindowIcon(DTIcon.HoloIcon1())
 app.setApplicationName("DongliTeahouseStudio")
-app.setApplicationVersion("2.0.2.2 build 220326")
+app.setApplicationVersion("2.0.2.3 build 220328")
 app.setAuthor("鍵山狐")
 app.setLoginEnable(True)
 app.loadTranslation(translation)

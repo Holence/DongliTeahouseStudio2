@@ -132,6 +132,7 @@ class LobbySession(DTSession.DTMainSession):
 		menuDataTransfer.addAction(self.lobby.actionExport_Concept_to_Json)
 		menuDataTransfer.addAction(self.lobby.actionExport_Library_to_Json)
 		menuDataTransfer.addAction(self.lobby.actionImport_Bookmarks)
+		menuDataTransfer.addAction(self.lobby.actionAdvanced_Search)
 		self.addMenuToMainMenu(menuDataTransfer)
 		
 		self.addActionToMainMenu(self.lobby.actionSave_Data)
@@ -251,6 +252,8 @@ class LobbySession(DTSession.DTMainSession):
 			self.lobby.DataChecker2.hide()
 		if hasattr(self.lobby,"bookmark_parser_window"):
 			self.lobby.bookmark_parser_window.hide()
+		if hasattr(self.lobby,"advance_search_window"):
+			self.lobby.advance_search_window.hide()
 		
 		super().bossComing()
 

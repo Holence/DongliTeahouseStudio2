@@ -243,6 +243,11 @@
     <enum>Qt::ApplicationShortcut</enum>
    </property>
   </action>
+  <action name="actionAdvanced_Search">
+   <property name="text">
+    <string>Advanced Search</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>

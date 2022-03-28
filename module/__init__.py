@@ -7,3 +7,4 @@ from module.LibraryCheck import LibraryCheck
 from module.Setting import Setting
 from module.DiarySearch import DiarySearch
 from module.BookmarkParser import BookmarkParser
+from module.AdvanceSearch import AdvanceSearch

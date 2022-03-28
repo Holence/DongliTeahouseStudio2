@@ -51,6 +51,9 @@ class Lobby(QWidget,Ui_Lobby):
 
 		self.SecureMode=False
 
+		self.actionAdvanced_Search.triggered.connect(self.AdvanceSearch)
+		self.actionAdvanced_Search.setIcon(IconFromCurrentTheme("database.svg"))
+
 		
 	def switchSecureMode(self):
 		if self.SecureMode==False:
@@ -657,3 +660,16 @@ cover-image: cover.jpg
 		self.bookmark_parser_window=BookmarkParserSession(self.Headquarter.app,self.Headquarter)
 		self.bookmark_parser_window.closed.connect(slot)
 		ShowUp(self.bookmark_parser_window)
+
+	def AdvanceSearch(self):
+		def slot():
+			del self.advance_search_window
+		
+		if hasattr(self,"advance_search_window"):
+			ShowUp(self.advance_search_window)
+			return
+		
+		from session import AdvanceSearchSession
+		self.advance_search_window=AdvanceSearchSession(self.Headquarter.app,self.Headquarter)
+		self.advance_search_window.closed.connect(slot)
+		ShowUp(self.advance_search_window)
