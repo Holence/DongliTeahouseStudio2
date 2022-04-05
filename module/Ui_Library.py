@@ -73,7 +73,6 @@ class Ui_Library(object):
 
         self.dateEdit = QDateEdit(self.layoutWidget2)
         self.dateEdit.setObjectName(u"dateEdit")
-        self.dateEdit.setMinimumSize(QSize(400, 0))
         self.dateEdit.setReadOnly(True)
 
         self.verticalLayout_2.addWidget(self.dateEdit)
@@ -85,7 +84,6 @@ class Ui_Library(object):
 
         self.lineEdit_name = QLineEdit(self.layoutWidget2)
         self.lineEdit_name.setObjectName(u"lineEdit_name")
-        self.lineEdit_name.setMinimumSize(QSize(400, 0))
 
         self.verticalLayout_2.addWidget(self.lineEdit_name)
 
@@ -96,6 +94,7 @@ class Ui_Library(object):
         sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
         self.tabWidget.setSizePolicy(sizePolicy1)
+        self.tabWidget.setMinimumSize(QSize(300, 0))
         self.tabWidget.setTabPosition(QTabWidget.North)
         self.tab_concept = QWidget()
         self.tab_concept.setObjectName(u"tab_concept")

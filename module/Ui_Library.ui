@@ -70,12 +70,6 @@
        </item>
        <item>
         <widget class="QDateEdit" name="dateEdit">
-         <property name="minimumSize">
-          <size>
-           <width>400</width>
-           <height>0</height>
-          </size>
-         </property>
          <property name="readOnly">
           <bool>true</bool>
          </property>
@@ -89,14 +83,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="lineEdit_name">
-         <property name="minimumSize">
-          <size>
-           <width>400</width>
-           <height>0</height>
-          </size>
-         </property>
-        </widget>
+        <widget class="QLineEdit" name="lineEdit_name"/>
        </item>
        <item>
         <widget class="QTabWidget" name="tabWidget">
@@ -105,6 +92,12 @@
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>300</width>
+           <height>0</height>
+          </size>
          </property>
          <property name="tabPosition">
           <enum>QTabWidget::North</enum>

@@ -144,7 +144,7 @@ cover-image: cover.jpg
 
 		label_extra=QLabel("Pandoc Extra Arguments:")
 		extra_edit=QLineEdit()
-		extra_edit.setText("--toc -c default.css")
+		extra_edit.setText("-c default.css")
 
 		slot()
 
@@ -217,7 +217,7 @@ cover-image: cover.jpg
 								if file["type"]==2:
 									block+="> Linked Url\n>\n> [%s](%s)\n\n"%(name,file["url"])
 								else:
-									url=os.path.abspath(self.Headquarter.library_base+"/").replace("\\","/")+file["url"]
+									url=os.path.join(os.path.abspath(self.Headquarter.library_base+"/").replace("\\","/"),file["url"])
 									ext=os.path.splitext(url)[1][1:]
 									if file["type"]==0:
 										block+="> Linked Folder\n>\n> [%s](%s)\n\n"%(name,url)
