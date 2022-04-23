@@ -134,8 +134,24 @@ class Concept(QWidget,Ui_Concept):
 		self.parentTable.conceptSort.connect(self.sortConceptParent)
 		self.relativeTable.conceptSort.connect(self.sortConceptRelative)
 	
-	def refresh(self):
+	def refresh(self, deleted_id_list=None):
 		self.showSearch()
+
+		# 有可能因为另一个Concept窗口删除了一个Concept，而导致这里请求不到Concept，于是需要判断一下
+		if self.Headquarter.getConcept(self.current_id)==None:
+			self.current_id=-1
+		else:
+			new_id=self.current_id
+			if type(deleted_id_list)==list:
+				for id in deleted_id_list:
+					if self.current_id==id:
+						new_id=-1
+						break
+					elif self.current_id>id:
+						new_id-=1
+			self.current_id=new_id
+			self.conceptTable.clearSelection()
+
 		self.showConcept(self.current_id,reset=False)
 	
 	def showSearch(self):
@@ -234,13 +250,8 @@ class Concept(QWidget,Ui_Concept):
 					self.concept_history_queue.remove(id)
 
 			self.current_id=id
-			
-			# 有可能因为另一个Concept窗口删除了一个Concept，而导致这里请求不到Concept，于是需要判断一下
-			concept=self.Headquarter.getConcept(self.current_id)
-			if concept==None:
-				self.current_id=-1
-			
 			if self.current_id!=-1:
+				concept=self.Headquarter.getConcept(self.current_id)
 				self.lineEdit_name.setText(concept["name"])
 				self.window().setWindowTitle("Concept %s"%concept["name"])
 				self.plainTextEdit_detail.setPlainText(concept["detail"])
@@ -349,7 +360,7 @@ class Concept(QWidget,Ui_Concept):
 	
 	def addConceptText(self,text_list):
 		if self.current_id!=-1:
-			print(self.current_id)
+			
 			for text in text_list:
 				line=self.Headquarter.getDiaryDayLine(QDate(text["y"],text["m"],text["d"]),text["index"])
 				if self.current_id not in line["concept"]:
@@ -418,8 +429,9 @@ class Concept(QWidget,Ui_Concept):
 		if delete_id_list!=[]:
 			if DTFrame.DTConfirmBox(self,"Delete Confirm","You want to delete concept:",DTIcon.Question(),warning_text).exec_():
 				self.Headquarter.deleteConcept(delete_id_list)
-				self.current_id=-1
-				self.refresh()
+				
+				for i in range(len(self.Headquarter.concept_heap)):
+					self.Headquarter.concept_heap[i].concept_module.refresh(deleted_id_list=delete_id_list)
 	
 	def deleteConceptFile(self):
 		# Only Root时才能选择删除
