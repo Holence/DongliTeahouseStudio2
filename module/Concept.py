@@ -137,20 +137,20 @@ class Concept(QWidget,Ui_Concept):
 	def refresh(self, deleted_id_list=None):
 		self.showSearch()
 
-		# 有可能因为另一个Concept窗口删除了一个Concept，而导致这里请求不到Concept，于是需要判断一下
-		if self.Headquarter.getConcept(self.current_id)==None:
-			self.current_id=-1
-		else:
+		if type(deleted_id_list)==list:
 			new_id=self.current_id
-			if type(deleted_id_list)==list:
-				for id in deleted_id_list:
-					if self.current_id==id:
-						new_id=-1
-						break
-					elif self.current_id>id:
-						new_id-=1
+			for id in deleted_id_list:
+				if self.current_id==id:
+					new_id=-1
+					break
+				elif self.current_id>id:
+					new_id-=1
 			self.current_id=new_id
 			self.conceptTable.clearSelection()
+		else:
+			# 有可能因为另一个Concept窗口删除了一个Concept，而导致这里请求不到Concept，于是需要判断一下
+			if self.Headquarter.getConcept(self.current_id)==None:
+				self.current_id=-1
 
 		self.showConcept(self.current_id,reset=False)
 	
