@@ -234,8 +234,13 @@ class Concept(QWidget,Ui_Concept):
 					self.concept_history_queue.remove(id)
 
 			self.current_id=id
+			
+			# 有可能因为另一个Concept窗口删除了一个Concept，而导致这里请求不到Concept，于是需要判断一下
+			concept=self.Headquarter.getConcept(self.current_id)
+			if concept==None:
+				self.current_id=-1
+			
 			if self.current_id!=-1:
-				concept=self.Headquarter.getConcept(id)
 				self.lineEdit_name.setText(concept["name"])
 				self.window().setWindowTitle("Concept %s"%concept["name"])
 				self.plainTextEdit_detail.setPlainText(concept["detail"])
@@ -344,6 +349,7 @@ class Concept(QWidget,Ui_Concept):
 	
 	def addConceptText(self,text_list):
 		if self.current_id!=-1:
+			print(self.current_id)
 			for text in text_list:
 				line=self.Headquarter.getDiaryDayLine(QDate(text["y"],text["m"],text["d"]),text["index"])
 				if self.current_id not in line["concept"]:
