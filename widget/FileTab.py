@@ -353,7 +353,7 @@ class FileTab(Ui_FileTab,QWidget):
 				self.fileTable.setRowHeight(row,32)
 				row+=1
 			
-			self.label_count.setText("%s item  |"%row)
+			self.label_count.setText("%s item  |  "%row)
 			
 			self.fileTable.lock.unlock()
 			self.fileTable.RestoreTableStatus()
@@ -401,7 +401,7 @@ class FileTab(Ui_FileTab,QWidget):
 				self.fileList.addItem(item)
 				row+=1
 			
-			self.label_count.setText("%s item  |"%row)
+			self.label_count.setText("%s item  |  "%row)
 			
 			self.fileList.lock.unlock()
 			
