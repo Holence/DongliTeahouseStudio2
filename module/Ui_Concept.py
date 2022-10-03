@@ -252,9 +252,6 @@ class Ui_Concept(object):
         self.verticalLayout_PCR.addLayout(self.horizontalLayout_child)
 
         self.childTree = ConceptTree(self.layoutWidget_1)
-        __qtreewidgetitem = QTreeWidgetItem()
-        __qtreewidgetitem.setText(0, u"1");
-        self.childTree.setHeaderItem(__qtreewidgetitem)
         self.childTree.setObjectName(u"childTree")
         sizePolicy1.setHeightForWidth(self.childTree.sizePolicy().hasHeightForWidth())
         self.childTree.setSizePolicy(sizePolicy1)
