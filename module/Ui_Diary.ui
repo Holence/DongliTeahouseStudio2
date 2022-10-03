@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Diary</class>
+ <widget class="QWidget" name="Diary">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1039</width>
+    <height>603</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Diary</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item>
+    <widget class="QSplitter" name="splitter_whole">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <widget class="QStackedWidget" name="stackedWidget">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="page_edit">
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QSplitter" name="splitter_left">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="childrenCollapsible">
+           <bool>false</bool>
+          </property>
+          <widget class="TextList" name="textList">
+           <property name="minimumSize">
+            <size>
+             <width>600</width>
+             <height>259</height>
+            </size>
+           </property>
+          </widget>
+          <widget class="DTPlainTextEdit" name="textEdit">
+           <property name="minimumSize">
+            <size>
+             <width>600</width>
+             <height>178</height>
+            </size>
+           </property>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="page_view">
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="MarkdownViewer" name="textViewer">
+          <property name="openExternalLinks">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+     <widget class="QSplitter" name="splitter_right">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <widget class="QWidget" name="calendarWidget" native="true">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>259</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>259</height>
+        </size>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <property name="spacing">
+         <number>4</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
+           <widget class="QLabel" name="label_calendar">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>15</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="BackButton" name="pushButton_back">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QCalendarWidget" name="calendar">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>240</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>240</height>
+           </size>
+          </property>
+          <property name="firstDayOfWeek">
+           <enum>Qt::Monday</enum>
+          </property>
+          <property name="gridVisible">
+           <bool>false</bool>
+          </property>
+          <property name="horizontalHeaderFormat">
+           <enum>QCalendarWidget::ShortDayNames</enum>
+          </property>
+          <property name="verticalHeaderFormat">
+           <enum>QCalendarWidget::ISOWeekNumbers</enum>
+          </property>
+          <property name="navigationBarVisible">
+           <bool>false</bool>
+          </property>
+          <property name="dateEditEnabled">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="layoutWidget_4">
+       <layout class="QVBoxLayout" name="verticalLayout_concept">
+        <property name="spacing">
+         <number>4</number>
+        </property>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <widget class="QLabel" name="label_5">
+            <property name="text">
+             <string>Concept</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="ConceptSearch" name="lineEdit_concept"/>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="ConceptTable" name="conceptTable">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="layoutWidget1_2">
+       <layout class="QVBoxLayout" name="verticalLayout_file">
+        <property name="spacing">
+         <number>4</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="label_6">
+          <property name="text">
+           <string>File</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="FileTab" name="fileTab" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+  <action name="actionSwitch_Eidt_View">
+   <property name="text">
+    <string>Switch Eidt / View</string>
+   </property>
+   <property name="toolTip">
+    <string>Switch Eidt / View</string>
+   </property>
+   <property name="shortcut">
+    <string>F9</string>
+   </property>
+  </action>
+  <action name="actionPrevious_Day">
+   <property name="text">
+    <string>Previous Day</string>
+   </property>
+   <property name="toolTip">
+    <string>Previous Day</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+Left</string>
+   </property>
+  </action>
+  <action name="actionNext_Day">
+   <property name="text">
+    <string>Next Day</string>
+   </property>
+   <property name="toolTip">
+    <string>Next Day</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+Right</string>
+   </property>
+  </action>
+  <action name="actionAdd_Line">
+   <property name="text">
+    <string>Add Line</string>
+   </property>
+   <property name="toolTip">
+    <string>Add Line</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Return</string>
+   </property>
+  </action>
+  <action name="actionDelete">
+   <property name="text">
+    <string>Delete</string>
+   </property>
+   <property name="shortcut">
+    <string>Del</string>
+   </property>
+  </action>
+  <action name="actionNext_Week">
+   <property name="text">
+    <string>Next Week</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+Down</string>
+   </property>
+  </action>
+  <action name="actionPrevious_Week">
+   <property name="text">
+    <string>Previous Week</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+Up</string>
+   </property>
+  </action>
+  <action name="actionNext_Line">
+   <property name="text">
+    <string>Next Line</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+Down</string>
+   </property>
+  </action>
+  <action name="actionPrevious_Line">
+   <property name="text">
+    <string>Previous Line</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+Up</string>
+   </property>
+  </action>
+  <action name="actionFirst_Line">
+   <property name="text">
+    <string>First Line</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+Left</string>
+   </property>
+  </action>
+  <action name="actionLast_Line">
+   <property name="text">
+    <string>Last Line</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+Right</string>
+   </property>
+  </action>
+  <action name="actionFind_Text">
+   <property name="text">
+    <string>Find Text</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F</string>
+   </property>
+  </action>
+  <action name="actionAdd_Concept">
+   <property name="text">
+    <string>Add Concept</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
+   </property>
+  </action>
+  <action name="actionImport_Text">
+   <property name="text">
+    <string>Import Text</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
+   </property>
+  </action>
+  <action name="actionGoto_Random_Day">
+   <property name="text">
+    <string>Goto Random Day</string>
+   </property>
+   <property name="shortcut">
+    <string>F8</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>FileTab</class>
+   <extends>QWidget</extends>
+   <header>widget</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ConceptTable</class>
+   <extends>QTableWidget</extends>
+   <header>widget</header>
+  </customwidget>
+  <customwidget>
+   <class>DTPlainTextEdit</class>
+   <extends>QPlainTextEdit</extends>
+   <header>DTWidget</header>
+  </customwidget>
+  <customwidget>
+   <class>TextList</class>
+   <extends>QListWidget</extends>
+   <header>widget</header>
+  </customwidget>
+  <customwidget>
+   <class>ConceptSearch</class>
+   <extends>QLineEdit</extends>
+   <header>widget</header>
+  </customwidget>
+  <customwidget>
+   <class>MarkdownViewer</class>
+   <extends>QTextBrowser</extends>
+   <header>DTWidget</header>
+  </customwidget>
+  <customwidget>
+   <class>BackButton</class>
+   <extends>QPushButton</extends>
+   <header>widget</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="../../Program/Python/Lib/site-packages/DTPySide/DT.qrc"/>
+ </resources>
+ <connections/>
+</ui>

@@ -1,0 +1,9 @@
+bookmarks_parser
+deepdiff
+jsondiff
+requests
+urllib3
+lxml
+
+--pre
+DTPySide
