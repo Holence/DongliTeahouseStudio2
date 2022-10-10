@@ -1045,9 +1045,10 @@ Concept: {", ".join([self.getConcept(i)["name"] for i in file["concept"]])}"""
 		}
 		return file
 	
-	def generateLibraryFileDict(self,date:QDate,type:int,name:str,url:str):
+	def generateLibraryFileDict(self,date:QDate,type:int,name:str):
 		y,m,d=map(str,QDate_to_Tuple(date))
 		concept_list=self.data[2][y][m][d][name]["concept"]
+		url=self.data[2][y][m][d][name]["url"]
 		file={
 			"y":int(y),
 			"m":int(m),
@@ -1172,8 +1173,11 @@ Concept: {", ".join([self.getConcept(i)["name"] for i in file["concept"]])}"""
 						pass
 				else:
 					pass
-
+			
+			full_name_list=re.findall("(?<= \").*?(?=\" )",search)
+			search=re.sub("\".*?\"","",search)
 			name_list=search.split()
+			name_list.extend(full_name_list)
 
 			return name_list,date_range_list,concept_list,TYPE
 		else:

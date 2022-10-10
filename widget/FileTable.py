@@ -292,14 +292,13 @@ class FileTable(DTWidget.DTHorizontalTabel):
 				type=int(self.item(row,0).text())
 				y,m,d=map(int,self.item(row,1).text().split("."))
 				name=self.item(row,3).text()
-				url=self.Headquarter.extractFileURL(self.item(row,4).text())
 				
-				file_dict=self.Headquarter.generateLibraryFileDict(QDate(y,m,d),type,name,url)
+				file_dict=self.Headquarter.generateLibraryFileDict(QDate(y,m,d),type,name)
 				file_list.append(file_dict)
 			
 			self.Headquarter.lobby.summon("library","Library")
 			library=self.Headquarter.library_heap[-1].library_module
-			library.setFixedShownFiles(file_list)
+			library.fileTab.setFileList(file_list)
 
 			MoveToCenterOfScreen(self.Headquarter.library_heap[-1])
 	

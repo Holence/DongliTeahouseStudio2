@@ -9,7 +9,6 @@ class Library(QWidget,Ui_Library):
 		super().__init__(parent=parent)
 		self.setupUi(self)
 		self.Headquarter=Headquarter
-		self.fixed_shown_files=None
 		self.initializeWindow()
 		self.initializeSignal()
 		self.showSearch()
@@ -155,10 +154,7 @@ class Library(QWidget,Ui_Library):
 	def refresh(self):
 		row=self.fileTab.currentRow()
 
-		if self.fixed_shown_files==None:
-			self.showSearch()
-		else:
-			self.showFixShownFiles()
+		self.showSearch()
 		
 		if row!=-1:
 			self.fileTab.selectRow(row)
@@ -331,13 +327,3 @@ class Library(QWidget,Ui_Library):
 			id=int(self.conceptTable.item(row,0).text())
 			current_file["concept"].append(id)
 		self.refreshTab()
-	
-	def showFixShownFiles(self):
-		self.fileTab.setFileList(self.fixed_shown_files)
-
-	def setFixedShownFiles(self, file_list):
-		self.fixed_shown_files=file_list
-		self.showFixShownFiles()
-	
-	def clearFixedShownFiles(self):
-		self.fixed_shown_files=None

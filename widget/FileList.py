@@ -349,12 +349,12 @@ class FileList(QListWidget):
 
 				type=self.Headquarter.getLibraryFile(date,name)["type"]
 				
-				file_dict=self.Headquarter.generateLibraryFileDict(date,type,name,url)
+				file_dict=self.Headquarter.generateLibraryFileDict(date,type,name)
 				file_list.append(file_dict)
 			
 			self.Headquarter.lobby.summon("library","Library")
 			library=self.Headquarter.library_heap[-1].library_module
-			library.setFixedShownFiles(file_list)
+			library.fileTab.setFileList(file_list)
 
 			MoveToCenterOfScreen(self.Headquarter.library_heap[-1])
 
