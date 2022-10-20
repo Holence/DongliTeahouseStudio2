@@ -39,7 +39,6 @@ class Library(QWidget,Ui_Library):
 		self.actionSearch_File.triggered.connect(self.lineEdit_search.setFocus)
 		
 		def slot():
-			self.clearFixedShownFiles()
 			self.showSearch(clear=True)
 			self.fileTab.clearSelection()
 			self.fileTab.fileList.scrollToTop()
