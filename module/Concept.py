@@ -23,6 +23,7 @@ class Concept(QWidget,Ui_Concept):
 		self.splitter_whole.setStretchFactor(2,1)
 
 		self.plainTextEdit_detail.setStyleSheet("font-size:12pt")
+		self.textviewer_detail.setStyleSheet("font-size:12pt")
 
 		# 搜索处的concept table只能drag out不能drop in
 		self.conceptTable.setDragDropMode(QAbstractItemView.DragOnly)
@@ -51,6 +52,7 @@ class Concept(QWidget,Ui_Concept):
 		self.actionAdd_Child.setIcon(IconFromCurrentTheme("user-plus.svg"))
 		self.actionAdd_Relative.setIcon(IconFromCurrentTheme("user-plus.svg"))
 		self.actionSearch_Concept.setIcon(IconFromCurrentTheme("search.svg"))
+		self.actionSwitch_Detail_Eidt_View.setIcon(IconFromCurrentTheme("slack.svg"))
 
 		self.pushButton_back.setStyleSheet("""
 			border: none;
@@ -95,6 +97,7 @@ class Concept(QWidget,Ui_Concept):
 			self.fileTab.fileTable.scrollToTop()
 			self.textList.scrollToTop()
 			self.textViewer.verticalScrollBar().setValue(0)
+			self.stackedWidget.setCurrentIndex(1)
 			self.showConcept(id)
 		# 点击concept，展示concept
 		self.conceptTable.conceptClicked.connect(slot)
@@ -104,6 +107,7 @@ class Concept(QWidget,Ui_Concept):
 		self.lineEdit_name.editingFinished.connect(self.saveName)
 		self.plainTextEdit_detail.editingFinished.connect(self.saveDetail)
 
+		self.actionSwitch_Detail_Eidt_View.triggered.connect(self.switchDetailEditAndView)
 		
 		self.checkBox.stateChanged.connect(self.refreshTab)
 		self.fileTab.fileDropped.connect(self.addConceptFile)
@@ -131,6 +135,8 @@ class Concept(QWidget,Ui_Concept):
 		self.pushButton_delete.clicked.connect(lambda:self.deleteConcept(id=self.current_id))
 
 		self.fileTab.fileTable.fileSorted.connect(self.sortConceptFile)
+		self.fileTab.fileTable.fileMoveToTop.connect(self.fileMoveToTop)
+		self.fileTab.fileTable.fileMoveToBottom.connect(self.fileMoveToBottom)
 		self.parentTable.conceptSort.connect(self.sortConceptParent)
 		self.relativeTable.conceptSort.connect(self.sortConceptRelative)
 	
@@ -254,7 +260,15 @@ class Concept(QWidget,Ui_Concept):
 				concept=self.Headquarter.getConcept(self.current_id)
 				self.lineEdit_name.setText(concept["name"])
 				self.window().setWindowTitle("Concept %s"%concept["name"])
-				self.plainTextEdit_detail.setPlainText(concept["detail"])
+
+				if self.stackedWidget.currentIndex()==0:
+					store=self.plainTextEdit_detail.verticalScrollBar().value()
+					self.plainTextEdit_detail.setPlainText(concept["detail"])
+					self.plainTextEdit_detail.verticalScrollBar().setValue(store)
+				else:
+					store=self.textviewer_detail.verticalScrollBar().value()
+					self.textviewer_detail.setMarkdown(concept["detail"])
+					self.textviewer_detail.verticalScrollBar().setValue(store)
 				
 				self.refreshTab(reset)
 
@@ -319,6 +333,17 @@ class Concept(QWidget,Ui_Concept):
 			concept["detail"]=self.plainTextEdit_detail.toPlainText()
 			self.showSearch()
 
+	def switchDetailEditAndView(self):
+		if self.stackedWidget.currentIndex()==0:
+			# View
+			self.stackedWidget.setCurrentIndex(1)
+			self.plainTextEdit_detail.clearFocus()
+		else:
+			
+			# Edit
+			self.stackedWidget.setCurrentIndex(0)
+		self.refresh()
+	
 	def addConceptFile(self,url_list,file_list):
 		if self.current_id!=-1:
 			concept=self.Headquarter.getConcept(self.current_id)
@@ -586,6 +611,60 @@ class Concept(QWidget,Ui_Concept):
 				url=self.Headquarter.extractFileURL(self.fileTab.fileTable.item(row,4).text())
 				new_file=self.Headquarter.generateDiaryConceptFileDict(date,type,name,url)
 				concept["file"].append(new_file)
+		else:
+			DTFrame.DTMessageBox(self,"Warning","You can only sort file in \"only root\" mode.",DTIcon.Warning())
+		self.refresh()
+
+	def fileMoveToTop(self):
+		if self.checkBox.checkState()==Qt.Unchecked:
+			selected=[]
+			for model_index in self.fileTab.fileTable.selectionModel().selectedRows():
+				row=model_index.row()
+				selected.append(row)
+			
+			concept=self.Headquarter.getConcept(self.current_id)
+			top=[]
+			others=[]
+			for row in range(self.fileTab.fileTable.rowCount()):
+				type=int(self.fileTab.fileTable.item(row,0).text())
+				y,m,d=map(int,self.fileTab.fileTable.item(row,1).text().split("."))
+				date=QDate(y,m,d)
+				name=self.fileTab.fileTable.item(row,3).text()
+				url=self.Headquarter.extractFileURL(self.fileTab.fileTable.item(row,4).text())
+				new_file=self.Headquarter.generateDiaryConceptFileDict(date,type,name,url)
+				if row in selected:
+					top.append(new_file)
+				else:
+					others.append(new_file)
+			top.extend(others)
+			concept["file"]=top.copy()
+		else:
+			DTFrame.DTMessageBox(self,"Warning","You can only sort file in \"only root\" mode.",DTIcon.Warning())
+		self.refresh()
+
+	def fileMoveToBottom(self):
+		if self.checkBox.checkState()==Qt.Unchecked:
+			selected=[]
+			for model_index in self.fileTab.fileTable.selectionModel().selectedRows():
+				row=model_index.row()
+				selected.append(row)
+			
+			concept=self.Headquarter.getConcept(self.current_id)
+			bottom=[]
+			others=[]
+			for row in range(self.fileTab.fileTable.rowCount()):
+				type=int(self.fileTab.fileTable.item(row,0).text())
+				y,m,d=map(int,self.fileTab.fileTable.item(row,1).text().split("."))
+				date=QDate(y,m,d)
+				name=self.fileTab.fileTable.item(row,3).text()
+				url=self.Headquarter.extractFileURL(self.fileTab.fileTable.item(row,4).text())
+				new_file=self.Headquarter.generateDiaryConceptFileDict(date,type,name,url)
+				if row in selected:
+					bottom.append(new_file)
+				else:
+					others.append(new_file)
+			others.extend(bottom)
+			concept["file"]=others.copy()
 		else:
 			DTFrame.DTMessageBox(self,"Warning","You can only sort file in \"only root\" mode.",DTIcon.Warning())
 		self.refresh()

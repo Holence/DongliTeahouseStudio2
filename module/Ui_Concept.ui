@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>886</width>
+    <width>1079</width>
     <height>622</height>
    </rect>
   </property>
@@ -110,19 +110,58 @@
             </widget>
            </item>
            <item>
-            <widget class="DTPlainTextEdit" name="plainTextEdit_detail">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
+            <widget class="QStackedWidget" name="stackedWidget">
+             <property name="currentIndex">
+              <number>0</number>
              </property>
-             <property name="minimumSize">
-              <size>
-               <width>425</width>
-               <height>100</height>
-              </size>
-             </property>
+             <widget class="QWidget" name="page_edit">
+              <layout class="QHBoxLayout" name="horizontalLayout_8">
+               <property name="spacing">
+                <number>0</number>
+               </property>
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="DTPlainTextEdit" name="plainTextEdit_detail"/>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="page_view">
+              <layout class="QHBoxLayout" name="horizontalLayout_9">
+               <property name="spacing">
+                <number>0</number>
+               </property>
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="MarkdownViewer" name="textviewer_detail">
+                 <property name="openExternalLinks">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
             </widget>
            </item>
           </layout>
@@ -404,6 +443,17 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionSwitch_Detail_Eidt_View">
+   <property name="text">
+    <string>Switch Detail Eidt / View</string>
+   </property>
+   <property name="toolTip">
+    <string>Switch Detail Eidt / View</string>
+   </property>
+   <property name="shortcut">
+    <string>F9</string>
    </property>
   </action>
  </widget>

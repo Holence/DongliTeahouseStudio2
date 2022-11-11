@@ -6,6 +6,8 @@ class FileTable(DTWidget.DTHorizontalTabel):
 	fileDropped=Signal(list,list)
 	fileDelete=Signal()
 	fileSorted=Signal()
+	fileMoveToTop=Signal()
+	fileMoveToBottom=Signal()
 	
 	def startDrag(self, actions:Qt.DropActions):
 		######################################################################
@@ -257,6 +259,12 @@ class FileTable(DTWidget.DTHorizontalTabel):
 		
 		def slotDelete():
 			self.fileDelete.emit()
+		
+		def slotMoveToTop():
+			self.fileMoveToTop.emit()
+		
+		def slotMoveToBottom():
+			self.fileMoveToBottom.emit()
 
 		def slotCopyPath():
 			text=""
@@ -365,6 +373,16 @@ class FileTable(DTWidget.DTHorizontalTabel):
 				actionRefreshIcon.triggered.connect(slotRefresh)
 				actionRefreshIcon.setIcon(IconFromCurrentTheme("refresh-cw.svg"))
 				menu.addAction(actionRefreshIcon)
+
+				actionMoveToTop=QAction("Move to Top")
+				actionMoveToTop.triggered.connect(slotMoveToTop)
+				actionMoveToTop.setIcon(IconFromCurrentTheme("chevrons-up.svg"))
+				menu.addAction(actionMoveToTop)
+				
+				actionMoveToBottom=QAction("Move to Bottom")
+				actionMoveToBottom.triggered.connect(slotMoveToBottom)
+				actionMoveToBottom.setIcon(IconFromCurrentTheme("chevrons-down.svg"))
+				menu.addAction(actionMoveToBottom)
 
 				actionDelete=QAction(QCoreApplication.translate("Library", "Delete"))
 				actionDelete.triggered.connect(slotDelete)

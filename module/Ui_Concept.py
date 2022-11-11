@@ -27,7 +27,7 @@ class Ui_Concept(object):
     def setupUi(self, Concept):
         if not Concept.objectName():
             Concept.setObjectName(u"Concept")
-        Concept.resize(886, 622)
+        Concept.resize(1079, 622)
         self.actionAdd_Concept = QAction(Concept)
         self.actionAdd_Concept.setObjectName(u"actionAdd_Concept")
         self.actionDelete = QAction(Concept)
@@ -40,6 +40,8 @@ class Ui_Concept(object):
         self.actionAdd_Relative.setObjectName(u"actionAdd_Relative")
         self.actionSearch_Concept = QAction(Concept)
         self.actionSearch_Concept.setObjectName(u"actionSearch_Concept")
+        self.actionSwitch_Detail_Eidt_View = QAction(Concept)
+        self.actionSwitch_Detail_Eidt_View.setObjectName(u"actionSwitch_Detail_Eidt_View")
         self.horizontalLayout_3 = QHBoxLayout(Concept)
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.splitter_whole = QSplitter(Concept)
@@ -122,16 +124,35 @@ class Ui_Concept(object):
 
         self.verticalLayout_detail.addWidget(self.label_detail)
 
-        self.plainTextEdit_detail = DTPlainTextEdit(self.layoutWidget_2)
+        self.stackedWidget = QStackedWidget(self.layoutWidget_2)
+        self.stackedWidget.setObjectName(u"stackedWidget")
+        self.page_edit = QWidget()
+        self.page_edit.setObjectName(u"page_edit")
+        self.horizontalLayout_8 = QHBoxLayout(self.page_edit)
+        self.horizontalLayout_8.setSpacing(0)
+        self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
+        self.horizontalLayout_8.setContentsMargins(0, 0, 0, 0)
+        self.plainTextEdit_detail = DTPlainTextEdit(self.page_edit)
         self.plainTextEdit_detail.setObjectName(u"plainTextEdit_detail")
-        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.plainTextEdit_detail.sizePolicy().hasHeightForWidth())
-        self.plainTextEdit_detail.setSizePolicy(sizePolicy)
-        self.plainTextEdit_detail.setMinimumSize(QSize(425, 100))
 
-        self.verticalLayout_detail.addWidget(self.plainTextEdit_detail)
+        self.horizontalLayout_8.addWidget(self.plainTextEdit_detail)
+
+        self.stackedWidget.addWidget(self.page_edit)
+        self.page_view = QWidget()
+        self.page_view.setObjectName(u"page_view")
+        self.horizontalLayout_9 = QHBoxLayout(self.page_view)
+        self.horizontalLayout_9.setSpacing(0)
+        self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
+        self.horizontalLayout_9.setContentsMargins(0, 0, 0, 0)
+        self.textviewer_detail = MarkdownViewer(self.page_view)
+        self.textviewer_detail.setObjectName(u"textviewer_detail")
+        self.textviewer_detail.setOpenExternalLinks(True)
+
+        self.horizontalLayout_9.addWidget(self.textviewer_detail)
+
+        self.stackedWidget.addWidget(self.page_view)
+
+        self.verticalLayout_detail.addWidget(self.stackedWidget)
 
         self.splitter_center.addWidget(self.layoutWidget_2)
         self.layoutWidget9 = QWidget(self.splitter_center)
@@ -147,11 +168,11 @@ class Ui_Concept(object):
 
         self.tabWidget = QTabWidget(self.layoutWidget9)
         self.tabWidget.setObjectName(u"tabWidget")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.MinimumExpanding)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
-        self.tabWidget.setSizePolicy(sizePolicy1)
+        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.MinimumExpanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
+        self.tabWidget.setSizePolicy(sizePolicy)
         self.tabWidget.setTabPosition(QTabWidget.North)
         self.tab_file = QWidget()
         self.tab_file.setObjectName(u"tab_file")
@@ -207,11 +228,11 @@ class Ui_Concept(object):
         self.horizontalLayout_parent.setObjectName(u"horizontalLayout_parent")
         self.label_parent = QLabel(self.layoutWidget_1)
         self.label_parent.setObjectName(u"label_parent")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
-        sizePolicy2.setHorizontalStretch(0)
-        sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.label_parent.sizePolicy().hasHeightForWidth())
-        self.label_parent.setSizePolicy(sizePolicy2)
+        sizePolicy1 = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.label_parent.sizePolicy().hasHeightForWidth())
+        self.label_parent.setSizePolicy(sizePolicy1)
 
         self.horizontalLayout_parent.addWidget(self.label_parent)
 
@@ -225,11 +246,11 @@ class Ui_Concept(object):
 
         self.parentTable = ConceptTable(self.layoutWidget_1)
         self.parentTable.setObjectName(u"parentTable")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
-        sizePolicy3.setHorizontalStretch(0)
-        sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(self.parentTable.sizePolicy().hasHeightForWidth())
-        self.parentTable.setSizePolicy(sizePolicy3)
+        sizePolicy2 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.parentTable.sizePolicy().hasHeightForWidth())
+        self.parentTable.setSizePolicy(sizePolicy2)
         self.parentTable.setMinimumSize(QSize(225, 0))
 
         self.verticalLayout_PCR.addWidget(self.parentTable)
@@ -238,8 +259,8 @@ class Ui_Concept(object):
         self.horizontalLayout_child.setObjectName(u"horizontalLayout_child")
         self.label_child = QLabel(self.layoutWidget_1)
         self.label_child.setObjectName(u"label_child")
-        sizePolicy2.setHeightForWidth(self.label_child.sizePolicy().hasHeightForWidth())
-        self.label_child.setSizePolicy(sizePolicy2)
+        sizePolicy1.setHeightForWidth(self.label_child.sizePolicy().hasHeightForWidth())
+        self.label_child.setSizePolicy(sizePolicy1)
 
         self.horizontalLayout_child.addWidget(self.label_child)
 
@@ -253,8 +274,8 @@ class Ui_Concept(object):
 
         self.childTree = ConceptTree(self.layoutWidget_1)
         self.childTree.setObjectName(u"childTree")
-        sizePolicy1.setHeightForWidth(self.childTree.sizePolicy().hasHeightForWidth())
-        self.childTree.setSizePolicy(sizePolicy1)
+        sizePolicy.setHeightForWidth(self.childTree.sizePolicy().hasHeightForWidth())
+        self.childTree.setSizePolicy(sizePolicy)
         self.childTree.setMinimumSize(QSize(225, 0))
 
         self.verticalLayout_PCR.addWidget(self.childTree)
@@ -263,8 +284,8 @@ class Ui_Concept(object):
         self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
         self.label_relative = QLabel(self.layoutWidget_1)
         self.label_relative.setObjectName(u"label_relative")
-        sizePolicy2.setHeightForWidth(self.label_relative.sizePolicy().hasHeightForWidth())
-        self.label_relative.setSizePolicy(sizePolicy2)
+        sizePolicy1.setHeightForWidth(self.label_relative.sizePolicy().hasHeightForWidth())
+        self.label_relative.setSizePolicy(sizePolicy1)
 
         self.horizontalLayout_5.addWidget(self.label_relative)
 
@@ -278,8 +299,8 @@ class Ui_Concept(object):
 
         self.relativeTable = ConceptTable(self.layoutWidget_1)
         self.relativeTable.setObjectName(u"relativeTable")
-        sizePolicy3.setHeightForWidth(self.relativeTable.sizePolicy().hasHeightForWidth())
-        self.relativeTable.setSizePolicy(sizePolicy3)
+        sizePolicy2.setHeightForWidth(self.relativeTable.sizePolicy().hasHeightForWidth())
+        self.relativeTable.setSizePolicy(sizePolicy2)
         self.relativeTable.setMinimumSize(QSize(225, 0))
 
         self.verticalLayout_PCR.addWidget(self.relativeTable)
@@ -291,6 +312,7 @@ class Ui_Concept(object):
 
         self.retranslateUi(Concept)
 
+        self.stackedWidget.setCurrentIndex(0)
         self.tabWidget.setCurrentIndex(0)
 
 
@@ -325,6 +347,13 @@ class Ui_Concept(object):
         self.actionSearch_Concept.setText(QCoreApplication.translate("Concept", u"Search Concept", None))
 #if QT_CONFIG(shortcut)
         self.actionSearch_Concept.setShortcut(QCoreApplication.translate("Concept", u"Ctrl+R", None))
+#endif // QT_CONFIG(shortcut)
+        self.actionSwitch_Detail_Eidt_View.setText(QCoreApplication.translate("Concept", u"Switch Detail Eidt / View", None))
+#if QT_CONFIG(tooltip)
+        self.actionSwitch_Detail_Eidt_View.setToolTip(QCoreApplication.translate("Concept", u"Switch Detail Eidt / View", None))
+#endif // QT_CONFIG(tooltip)
+#if QT_CONFIG(shortcut)
+        self.actionSwitch_Detail_Eidt_View.setShortcut(QCoreApplication.translate("Concept", u"F9", None))
 #endif // QT_CONFIG(shortcut)
         self.label_search.setText(QCoreApplication.translate("Concept", u"Search", None))
         self.pushButton_back.setText("")

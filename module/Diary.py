@@ -120,6 +120,8 @@ class Diary(QWidget,Ui_Diary):
 		self.actionImport_Text.triggered.connect(self.importText)
 
 		self.fileTab.fileTable.fileSorted.connect(self.sortLineFile)
+		self.fileTab.fileTable.fileMoveToTop.connect(self.fileMoveToTop)
+		self.fileTab.fileTable.fileMoveToBottom.connect(self.fileMoveToBottom)
 		self.conceptTable.conceptSort.connect(self.sortLineConcept)
 	
 	def CalendarPaintMonth(self):
@@ -258,7 +260,9 @@ class Diary(QWidget,Ui_Diary):
 		day_data=self.Headquarter.getDiaryDay(self.current_date)
 		if day_data!=None and len(day_data)!=1:
 			if len(day_data)!=self.textList.count():
-				DTFrame.DTMessageBox(self,"Error","Fatal Error during text sorting!!!",DTIcon.Error())
+				DTFrame.DTMessageBox(self,"Error","Please dont press ctrl while text sorting!!!",DTIcon.Error())
+				self.refresh()
+				return
 			
 			diary_data=self.Headquarter.getDiaryData()
 			y,m,d=map(str,QDate_to_Tuple(self.current_date))
@@ -626,6 +630,62 @@ class Diary(QWidget,Ui_Diary):
 				url=self.Headquarter.extractFileURL(self.fileTab.fileTable.item(row,4).text())
 				new_file=self.Headquarter.generateDiaryConceptFileDict(date,type,name,url)
 				line["file"].append(new_file)
+		else:
+			DTFrame.DTMessageBox(self,"Warning","Please select line first, then select the file to sort.",DTIcon.Warning())
+		self.refresh()
+	
+	def fileMoveToTop(self):
+		index=self.textList.currentRow()
+		if index!=-1:
+			selected=[]
+			for model_index in self.fileTab.fileTable.selectionModel().selectedRows():
+				row=model_index.row()
+				selected.append(row)
+			
+			line=self.Headquarter.getDiaryDayLine(self.current_date,index)
+			top=[]
+			others=[]
+			for row in range(self.fileTab.fileTable.rowCount()):
+				type=int(self.fileTab.fileTable.item(row,0).text())
+				y,m,d=map(int,self.fileTab.fileTable.item(row,1).text().split("."))
+				date=QDate(y,m,d)
+				name=self.fileTab.fileTable.item(row,3).text()
+				url=self.Headquarter.extractFileURL(self.fileTab.fileTable.item(row,4).text())
+				new_file=self.Headquarter.generateDiaryConceptFileDict(date,type,name,url)
+				if row in selected:
+					top.append(new_file)
+				else:
+					others.append(new_file)
+			top.extend(others)
+			line["file"]=top.copy()
+		else:
+			DTFrame.DTMessageBox(self,"Warning","Please select line first, then select the file to sort.",DTIcon.Warning())
+		self.refresh()
+
+	def fileMoveToBottom(self):
+		index=self.textList.currentRow()
+		if index!=-1:
+			selected=[]
+			for model_index in self.fileTab.fileTable.selectionModel().selectedRows():
+				row=model_index.row()
+				selected.append(row)
+			
+			line=self.Headquarter.getDiaryDayLine(self.current_date,index)
+			bottom=[]
+			others=[]
+			for row in range(self.fileTab.fileTable.rowCount()):
+				type=int(self.fileTab.fileTable.item(row,0).text())
+				y,m,d=map(int,self.fileTab.fileTable.item(row,1).text().split("."))
+				date=QDate(y,m,d)
+				name=self.fileTab.fileTable.item(row,3).text()
+				url=self.Headquarter.extractFileURL(self.fileTab.fileTable.item(row,4).text())
+				new_file=self.Headquarter.generateDiaryConceptFileDict(date,type,name,url)
+				if row in selected:
+					bottom.append(new_file)
+				else:
+					others.append(new_file)
+			others.extend(bottom)
+			line["file"]=others.copy()
 		else:
 			DTFrame.DTMessageBox(self,"Warning","Please select line first, then select the file to sort.",DTIcon.Warning())
 		self.refresh()

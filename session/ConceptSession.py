@@ -60,6 +60,7 @@ class ConceptSession(DTFrame.DTMainWindow):
 		self.concept_module.lineEdit_search.installEventFilter(self)
 		self.concept_module.lineEdit_name.installEventFilter(self)
 		self.concept_module.plainTextEdit_detail.installEventFilter(self)
+		self.concept_module.textviewer_detail.installEventFilter(self)
 		self.concept_module.fileTab.fileTable.installEventFilter(self)
 		self.concept_module.fileTab.fileList.installEventFilter(self)
 		self.concept_module.textList.installEventFilter(self)
@@ -74,6 +75,7 @@ class ConceptSession(DTFrame.DTMainWindow):
 		self.addAction(self.concept_module.actionAdd_Parent)
 		self.addAction(self.concept_module.actionAdd_Child)
 		self.addAction(self.concept_module.actionAdd_Relative)
+		self.addAction(self.concept_module.actionSwitch_Detail_Eidt_View)
 	
 	def initializeMenu(self):
 
@@ -87,6 +89,7 @@ class ConceptSession(DTFrame.DTMainWindow):
 		self.addMenuToMainMenu(self.menu_edit)
 
 		self.addActionToMainMenu(self.concept_module.actionSearch_Concept)
+		self.addActionToMainMenu(self.concept_module.actionSwitch_Detail_Eidt_View)
 
 		self.addSeparatorToMainMenu()
 		super().initializeMenu()
