@@ -264,10 +264,12 @@ class Concept(QWidget,Ui_Concept):
 				if self.stackedWidget.currentIndex()==0:
 					store=self.plainTextEdit_detail.verticalScrollBar().value()
 					self.plainTextEdit_detail.setPlainText(concept["detail"])
+					self.textviewer_detail.clear()
 					self.plainTextEdit_detail.verticalScrollBar().setValue(store)
 				else:
 					store=self.textviewer_detail.verticalScrollBar().value()
 					self.textviewer_detail.setMarkdown(concept["detail"])
+					self.plainTextEdit_detail.clear()
 					self.textviewer_detail.verticalScrollBar().setValue(store)
 				
 				self.refreshTab(reset)
@@ -314,6 +316,7 @@ class Concept(QWidget,Ui_Concept):
 		new_concept=self.Headquarter.appendConcept()
 		self.showConcept(new_concept["id"],force=True)
 		self.showSearch()
+		self.stackedWidget.setCurrentIndex(0)
 		self.conceptTable.clearSelection()
 		self.lineEdit_name.setFocus()
 		# 有时候按了shift后添加concept，shift没被消除
@@ -336,10 +339,10 @@ class Concept(QWidget,Ui_Concept):
 	def switchDetailEditAndView(self):
 		if self.stackedWidget.currentIndex()==0:
 			# View
+			self.saveDetail()
 			self.stackedWidget.setCurrentIndex(1)
 			self.plainTextEdit_detail.clearFocus()
 		else:
-			
 			# Edit
 			self.stackedWidget.setCurrentIndex(0)
 		self.refresh()
