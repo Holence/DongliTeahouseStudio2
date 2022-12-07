@@ -577,7 +577,7 @@ cover-image: cover.jpg
 
 		def check():
 			
-			old_data=Fernet_Decrypt_Load(self.Headquarter.password(),os.path.join(self.Headquarter.app.DataDir(),"data.dlcw"))
+			old_data=Symmetric_Decrypt_Load(self.Headquarter.password(),os.path.join(self.Headquarter.app.DataDir(),"data.dlcw"))
 			old_diary_data=old_data[0]
 			old_concept_data=old_data[1]
 			old_library_data=old_data[2]

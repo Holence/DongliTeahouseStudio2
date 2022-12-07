@@ -31,40 +31,40 @@ class LobbySession(DTSession.DTMainSession):
 	def loadData(self):
 		data_dir=os.path.join(self.app.DataDir(),"data.dlcw")
 		if os.path.exists(data_dir):
-			self.data=Fernet_Decrypt_Load(self.password(),data_dir)
+			self.data=Symmetric_Decrypt_Load(self.password(),data_dir)
 			if self.data==False:
 				DTFrame.DTMessageBox(self,"Error","Data error!")
 				self.app.quit()
 			
 		else:
 			self.data=[{},[],{}]
-			Fernet_Encrypt_Save(self.password(),self.data,data_dir)
+			Symmetric_Encrypt_Save(self.password(),self.data,data_dir)
 
 		if os.path.exists("cache"):
-			self.cache=Fernet_Decrypt_Load(self.password(),os.path.abspath("cache"))
+			self.cache=Symmetric_Decrypt_Load(self.password(),os.path.abspath("cache"))
 			if self.cache==False:
 				DTFrame.DTMessageBox(self,"Error","Cache data error!")
 				self.app.quit()
 		else:
 			self.cache={}
-			Fernet_Encrypt_Save(self.password(),self.cache,os.path.abspath("cache"))
+			Symmetric_Encrypt_Save(self.password(),self.cache,os.path.abspath("cache"))
 			
 		if os.path.exists("confreq"):
-			self.concept_frequency=Fernet_Decrypt_Load(self.password(),os.path.abspath("confreq"))
+			self.concept_frequency=Symmetric_Decrypt_Load(self.password(),os.path.abspath("confreq"))
 			if self.concept_frequency==False:
 				DTFrame.DTMessageBox(self,"Error","Concept Frequency data error!")
 				self.app.quit()
 		else:
 			self.concept_frequency={}
-			Fernet_Encrypt_Save(self.password(),self.concept_frequency,os.path.abspath("confreq"))
+			Symmetric_Encrypt_Save(self.password(),self.concept_frequency,os.path.abspath("confreq"))
 		
-		self.library_base=Fernet_Decrypt(self.password(),self.UserSetting().value("LibraryBase"))
+		self.library_base=Symmetric_Decrypt(self.password(),self.UserSetting().value("LibraryBase"))
 		if self.library_base==False:
 			dlg=QFileDialog(self)
 			while not self.library_base:
 				DTFrame.DTMessageBox(self,"Information","You need to set Library Base first!",DTIcon.Information())
 				self.library_base=dlg.getExistingDirectory()
-			self.UserSetting().setValue("LibraryBase",Fernet_Encrypt(self.password(),self.library_base))
+			self.UserSetting().setValue("LibraryBase",Symmetric_Encrypt(self.password(),self.library_base))
 	
 	def dataValidityCheck(self):
 		return True
@@ -211,9 +211,9 @@ class LobbySession(DTSession.DTMainSession):
 		
 		try:
 			data_dir=os.path.join(self.app.DataDir(),"data.dlcw")
-			Fernet_Encrypt_Save(self.password(), self.data, data_dir)
-			Fernet_Encrypt_Save(self.password(), self.cache, os.path.abspath("cache"))
-			Fernet_Encrypt_Save(self.password(), self.concept_frequency, os.path.abspath("confreq"))
+			Symmetric_Encrypt_Save(self.password(), self.data, data_dir)
+			Symmetric_Encrypt_Save(self.password(), self.cache, os.path.abspath("cache"))
+			Symmetric_Encrypt_Save(self.password(), self.concept_frequency, os.path.abspath("confreq"))
 			if force==True:
 				self.app.showMessage("Information","Data Saved Successfully!",DTIcon.Information(),clicked_slot=lambda:os.popen("explorer /select,\"%s\""%os.path.abspath(data_dir)))
 		except Exception as e:
@@ -222,7 +222,7 @@ class LobbySession(DTSession.DTMainSession):
 	def saveAllEncryptData(self):
 		super().saveAllEncryptData()
 		self.saveData()
-		self.UserSetting().setValue("LibraryBase",Fernet_Encrypt(self.password(),self.library_base))
+		self.UserSetting().setValue("LibraryBase",Symmetric_Encrypt(self.password(),self.library_base))
 	
 	def backup(self):
 		self.saveData()
