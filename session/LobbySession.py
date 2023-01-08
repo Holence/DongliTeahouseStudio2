@@ -139,10 +139,10 @@ class LobbySession(DTSession.DTMainSession):
 			else:
 				self.dockWidget_note.hide()
 				self.actionSwitchNotes.setText("Show Notes")
-		self.actionSwitchNotes=QAction("Hide Notes")
+		self.actionSwitchNotes=QAction("Show Notes")
 		self.actionSwitchNotes.setShortcut("F2")
 		self.actionSwitchNotes.setShortcutContext(Qt.ApplicationShortcut)
-		self.actionSwitchNotes.setIcon(IconFromCurrentTheme("slack.svg"))
+		self.actionSwitchNotes.setIcon(IconFromCurrentTheme("clipboard.svg"))
 		self.actionSwitchNotes.triggered.connect(slot)
 
 		self.addAction(self.lobby.actionSave_Data)
