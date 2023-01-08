@@ -7,3 +7,4 @@ from widget.TextList import TextList
 from widget.Desktop import Desktop
 from widget.ConceptSearch import ConceptSearch
 from widget.BackButton import BackButton
+from widget.Notes import Notes

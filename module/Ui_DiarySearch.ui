@@ -54,7 +54,7 @@
      </property>
      <widget class="QWidget" name="tab_textlist">
       <attribute name="title">
-       <string>Text List </string>
+       <string>Text List</string>
       </attribute>
       <layout class="QHBoxLayout" name="horizontalLayout_5">
        <property name="spacing">

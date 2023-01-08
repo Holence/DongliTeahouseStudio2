@@ -4,6 +4,26 @@ from DTPySide.DTFrame.DTMainWindow import DTMainWindow
 from web_func import *
 
 class LobbySession(DTSession.DTMainSession):
+
+	def closeEvent(self, event):
+		for diary in self.diary_heap:
+			diary.close()
+		for concept in self.concept_heap:
+			concept.close()
+		for library in self.library_heap:
+			library.close()
+		
+		if hasattr(self.lobby,"DataChecker"):
+			self.lobby.DataChecker.close()
+		if hasattr(self.lobby,"DataChecker2"):
+			self.lobby.DataChecker2.close()
+		if hasattr(self.lobby,"bookmark_parser_window"):
+			self.lobby.bookmark_parser_window.close()
+		if hasattr(self.lobby,"advance_search_window"):
+			self.lobby.advance_search_window.close()
+		
+		self.dockWidget_note.close()
+		super().closeEvent(event)
 	
 	def eventFilter(self, watched: QObject, event:QMouseEvent) -> bool:
 		# 为了实现重新focusIn窗体的时候刷新界面，虽然手动把一堆子控件installEventFilter一遍，但也只能这样了
@@ -31,40 +51,40 @@ class LobbySession(DTSession.DTMainSession):
 	def loadData(self):
 		data_dir=os.path.join(self.app.DataDir(),"data.dlcw")
 		if os.path.exists(data_dir):
-			self.data=Symmetric_Decrypt_Load(self.password(),data_dir)
+			self.data=Symmetric_Decrypt_Load(self.password(), data_dir, iteration=self.iteration())
 			if self.data==False:
 				DTFrame.DTMessageBox(self,"Error","Data error!")
 				self.app.quit()
 			
 		else:
-			self.data=[{},[],{}]
-			Symmetric_Encrypt_Save(self.password(),self.data,data_dir)
+			self.data=[{},[],{},""]
+			Symmetric_Encrypt_Save(self.password(), self.data, data_dir, iteration=self.iteration())
 
 		if os.path.exists("cache"):
-			self.cache=Symmetric_Decrypt_Load(self.password(),os.path.abspath("cache"))
+			self.cache=Symmetric_Decrypt_Load(self.password(), os.path.abspath("cache"), iteration=self.iteration())
 			if self.cache==False:
 				DTFrame.DTMessageBox(self,"Error","Cache data error!")
 				self.app.quit()
 		else:
 			self.cache={}
-			Symmetric_Encrypt_Save(self.password(),self.cache,os.path.abspath("cache"))
+			Symmetric_Encrypt_Save(self.password(), self.cache, os.path.abspath("cache"), iteration=self.iteration())
 			
 		if os.path.exists("confreq"):
-			self.concept_frequency=Symmetric_Decrypt_Load(self.password(),os.path.abspath("confreq"))
+			self.concept_frequency=Symmetric_Decrypt_Load(self.password(), os.path.abspath("confreq"), iteration=self.iteration())
 			if self.concept_frequency==False:
 				DTFrame.DTMessageBox(self,"Error","Concept Frequency data error!")
 				self.app.quit()
 		else:
 			self.concept_frequency={}
-			Symmetric_Encrypt_Save(self.password(),self.concept_frequency,os.path.abspath("confreq"))
+			Symmetric_Encrypt_Save(self.password(), self.concept_frequency, os.path.abspath("confreq"), iteration=self.iteration())
 		
-		self.library_base=Symmetric_Decrypt(self.password(),self.UserSetting().value("LibraryBase"))
+		self.library_base=Symmetric_Decrypt(self.password(), self.UserSetting().value("LibraryBase"), iteration=self.iteration())
 		if self.library_base==False:
 			dlg=QFileDialog(self)
 			while not self.library_base:
 				DTFrame.DTMessageBox(self,"Information","You need to set Library Base first!",DTIcon.Information())
 				self.library_base=dlg.getExistingDirectory()
-			self.UserSetting().setValue("LibraryBase",Symmetric_Encrypt(self.password(),self.library_base))
+			self.UserSetting().setValue("LibraryBase",Symmetric_Encrypt(self.password(), self.library_base, iteration=self.iteration()))
 	
 	def dataValidityCheck(self):
 		return True
@@ -94,6 +114,10 @@ class LobbySession(DTSession.DTMainSession):
 		library.initialize()
 		self.library_heap.append(library)
 
+		from widget import Notes
+		self.dockWidget_note=Notes(self)
+		self.dockWidget_note.hide()
+
 	def restoreWindowStatus(self):
 		try:
 			self.resize(self.UserSetting().value("WindowStatus/LobbySize"))
@@ -107,6 +131,20 @@ class LobbySession(DTSession.DTMainSession):
 		super().initializeSignal()
 		self.installEventFilter(self)
 		self.refreshModuleSingal()
+
+		def slot():
+			if self.dockWidget_note.isHidden():
+				self.dockWidget_note.show()
+				self.actionSwitchNotes.setText("Hide Notes")
+			else:
+				self.dockWidget_note.hide()
+				self.actionSwitchNotes.setText("Show Notes")
+		self.actionSwitchNotes=QAction("Hide Notes")
+		self.actionSwitchNotes.setShortcut("F2")
+		self.actionSwitchNotes.setShortcutContext(Qt.ApplicationShortcut)
+		self.actionSwitchNotes.setIcon(IconFromCurrentTheme("slack.svg"))
+		self.actionSwitchNotes.triggered.connect(slot)
+
 		self.addAction(self.lobby.actionSave_Data)
 		self.addAction(self.lobby.actionCheck_Data_Completeness)
 		self.addAction(self.lobby.actionCheck_Unsaved_Data)
@@ -134,6 +172,9 @@ class LobbySession(DTSession.DTMainSession):
 		menuDataTransfer.addAction(self.lobby.actionAdvanced_Search)
 		self.addMenuToMainMenu(menuDataTransfer)
 		
+		self.addAction(self.actionSwitchNotes)
+		self.addActionToMainMenu(self.actionSwitchNotes)
+
 		self.addActionToMainMenu(self.lobby.actionSave_Data)
 		super().initializeMenu()
 
@@ -154,6 +195,7 @@ class LobbySession(DTSession.DTMainSession):
 					flag=True
 					ShowUp(concept)
 					concept.concept_module.showConcept(id)
+					break
 			#如果全部都隐藏着，开启一个
 			if flag==False:
 				ShowUp(self.concept_heap[0])
@@ -179,6 +221,7 @@ class LobbySession(DTSession.DTMainSession):
 					diary.diary_module.textList.clearSelection()
 					diary.diary_module.textList.setCurrentRow(index)
 					diary.diary_module.showLine()
+					break
 			#如果全部都隐藏着，开启一个
 			if flag==False:
 				ShowUp(self.diary_heap[0])
@@ -211,9 +254,9 @@ class LobbySession(DTSession.DTMainSession):
 		
 		try:
 			data_dir=os.path.join(self.app.DataDir(),"data.dlcw")
-			Symmetric_Encrypt_Save(self.password(), self.data, data_dir)
-			Symmetric_Encrypt_Save(self.password(), self.cache, os.path.abspath("cache"))
-			Symmetric_Encrypt_Save(self.password(), self.concept_frequency, os.path.abspath("confreq"))
+			Symmetric_Encrypt_Save(self.password(), self.data, data_dir, iteration=self.iteration())
+			Symmetric_Encrypt_Save(self.password(), self.cache, os.path.abspath("cache"), iteration=self.iteration())
+			Symmetric_Encrypt_Save(self.password(), self.concept_frequency, os.path.abspath("confreq"), iteration=self.iteration())
 			if force==True:
 				self.app.showMessage("Information","Data Saved Successfully!",DTIcon.Information(),clicked_slot=lambda:os.popen("explorer /select,\"%s\""%os.path.abspath(data_dir)))
 		except Exception as e:
@@ -222,7 +265,7 @@ class LobbySession(DTSession.DTMainSession):
 	def saveAllEncryptData(self):
 		super().saveAllEncryptData()
 		self.saveData()
-		self.UserSetting().setValue("LibraryBase",Symmetric_Encrypt(self.password(),self.library_base))
+		self.UserSetting().setValue("LibraryBase",Symmetric_Encrypt(self.password(), self.library_base, iteration=self.iteration()))
 	
 	def backup(self):
 		self.saveData()
@@ -250,6 +293,8 @@ class LobbySession(DTSession.DTMainSession):
 			self.lobby.bookmark_parser_window.hide()
 		if hasattr(self.lobby,"advance_search_window"):
 			self.lobby.advance_search_window.hide()
+		
+		self.dockWidget_note.hide()
 		
 		super().bossComing()
 

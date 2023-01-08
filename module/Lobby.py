@@ -3,7 +3,7 @@ from DTPySide import *
 
 from module.Ui_Lobby import Ui_Lobby
 from session import LobbySession
-class Lobby(QWidget,Ui_Lobby):
+class Lobby(Ui_Lobby, QWidget):
 	def __init__(self, Headquarter: LobbySession):
 		super().__init__(parent=Headquarter)
 		self.setupUi(self)
@@ -48,6 +48,11 @@ class Lobby(QWidget,Ui_Lobby):
 
 		self.actionAdvanced_Search.triggered.connect(self.AdvanceSearch)
 		self.actionAdvanced_Search.setIcon(IconFromCurrentTheme("database.svg"))
+
+		def slot():
+			os.system("start explorer \"https://www.google.com/search?q=%s\""%self.lineEdit.text())
+		self.lineEdit.setAlignment(Qt.AlignHCenter)
+		self.lineEdit.returnPressed.connect(slot)
 	
 	def summon(self, へ_へ, ヘ＿ヘ):
 		
@@ -577,7 +582,7 @@ cover-image: cover.jpg
 
 		def check():
 			
-			old_data=Symmetric_Decrypt_Load(self.Headquarter.password(),os.path.join(self.Headquarter.app.DataDir(),"data.dlcw"))
+			old_data=Symmetric_Decrypt_Load(self.Headquarter.password(), os.path.join(self.Headquarter.app.DataDir(),"data.dlcw"), iteration=self.Headquarter.iteration())
 			old_diary_data=old_data[0]
 			old_concept_data=old_data[1]
 			old_library_data=old_data[2]

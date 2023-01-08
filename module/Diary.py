@@ -3,7 +3,7 @@ from DTPySide import *
 
 from session import LobbySession
 from module.Ui_Diary import Ui_Diary
-class Diary(QWidget,Ui_Diary):
+class Diary(Ui_Diary, QWidget):
 
 	def __init__(self, parent, Headquarter: LobbySession):
 		super().__init__()

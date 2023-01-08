@@ -3,7 +3,7 @@ from DTPySide import *
 
 from session import LobbySession
 from module.Ui_LibraryCheck import Ui_LibraryCheck
-class LibraryCheck(Ui_LibraryCheck,QWidget):
+class LibraryCheck(Ui_LibraryCheck, QWidget):
 	"""写的跟狗屎一样
 
 	Args:

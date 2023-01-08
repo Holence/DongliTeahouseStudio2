@@ -3,7 +3,7 @@ from DTPySide import *
 
 from session import LobbySession
 from module.Ui_AdvanceSearch import Ui_AdvanceSearch
-class AdvanceSearch(QWidget,Ui_AdvanceSearch):
+class AdvanceSearch(Ui_AdvanceSearch, QWidget):
 	def __init__(self, parent, Headquarter:LobbySession):
 		super().__init__(parent=parent)
 		self.setupUi(self)

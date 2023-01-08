@@ -3,7 +3,7 @@ from DTPySide import *
 
 from session import LobbySession
 from module.Ui_Library import Ui_Library
-class Library(QWidget,Ui_Library):
+class Library(Ui_Library, QWidget):
 	
 	def __init__(self, parent, Headquarter: LobbySession):
 		super().__init__(parent=parent)

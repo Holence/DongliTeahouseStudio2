@@ -3,7 +3,7 @@ from DTPySide import *
 
 from session import LobbySession
 from module.Ui_BookmarkParser import Ui_BookmarkParser
-class BookmarkParser(QWidget,Ui_BookmarkParser):
+class BookmarkParser(Ui_BookmarkParser, QWidget):
 	def __init__(self, parent, Headquarter:LobbySession):
 		super().__init__(parent=parent)
 		self.setupUi(self)

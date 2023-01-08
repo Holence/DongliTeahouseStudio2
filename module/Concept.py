@@ -3,7 +3,7 @@ from DTPySide import *
 
 from session import LobbySession
 from module.Ui_Concept import Ui_Concept
-class Concept(QWidget,Ui_Concept):
+class Concept(Ui_Concept, QWidget):
 	def __init__(self, parent, Headquarter: LobbySession):
 		super().__init__(parent=parent)
 		self.setupUi(self)

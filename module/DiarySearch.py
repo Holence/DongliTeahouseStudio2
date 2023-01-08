@@ -4,7 +4,7 @@ from DTPySide import *
 from session import LobbySession
 from module.Diary import Diary
 from module.Ui_DiarySearch import Ui_DiarySearch
-class DiarySearch(Ui_DiarySearch,QWidget):
+class DiarySearch(Ui_DiarySearch, QWidget):
 	def __init__(self,parent,Headquarter:LobbySession,diary:Diary):
 		super().__init__(parent)
 		self.setupUi(self)

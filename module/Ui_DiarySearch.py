@@ -88,7 +88,7 @@ class Ui_DiarySearch(object):
         DiarySearch.setWindowTitle(QCoreApplication.translate("DiarySearch", u"DiarySearch", None))
         self.lineEdit.setPlaceholderText(QCoreApplication.translate("DiarySearch", u"text text (2000.1.1) (2001.1.1-2001.2.1) [conceptA] [conceptB]", None))
         self.checkBox.setText(QCoreApplication.translate("DiarySearch", u"Rank", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_textlist), QCoreApplication.translate("DiarySearch", u"Text List ", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_textlist), QCoreApplication.translate("DiarySearch", u"Text List", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_textviewer), QCoreApplication.translate("DiarySearch", u"Text Viewer", None))
     # retranslateUi
 
