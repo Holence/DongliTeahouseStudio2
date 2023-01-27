@@ -848,7 +848,7 @@ Concept: {", ".join([self.getConcept(i)["name"] for i in file["concept"]])}"""
 				
 				# 移动
 				if move_from_outside:
-					if not Win32_Shellmove(old_dir,new_dir):
+					if not Shell_Move_File(old_dir,new_dir):
 						return None
 			
 			except Exception as e:

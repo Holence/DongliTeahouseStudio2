@@ -258,7 +258,7 @@ class FileList(QListWidget):
 								DTFrame.DTMessageBox(self.window(),"Warning","Already exsist file at %s"%os.path.join(new_base, name),DTIcon.Warning())
 								return
 							else:
-								Win32_Shellmove(url,new_base)
+								Shell_Move_File(url,new_base)
 						except Exception as e:
 							DTFrame.DTMessageBox(self.window(),"Error",str(e),DTIcon.Error())
 							return
