@@ -435,11 +435,11 @@ class FileTab(Ui_FileTab,QWidget):
 
 		if url[:4]!="http":
 			try:
-				os.startfile(url)
+				Open_Explorer(url, False)
 			except Exception as e:
 				DTFrame.DTMessageBox(self.window(),"Warning","Could not open file! Try running Check Library.\n\n%s"%e,DTIcon.Warning())
 		else:
-			os.system("start explorer \"%s\""%url)
+			Open_Website(url)
 	
 	def Clear(self):
 		if self.stackedWidget.currentIndex()==0:

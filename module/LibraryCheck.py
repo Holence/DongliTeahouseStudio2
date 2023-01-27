@@ -109,11 +109,12 @@ class LibraryCheck(Ui_LibraryCheck, QWidget):
 				
 				# 原始文件中存在与替换文件处在不同的文件夹，需要把替换文件移动到原始文件的文件夹中
 				if os.path.dirname(replicant_url)!=origin_base:
-					if Shell_Move_File(replicant_url,origin_base):
-						self.Headquarter.renameLibraryFile(date,origin_name,new_name,rename_operation=False,new_file_type=TYPE)
-						self.plainTextEdit.appendPlainText("Replaced %s to %s and moved from %s to %s\n"%(origin_name,new_name,origin_url,replicant_url))
+					Shell_Move_File(replicant_url,origin_base)
+					self.Headquarter.renameLibraryFile(date,origin_name,new_name,rename_operation=False,new_file_type=TYPE)
+					self.plainTextEdit.appendPlainText("Replaced %s to %s and moved from %s to %s\n"%(origin_name,new_name,origin_url,replicant_url))
 				# 原始文件中存在与替换文件处在相同的文件夹，重命名即可
 				else:
+					os.rename(origin_url, replicant_url)
 					self.Headquarter.renameLibraryFile(date,origin_name,new_name,rename_operation=False,new_file_type=TYPE)
 					self.plainTextEdit.appendPlainText("Replaced %s to %s and moved from %s to %s\n"%(origin_name,new_name,origin_url,replicant_url))
 					

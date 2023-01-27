@@ -74,7 +74,7 @@ class BookmarkParser(Ui_BookmarkParser, QWidget):
 		dlg=QFileDialog(self)
 		url=dlg.getOpenFileUrl(self,"Open Html",filter="Bookmark (*.html)")[0].url()
 		if url!="":
-			url=url.replace("file:///","")
+			url=url.replace("file:///"[:PATH_PREFIX_LEN],"")
 			
 			import bookmarks_parser
 			try:

@@ -258,7 +258,7 @@ class LobbySession(DTSession.DTMainSession):
 			Symmetric_Encrypt_Save(self.password(), self.cache, os.path.abspath("cache"), iteration=self.iteration())
 			Symmetric_Encrypt_Save(self.password(), self.concept_frequency, os.path.abspath("confreq"), iteration=self.iteration())
 			if force==True:
-				self.app.showMessage("Information","Data Saved Successfully!",DTIcon.Information(),clicked_slot=lambda:os.popen("explorer /select,\"%s\""%os.path.abspath(data_dir)))
+				self.app.showMessage("Information","Data Saved Successfully!",DTIcon.Information(),clicked_slot=lambda:Open_Explorer(os.path.abspath(data_dir), True))
 		except Exception as e:
 			self.app.showMessage("Error","Error occured during Data Saving!\n\n%s"%e,DTIcon.Error())
 
@@ -702,12 +702,15 @@ Relative: {", ".join([self.getConcept(i)["name"] for i in concept["relative"]])}
 			return None
 	
 	def getLibraryFileTooltip(self,date:QDate,name):
-		file=self.getLibraryFile(date,name)
-		backslash_char = "\\"
-		tooltip=f"""{os.path.join(self.library_base, file["url"]).replace(backslash_char,"/") if file["type"]!=2 else file["url"]}
+		try:
+			file=self.getLibraryFile(date,name)
+			backslash_char = "\\"
+			tooltip=f"""{os.path.join(self.library_base, file["url"]).replace(backslash_char,"/") if file["type"]!=2 else file["url"]}
 Type: {file["type"]}
 Concept: {", ".join([self.getConcept(i)["name"] for i in file["concept"]])}"""
-		return tooltip
+			return tooltip
+		except:
+			return ""
 
 	def getLibraryFileList(self,name_list=[],date_range_list=[],concept_name_list=[],TYPE=None):
 		
@@ -809,13 +812,13 @@ Concept: {", ".join([self.getConcept(i)["name"] for i in file["concept"]])}"""
 					name=name+str(time.time_ns())
 				else:
 					return None
-
-		elif url[:8]=="file:///":
-			if os.path.isdir(url[8:]):
+		
+		elif url[:PATH_PREFIX_LEN]=="file:///"[:PATH_PREFIX_LEN]:
+			if os.path.isdir(url[PATH_PREFIX_LEN:]):
 				TYPE=0 # folder=0
 			else:
 				TYPE=1 # file=1
-			old_dir=url[8:]
+			old_dir=url[PATH_PREFIX_LEN:]
 			name=os.path.basename(old_dir)
 
 			try:
@@ -848,8 +851,7 @@ Concept: {", ".join([self.getConcept(i)["name"] for i in file["concept"]])}"""
 				
 				# 移动
 				if move_from_outside:
-					if not Shell_Move_File(old_dir,new_dir):
-						return None
+					Shell_Move_File(old_dir,new_dir)
 			
 			except Exception as e:
 				# 出错

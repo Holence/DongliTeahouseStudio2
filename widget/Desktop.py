@@ -24,7 +24,7 @@ class DesktopButton(QPushButton):
         };
         """)
 
-		if url[:8]=="file:///":
+		if url[:PATH_PREFIX_LEN]=="file:///"[:PATH_PREFIX_LEN]:
 			self.setToolTip(os.path.basename(url))
 		else:
 			self.setToolTip(url)
@@ -34,8 +34,8 @@ class DesktopButton(QPushButton):
 	def refreshIcon(self,force=False):
 		
 		# 本地load图标
-		if self.url[:8]=="file:///":
-			file_info=QFileInfo(self.url[8:])
+		if self.url[:PATH_PREFIX_LEN]=="file:///"[:PATH_PREFIX_LEN]:
+			file_info=QFileInfo(self.url[PATH_PREFIX_LEN:])
 			icon=QFileIconProvider().icon(file_info)
 		
 		# 网页favicon
@@ -104,13 +104,13 @@ class DesktopButton(QPushButton):
 			super().mouseReleaseEvent(e)
 	
 	def openFile(self):
-		if self.url[0:8]=="file:///":
+		if self.url[:PATH_PREFIX_LEN]=="file:///"[:PATH_PREFIX_LEN]:
 			try:
-				os.startfile(self.url)
+				Open_Explorer(self.url, False)
 			except Exception as e:
 				DTFrame.DTMessageBox(self,"Warning","Could not open file! Try running Check Library.\n\n%s"%e,DTIcon.Warning())
 		else:
-			os.system("start explorer \"%s\""%self.url)
+			Open_Website(self.url)
 
 from session.LobbySession import LobbySession
 class Desktop(QWidget):

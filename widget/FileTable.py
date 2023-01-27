@@ -232,9 +232,9 @@ class FileTable(DTWidget.DTHorizontalTabel):
 				DTFrame.DTMessageBox(self.window(),"Error","%s does not exist! Try running Check Library."%url,DTIcon.Error())
 
 		def slotLocation():
-			url=self.item(self.currentRow(),4).text().replace("/","\\")#呵window得用反斜线
+			url=self.item(self.currentRow(),4).text()
 			try:
-				os.popen("explorer /select,\"%s\""%url)
+				Open_Explorer(url, True)
 			except Exception as e:
 				DTFrame.DTMessageBox(self.window(),"Warning","%s does not exist! Try running Check Library.\n\n%s"%(url,e),DTIcon.Warning())
 
@@ -251,7 +251,7 @@ class FileTable(DTWidget.DTHorizontalTabel):
 			text=""
 			for model_index in self.selectionModel().selectedRows():
 				row=model_index.row()
-				url=self.item(row,4).text().replace("/","\\")#呵window得用反斜线
+				url=self.item(row,4).text()
 				text+=url+"\n"
 			clip=QGuiApplication.clipboard()
 			clip.setText(text[:-1])

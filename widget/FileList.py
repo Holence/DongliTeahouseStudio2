@@ -280,9 +280,9 @@ class FileList(QListWidget):
 				DTFrame.DTMessageBox(self.window(),"Error","%s does not exist! Try running Check Library."%url,DTIcon.Error())
 		
 		def slotLocation():
-			url=self.item(self.currentRow()).toolTip().split("\n")[0].replace("/","\\")#呵window得用反斜线
+			url=self.item(self.currentRow()).toolTip().split("\n")[0]
 			try:
-				os.popen("explorer /select,\"%s\""%url)
+				Open_Explorer(url, True)
 			except Exception as e:
 				DTFrame.DTMessageBox(self.window(),"Warning","%s does not exist! Try running Check Library.\n\n%s"%(url,e),DTIcon.Warning())
 		
@@ -293,7 +293,7 @@ class FileList(QListWidget):
 			text=""
 			for model_index in self.selectionModel().selectedRows():
 				row=model_index.row()
-				url=self.item(row).toolTip().split("\n")[0].replace("/","\\")#呵window得用反斜线
+				url=self.item(row).toolTip().split("\n")[0]
 				text+=url+"\n"
 			clip=QGuiApplication.clipboard()
 			clip.setText(text[:-1])

@@ -49,10 +49,8 @@ class Lobby(Ui_Lobby, QWidget):
 		self.actionAdvanced_Search.triggered.connect(self.AdvanceSearch)
 		self.actionAdvanced_Search.setIcon(IconFromCurrentTheme("database.svg"))
 
-		def slot():
-			os.system("start explorer \"https://www.google.com/search?q=%s\""%self.lineEdit.text())
 		self.lineEdit.setAlignment(Qt.AlignHCenter)
-		self.lineEdit.returnPressed.connect(slot)
+		self.lineEdit.returnPressed.connect(lambda:Open_Website(self.lineEdit.text()))
 	
 	def summon(self, へ_へ, ヘ＿ヘ):
 		
@@ -85,7 +83,7 @@ else:
 		url=os.path.abspath("./Export_Data_%s.json"%WhatDayIsToday(1).toString("yyyyMMdd"))
 		res=Json_Save(self.Headquarter.data[index],url)
 		if res==True:
-			self.Headquarter.app.showMessage("Information", "Data Export Successfully!", DTIcon.Information(), clicked_slot=lambda:os.popen("explorer /select,\"%s\""%url))
+			self.Headquarter.app.showMessage("Information", "Data Export Successfully!", DTIcon.Information(), clicked_slot=lambda:Open_Explorer(url, True))
 		else:
 			self.Headquarter.app.showMessage("Error","Error occured during Data Export!",DTIcon.Error())
 	
@@ -232,13 +230,18 @@ cover-image: cover.jpg
 						f.write(text)
 					
 					if checkbox_epub.isChecked():
-						cmd="start powershell "
-						cmd+="chcp 65001;"
-						cmd+="pandoc -i %s -o %s -s %s;"%(url, url[:-2]+"epub", extra_edit.text())
-						cmd+="pause;"
-						os.system(cmd)
+						if sys.platform=="win32":
+							cmd="start powershell "
+							cmd+="chcp 65001;"
+							cmd+="pandoc -i %s -o %s -s %s;"%(url, url[:-2]+"epub", extra_edit.text())
+							cmd+="pause;"
+							os.system(cmd)
+						elif sys.platform=="linux":
+							cmd="gnome-terminal -- "
+							cmd+="pandoc -i %s -o %s -s %s;"%(url, url[:-2]+"epub", extra_edit.text())
+							os.system(cmd)
 					
-					self.Headquarter.app.showMessage("Information", "Diary Export Successfully!", DTIcon.Information(), clicked_slot=lambda:os.popen("explorer /select,\"%s\""%url))
+					self.Headquarter.app.showMessage("Information", "Diary Export Successfully!", DTIcon.Information(), clicked_slot=lambda:Open_Explorer(url, True))
 
 				except Exception as e:
 					DTFrame.DTMessageBox(self,"Error","Error occurs during output!\n\n%s"%e,DTIcon.Error())
@@ -555,8 +558,10 @@ cover-image: cover.jpg
 
 			self.DataChecker.actionExit.triggered.disconnect(self.DataChecker.close)
 			self.DataChecker.actionExit.triggered.connect(slot)
-			self.DataChecker.TitleBar.btn_close.clicked.disconnect(self.DataChecker.close)
-			self.DataChecker.TitleBar.btn_close.clicked.connect(slot)
+
+			if sys.platform=="win32":
+				self.DataChecker.TitleBar.btn_close.clicked.disconnect(self.DataChecker.close)
+				self.DataChecker.TitleBar.btn_close.clicked.connect(slot)
 
 			self.DataChecker.errorText=QPlainTextEdit(error)
 			self.DataChecker.errorText.setReadOnly(True)
@@ -615,8 +620,10 @@ cover-image: cover.jpg
 
 			self.DataChecker2.actionExit.triggered.disconnect(self.DataChecker2.close)
 			self.DataChecker2.actionExit.triggered.connect(slot)
-			self.DataChecker2.TitleBar.btn_close.clicked.disconnect(self.DataChecker2.close)
-			self.DataChecker2.TitleBar.btn_close.clicked.connect(slot)
+			
+			if sys.platform=="win32":
+				self.DataChecker2.TitleBar.btn_close.clicked.disconnect(self.DataChecker2.close)
+				self.DataChecker2.TitleBar.btn_close.clicked.connect(slot)
 
 			self.DataChecker2.infoText=QPlainTextEdit(info)
 			self.DataChecker2.infoText.setReadOnly(True)
