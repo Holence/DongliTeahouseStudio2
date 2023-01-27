@@ -100,15 +100,25 @@ class LibraryCheck(Ui_LibraryCheck, QWidget):
 			
 			try:
 				origin_base=os.path.dirname(origin_url)
+				new_name=os.path.basename(replicant_url)
+
+				# 原始文件的文件夹中存在与替换文件名相同的文件
+				if os.path.exists(os.path.join(origin_base, new_name)):
+					DTFrame.DTMessageBox(self,"Warning","Already exsist file at %s"%os.path.join(origin_base, new_name),DTIcon.Warning())
+					continue
+				
+				# 原始文件中存在与替换文件处在不同的文件夹，需要把替换文件移动到原始文件的文件夹中
 				if os.path.dirname(replicant_url)!=origin_base:
-					Win32_Shellmove(replicant_url,origin_base)
+					if Win32_Shellmove(replicant_url,origin_base):
+						self.Headquarter.renameLibraryFile(date,origin_name,new_name,rename_operation=False,new_file_type=TYPE)
+						self.plainTextEdit.appendPlainText("Replaced %s to %s and moved from %s to %s\n"%(origin_name,new_name,origin_url,replicant_url))
+				# 原始文件中存在与替换文件处在相同的文件夹，重命名即可
+				else:
+					self.Headquarter.renameLibraryFile(date,origin_name,new_name,rename_operation=False,new_file_type=TYPE)
+					self.plainTextEdit.appendPlainText("Replaced %s to %s and moved from %s to %s\n"%(origin_name,new_name,origin_url,replicant_url))
+					
 			except Exception as e:
 				DTFrame.DTMessageBox(self,"Error",str(e),DTIcon.Error())
-			
-			new_name=os.path.basename(replicant_url)
-			
-			self.Headquarter.renameLibraryFile(date,origin_name,new_name,rename_operation=False,new_file_type=TYPE)
-			self.plainTextEdit.appendPlainText("Replaced %s to %s and moved from %s to %s\n"%(origin_name,new_name,origin_url,replicant_url))
 		
 		self.refresh()
 

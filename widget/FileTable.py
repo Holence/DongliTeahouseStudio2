@@ -204,7 +204,13 @@ class FileTable(DTWidget.DTHorizontalTabel):
 							new_base=self.Headquarter.library_base+"/%s/%s/%s"%(new_date.year(),new_date.month(),new_date.day())
 							if not os.path.exists(new_base):
 								os.makedirs(new_base)
-							Win32_Shellmove(url,new_base)
+							
+							# 新日期的文件夹中存在同名的文件
+							if os.path.exists(os.path.join(new_base, name)):
+								DTFrame.DTMessageBox(self.window(),"Warning","Already exsist file at %s"%os.path.join(new_base, name),DTIcon.Warning())
+								return
+							else:
+								Win32_Shellmove(url,new_base)
 						except Exception as e:
 							DTFrame.DTMessageBox(self.window(),"Error",str(e),DTIcon.Error())
 							return
@@ -232,31 +238,6 @@ class FileTable(DTWidget.DTHorizontalTabel):
 			except Exception as e:
 				DTFrame.DTMessageBox(self.window(),"Warning","%s does not exist! Try running Check Library.\n\n%s"%(url,e),DTIcon.Warning())
 
-		# def slotCopy():
-		# 	copy_list=[]
-		# 	for model_index in self.selectionModel().selectedRows():
-		# 		row=model_index.row()
-		# 		type=int(self.item(row,0).text())
-		# 		url=self.item(row,4).text().replace("/","\\")
-		# 		if type!=2:
-		# 			copy_list.append(url)
-			
-		# 	if copy_list==[]:
-		# 		DTFrame.DTMessageBox(self.window(),"Warning","There is nothing can be copied.",DTIcon.Warning())
-		# 		return
-			
-		# 	dlg=QFileDialog(self)
-		# 	dst=dlg.getExistingDirectory().replace("/","\\")
-		# 	if dst!="":
-		# 		try:
-		# 			res=Win32_Shellcopy(copy_list,dst)
-		# 			if res==True:
-		# 				os.startfile(dst)
-		# 			else:
-		# 				DTFrame.DTMessageBox(self.window(),"Error","Copy Failed",DTIcon.Error())
-		# 		except Exception as e:
-		# 			DTFrame.DTMessageBox(self.window(),"Error","Error occured: %s\n\nTry running Check Library."%e,DTIcon.Error())
-		
 		def slotDelete():
 			self.fileDelete.emit()
 		
@@ -374,15 +355,16 @@ class FileTable(DTWidget.DTHorizontalTabel):
 				actionRefreshIcon.setIcon(IconFromCurrentTheme("refresh-cw.svg"))
 				menu.addAction(actionRefreshIcon)
 
-				actionMoveToTop=QAction("Move to Top")
-				actionMoveToTop.triggered.connect(slotMoveToTop)
-				actionMoveToTop.setIcon(IconFromCurrentTheme("chevrons-up.svg"))
-				menu.addAction(actionMoveToTop)
-				
-				actionMoveToBottom=QAction("Move to Bottom")
-				actionMoveToBottom.triggered.connect(slotMoveToBottom)
-				actionMoveToBottom.setIcon(IconFromCurrentTheme("chevrons-down.svg"))
-				menu.addAction(actionMoveToBottom)
+				if "Library" not in self.objectName():
+					actionMoveToTop=QAction("Move to Top")
+					actionMoveToTop.triggered.connect(slotMoveToTop)
+					actionMoveToTop.setIcon(IconFromCurrentTheme("chevrons-up.svg"))
+					menu.addAction(actionMoveToTop)
+					
+					actionMoveToBottom=QAction("Move to Bottom")
+					actionMoveToBottom.triggered.connect(slotMoveToBottom)
+					actionMoveToBottom.setIcon(IconFromCurrentTheme("chevrons-down.svg"))
+					menu.addAction(actionMoveToBottom)
 
 				actionDelete=QAction(QCoreApplication.translate("Library", "Delete"))
 				actionDelete.triggered.connect(slotDelete)

@@ -252,7 +252,13 @@ class FileList(QListWidget):
 							new_base=self.Headquarter.library_base+"/%s/%s/%s"%(new_date.year(),new_date.month(),new_date.day())
 							if not os.path.exists(new_base):
 								os.makedirs(new_base)
-							Win32_Shellmove(url,new_base)
+							
+							# 新日期的文件夹中存在同名的文件
+							if os.path.exists(os.path.join(new_base, name)):
+								DTFrame.DTMessageBox(self.window(),"Warning","Already exsist file at %s"%os.path.join(new_base, name),DTIcon.Warning())
+								return
+							else:
+								Win32_Shellmove(url,new_base)
 						except Exception as e:
 							DTFrame.DTMessageBox(self.window(),"Error",str(e),DTIcon.Error())
 							return
@@ -279,30 +285,6 @@ class FileList(QListWidget):
 				os.popen("explorer /select,\"%s\""%url)
 			except Exception as e:
 				DTFrame.DTMessageBox(self.window(),"Warning","%s does not exist! Try running Check Library.\n\n%s"%(url,e),DTIcon.Warning())
-		
-		# def slotCopy():
-		# 	copy_list=[]
-		# 	for model_index in self.selectionModel().selectedRows():
-		# 		row=model_index.row()
-		# 		url=self.item(row).toolTip().split("\n")[0].replace("/","\\")
-		# 		if url[:4]!="http":
-		# 			copy_list.append(url)
-			
-		# 	if copy_list==[]:
-		# 		DTFrame.DTMessageBox(self.window(),"Warning","There is nothing can be copied.",DTIcon.Warning())
-		# 		return
-				
-		# 	dlg=QFileDialog(self)
-		# 	dst=dlg.getExistingDirectory().replace("/","\\")
-		# 	if dst!="":
-		# 		try:
-		# 			res=Win32_Shellcopy(copy_list,dst)
-		# 			if res==True:
-		# 				os.startfile(dst)
-		# 			else:
-		# 				DTFrame.DTMessageBox(self.window(),"Error","Copy Failed",DTIcon.Error())
-		# 		except Exception as e:
-		# 			DTFrame.DTMessageBox(self.window(),"Error","Error occured: %s\n\nTry running Check Library."%e,DTIcon.Error())
 		
 		def slotDelete():
 			self.fileDelete.emit()
