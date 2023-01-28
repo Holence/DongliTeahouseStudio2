@@ -14,7 +14,7 @@ Download from [Github Release](https://github.com/Holence/DongliTeahouseStudio2/
 
 `.\env_build\Scripts\activate` or `source .\env_build\Scripts\activate` on linux
 
-`pip install -r .\requirements.txt`
+`pip install -r .\requirements.txt` and you need to `pip install pywin32` on windows manually
 
 `pip install pyinstaller`
 
