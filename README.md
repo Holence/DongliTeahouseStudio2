@@ -4,15 +4,15 @@ This is the 2.0 version of the [DongliTeahouseStudio](https://github.com/Holence
 
 ## Installation
 
-Download from [Github Release](https://github.com/Holence/DongliTeahouseStudio2/releases) to get the latest build for Windows.
+Download from [Github Release](https://github.com/Holence/DongliTeahouseStudio2/releases) to get the latest build.
 
-or build with pyinstaller on your own:
+## Build with Pyinstaller
 
 `git clone https://github.com/Holence/DongliTeahouseStudio2.git`
 
 `python -m venv env_build`
 
-`.\env_build\Scripts\activate`
+`.\env_build\Scripts\activate` or `source .\env_build\Scripts\activate` on linux
 
 `pip install -r .\requirements.txt`
 
