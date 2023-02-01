@@ -557,7 +557,7 @@ Relative: {", ".join([self.getConcept(i)["name"] for i in concept["relative"]])}
 		
 		def Bake_ID_List(raw_list:list): #把raw_list，先剔除delete_id_list中的id，再改需要前移的id
 			baked_list=[]
-			for id in List_Difference(raw_list,delete_id_list):
+			for id in List_Difference_Full(raw_list,delete_id_list):
 				baked_list.append(New_ID_Dict[id])
 			return baked_list
 		
@@ -610,7 +610,7 @@ Relative: {", ".join([self.getConcept(i)["name"] for i in concept["relative"]])}
 	def addParent(self,concept_id,parent_id_list):
 		concept=self.data[1][concept_id]
 			
-		for parent_id in List_Difference(parent_id_list,concept["parent"]):
+		for parent_id in List_Difference_Full(parent_id_list,concept["parent"]):
 			
 			# 禁止自生
 			if parent_id==concept_id:
@@ -632,7 +632,7 @@ Relative: {", ".join([self.getConcept(i)["name"] for i in concept["relative"]])}
 	def addChild(self,concept_id,child_id_list):
 		concept=self.data[1][concept_id]
 			
-		for child_id in List_Difference(child_id_list,concept["child"]):
+		for child_id in List_Difference_Full(child_id_list,concept["child"]):
 			
 			# 禁止自生
 			if child_id==concept_id:
@@ -654,7 +654,7 @@ Relative: {", ".join([self.getConcept(i)["name"] for i in concept["relative"]])}
 	def addRelative(self,concept_id,relative_id_list):
 		concept=self.data[1][concept_id]
 		
-		for relative_id in List_Difference(relative_id_list,concept["relative"]):
+		for relative_id in List_Difference_Full(relative_id_list,concept["relative"]):
 			
 			# 禁止自交
 			if relative_id==concept_id:
@@ -670,21 +670,21 @@ Relative: {", ".join([self.getConcept(i)["name"] for i in concept["relative"]])}
 	
 	def deleteParent(self,concept_id,delete_id_list):
 		concept=self.getConcept(concept_id)
-		concept["parent"]=List_Difference(concept["parent"],delete_id_list)
+		concept["parent"]=List_Difference_Full(concept["parent"],delete_id_list)
 		
 		for id in delete_id_list:
 			self.getConcept(id)["child"].remove(concept_id)
 	
 	def deleteChild(self,concept_id,delete_id_list):
 		concept=self.getConcept(concept_id)
-		concept["child"]=List_Difference(concept["child"],delete_id_list)
+		concept["child"]=List_Difference_Full(concept["child"],delete_id_list)
 		
 		for id in delete_id_list:
 			self.getConcept(id)["parent"].remove(concept_id)
 
 	def deleteRelative(self,concept_id,delete_id_list):
 		concept=self.getConcept(concept_id)
-		concept["relative"]=List_Difference(concept["relative"],delete_id_list)
+		concept["relative"]=List_Difference_Full(concept["relative"],delete_id_list)
 		
 		for id in delete_id_list:
 			self.getConcept(id)["relative"].remove(concept_id)

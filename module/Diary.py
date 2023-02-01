@@ -399,7 +399,7 @@ class Diary(Ui_Diary, QWidget):
 		if index!=-1:
 
 			line=self.Headquarter.getDiaryDayLine(self.current_date,index)
-			for id in List_Difference(id_list,line["concept"]):
+			for id in List_Difference_Full(id_list,line["concept"]):
 				line["concept"].append(id)
 			
 			self.showDay()
@@ -476,7 +476,7 @@ class Diary(Ui_Diary, QWidget):
 	
 			if delete_id_list!=[]:
 				if DTFrame.DTConfirmBox(self,"Delete Confirm","You want to delete line linked concept:",DTIcon.Question(),warning_text).exec_():
-					line["concept"]=List_Difference(line["concept"],delete_id_list)
+					line["concept"]=List_Difference_Full(line["concept"],delete_id_list)
 					self.refresh()
 	
 	def deleteLineFile(self):

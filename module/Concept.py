@@ -24,6 +24,7 @@ class Concept(Ui_Concept, QWidget):
 
 		self.plainTextEdit_detail.setStyleSheet("font-size:12pt")
 		self.textviewer_detail.setStyleSheet("font-size:12pt")
+		self.stackedWidget.setCurrentIndex(1)
 
 		# 搜索处的concept table只能drag out不能drop in
 		self.conceptTable.setDragDropMode(QAbstractItemView.DragOnly)
@@ -86,13 +87,13 @@ class Concept(Ui_Concept, QWidget):
 		
 		# search
 		self.lineEdit_search.textEdited.connect(self.showSearch)
-		def slot():
+		def slot1():
 			self.conceptTable.setFocus()
 			self.conceptTable.selectRow(0)
-		self.lineEdit_search.returnPressed.connect(slot)
+		self.lineEdit_search.returnPressed.connect(slot1)
 		self.actionSearch_Concept.triggered.connect(self.lineEdit_search.setFocus)
 
-		def slot(id):
+		def slot2(id):
 			self.fileTab.fileList.scrollToTop()
 			self.fileTab.fileTable.scrollToTop()
 			self.textList.scrollToTop()
@@ -100,8 +101,8 @@ class Concept(Ui_Concept, QWidget):
 			self.stackedWidget.setCurrentIndex(1)
 			self.showConcept(id)
 		# 点击concept，展示concept
-		self.conceptTable.conceptClicked.connect(slot)
-		self.conceptTable.conceptReturnPressed.connect(slot)
+		self.conceptTable.conceptClicked.connect(slot2)
+		self.conceptTable.conceptReturnPressed.connect(slot2)
 
 		#修改concept信息
 		self.lineEdit_name.editingFinished.connect(self.saveName)
@@ -114,17 +115,17 @@ class Concept(Ui_Concept, QWidget):
 		self.tabWidget.currentChanged.connect(self.refreshTab)
 		self.textList.textDropped.connect(self.addConceptText)
 
-		self.parentTable.conceptDoubleClicked.connect(slot)
+		self.parentTable.conceptDoubleClicked.connect(slot2)
 		self.parentTable.conceptDropped.connect(self.addParent)
 		self.lineEdit_parent.conceptAdd.connect(self.addParent)
 		self.actionAdd_Parent.triggered.connect(self.lineEdit_parent.setFocus)
 		
-		self.childTree.conceptDoubleClicked.connect(slot)
+		self.childTree.conceptDoubleClicked.connect(slot2)
 		self.childTree.conceptDropped.connect(self.addChild)
 		self.lineEdit_child.conceptAdd.connect(self.addChild)
 		self.actionAdd_Child.triggered.connect(self.lineEdit_child.setFocus)
 
-		self.relativeTable.conceptDoubleClicked.connect(slot)
+		self.relativeTable.conceptDoubleClicked.connect(slot2)
 		self.relativeTable.conceptDropped.connect(self.addRelative)
 		self.lineEdit_relative.conceptAdd.connect(self.addRelative)
 		self.actionAdd_Relative.triggered.connect(self.lineEdit_relative.setFocus)
@@ -282,6 +283,7 @@ class Concept(Ui_Concept, QWidget):
 				self.lineEdit_name.clear()
 				self.window().setWindowTitle("Concept")
 				self.plainTextEdit_detail.clear()
+				self.textviewer_detail.clear()
 				self.fileTab.Clear()
 				self.textList.clear()
 				self.textViewer.clear()
